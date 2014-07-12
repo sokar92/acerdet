@@ -44,13 +44,13 @@ namespace AcerDet {
 		
 		class Particle {
 		public:
-			ParticleState	state;
-			ParticleType	type;
-			Real64_t		px,py,pz,e;		//momentum
-			Real64_t		phi,theta;		//angles
-			Real64_t		x,y,z;			//production
+			ParticleState state;
+			ParticleType type;
+			Real64_t px,py,pz,e; //momentum
+			Real64_t phi,theta; //angles
+			Real64_t x,y,z;	//production
 			
-			Int32_t			id,mother;
+			Int32_t id,mother;
 			pair<Int32_t,Int32_t> daughters;
 			
 			void print() const {
@@ -67,26 +67,26 @@ namespace AcerDet {
 		private:
 			string getTypeName() const {
 				switch(type) {
-				case PT_JET:		return string("Jet");
-				case PT_BJET:		return string("B-Jet");
-				case PT_CJET:		return string("C-Jet");
-				case PT_CELL:		return string("Cell");
-				case PT_CLUSTER:	return string("Cluster");
-				case PT_MUON:		return string("Muon");
-				case PT_ELECTRON:	return string("Electron");
-				case PT_PHOTON:		return string("Photon");
-				case PT_TAU:		return string("Tau");
-				default:			return string("Unknown");
+				case PT_JET: return string("Jet");
+				case PT_BJET: return string("B-Jet");
+				case PT_CJET: return string("C-Jet");
+				case PT_CELL: return string("Cell");
+				case PT_CLUSTER: return string("Cluster");
+				case PT_MUON: return string("Muon");
+				case PT_ELECTRON: return string("Electron");
+				case PT_PHOTON: return string("Photon");
+				case PT_TAU: return string("Tau");
+				default: return string("Unknown");
 				}
 			}
 			
 			string getStateName() const {
 				switch(state) {
-				case PS_BEAM:		return string("Beam");
-				case PS_FINAL:		return string("Final");
-				case PS_DECAYED:	return string("Decayed");
-				case PS_HISTORY:	return string("Historical");
-				default:			return string("Unknown");
+				case PS_BEAM: return string("Beam");
+				case PS_FINAL: return string("Final");
+				case PS_DECAYED: return string("Decayed");
+				case PS_HISTORY: return string("Historical");
+				default: return string("Unknown");
 				}
 			}
 		};
@@ -154,10 +154,6 @@ namespace AcerDet {
 				else 		printf(" SUM: %15.8e %15.8e %15.8e %15.8e  | %15.8e\n", getPx(), getPy(), getPz(), getE(), recalculated_mass());
 			}
 		public:
-		/*
-			These methods work on above accessors - they don't have to be changed
-			even if above methods change.
-		/
 			double getAnglePhi();
 			double getAngleTheta();
 			void rotateXZ(double theta);
