@@ -1,0 +1,12 @@
+1. Install AcerDET library, described in src/README
+
+2. Change Pythia and HepMC locations in path.inc
+
+3. Set up local variables
+	source path.inc
+
+4. Build demo
+	make
+
+5. Run demo
+	./demo.exe

@@ -1,0 +1,19 @@
+Instalation
+
+1. enter super user mode
+	su
+
+1.a if there are some problems
+	man su
+	apt-get install su
+
+2. change Pythia and HepMC locations in path.inc
+
+3. set up local variables
+	source path.inc
+
+4. build and install shared library in /usr/local/lib
+	make
+
+5. leave super user mode
+	exit
