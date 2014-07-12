@@ -59,11 +59,12 @@ void BJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	IEVENT++;
 	
 	// search for history partition
+	/*
 	const vector<Particle>& parts = irecord.particles();
 	int n = parts.size();
 	
 	int nstart = 0;
 	while(nstart < n && parts[nstart].state != PS_HISTORY) 
 		nstart++;
-	int nstop = nstart-1;
+	int nstop = nstart-1;*/
 }

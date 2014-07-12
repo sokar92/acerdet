@@ -1,4 +1,6 @@
 #include "Cell.h"
+#include "../core/Typedefs.h"
+#include "../core/Functions.h"
 #include <cstdio>
 
 using namespace AcerDet::analyse;
@@ -49,4 +51,34 @@ void Cell::printInfo() const {
 
 void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
 	//printf ("Cell: analyse record\n");
+	
+	// new event to compute
+	IEVENT++;
+	Int32_t NDUM = 0;
+	
+	Real64_t PTLRAT = 1.0 / pow(sinh(ETACEL), 2.0);
+	
+	// Loop over all particles.
+	// Find cell that was hit by given particle.
+	const vector<Particle>& parts = irecord.particles();
+	Int32_t N = parts.size();
+	
+	for (int i=0;i<N;++i) {
+		const Particle& p = parts[i];
+
+		if (p.px*p.px + p.py*p.py <= PTLRAT * p.pz)
+			continue;
+			
+		Real64_t DETPHI = 0.0;
+
+		if (KEYFLD && false) {
+			Real64_t pT = sqrt(p.px*p.px + p.py*p.py);
+
+			if (pT < PTMIN)
+				continue;
+				
+			//Real64_t ETA = sign(0, p.pz);
+			Real64_t PHI = angle(p.px, p.py);
+		}
+	}
 }
