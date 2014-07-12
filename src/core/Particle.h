@@ -25,12 +25,19 @@ namespace AcerDet {
 		};
 		
 		/*
-		  Type of particle
+		  Type of particle - self descriptive
 		*/
 		enum ParticleType {
 			PT_UNDEFINED = 0,
+			PT_JET,
 			PT_BJET,
-			PT_CJET // etc
+			PT_CJET,
+			PT_CELL,
+			PT_CLUSTER,
+			PT_MUON,
+			PT_ELECTRON,
+			PT_PHOTON,
+			PT_TAU
 		};
 		
 		struct Particle {
