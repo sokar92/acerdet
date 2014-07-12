@@ -30,7 +30,7 @@ namespace AcerDet {
 		  Type of particle - self descriptive
 		*/
 		enum ParticleType {
-			PT_UNDEFINED = 0,
+			PT_UNKNOWN = 0,
 			PT_JET,
 			PT_BJET,
 			PT_CJET,
@@ -46,21 +46,24 @@ namespace AcerDet {
 		public:
 			ParticleState state;
 			ParticleType type;
-			Real64_t px,py,pz,e; //momentum
-			Real64_t phi,theta; //angles
-			Real64_t x,y,z;	//production
+			Real64_t px, py, pz, e; //momentum
+			Real64_t phi, theta; //angles
+			Real64_t prod_x, prod_y, prod_z, prod_time;	//production
 			
 			Int32_t id,mother;
 			pair<Int32_t,Int32_t> daughters;
 			
+			Particle() : state(PS_NULL), type(PT_UNKNOWN), px(0), py(0), pz(0), e(0), phi(0), theta(0),
+				prod_x(0), prod_y(0), prod_z(0), prod_time(0), id(-1), mother(-1), daughters(make_pair(-1,-1)) {}
+
 			void print() const {
 				printf ("Particle:\n");
 				printf ("\tID: %d\n", id);
 				printf ("\tType: %s\n", getTypeName().c_str());
 				printf ("\tState: %s\n", getStateName().c_str());
 				printf ("\tPolarization (phi, theta): (%f, %f)\n", phi, theta);
-				printf ("\tP=(px,py,pz,e) = (%f, %f, %f, %f)\n", px, py, pz, e);
-				printf ("\tX=(x,y,z) = (%f, %f, %f)\n", x, y, z);
+				printf ("\tMomentum (px,py,pz,e) = (%f, %f, %f, %f)\n", px, py, pz, e);
+				printf ("\tProduction (x,y,z,t) = (%f, %f, %f, %f)\n", prod_x, prod_y, prod_z, prod_time);
 				printf ("\n");
 			}
 			

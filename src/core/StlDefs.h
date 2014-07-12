@@ -9,9 +9,9 @@
 #include <algorithm>
 using namespace std;
 
-//#define _for (n,i) for(int i=0;i<1;i++)
-//#define _for (a,b,i) for(int i=a;i<=b;i++)
+#define FOR (i,n) for(int i=0;i<n;i++)
+#define FOR_RANGE (i,a,b) for(int i=a;i<=b;i++)
 
-//#define _foreach (vec,it) for(vec::const_iterator it = vec.begin(); it != vec.end; it++)
+#define FOREACH (it,vec) for(vec::const_iterator it = vec.begin(); it != vec.end; it++)
 
 #endif

@@ -11,15 +11,8 @@ namespace AcerDet {
 	namespace io {
 
 		class InputRecord {
-/*		private:
-			vector<Particle> _leptons;
-			vector<Particle> _particles;
-			vector<Particle> _photons;
-			vector<Particle> _jets;
+/*
 		public:
-			// acdinfo.inc 
-			// INTEGER IDPROC
-			// COMMON /ACDINFO/ IDPROC
 			Int32_t IdProc;
 
 			// acmcproc.inc
@@ -100,13 +93,16 @@ namespace AcerDet {
 			vector<Particle> parts;
 
 		public:
+			/*
+			 * Constructor
+			 * creates an input record from given particle list
+			 */
 			InputRecord(const vector<Particle>&);
 			
+			/*
+			 * Access the particle list
+			 */
 			const vector<Particle>& particles() const;
-			
-			const Particle& getMother(const Particle&) const;
-			const Particle& getDaughter1(const Particle&) const;
-			const Particle& getDaughter2(const Particle&) const;
 
 		};
 
