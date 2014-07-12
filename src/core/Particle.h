@@ -5,6 +5,8 @@
 
 #include <cmath>
 #include <cstdio>
+#include <string>
+using namespace std;
 
 #include "Typedefs.h"
 #include "StlDefs.h"
@@ -40,8 +42,10 @@ namespace AcerDet {
 			PT_TAU
 		};
 		
-		struct Particle {
+		class Particle {
+		public:
 			ParticleState	state;
+			ParticleType	type;
 			Real64_t		px,py,pz,e;		//momentum
 			Real64_t		phi,theta;		//angles
 			Real64_t		x,y,z;			//production
@@ -51,24 +55,39 @@ namespace AcerDet {
 			
 			void print() const {
 				printf ("Particle:\n");
-				printf ("\tid: %d\n", id);
-				//printf ("\tstatus: %d\n", gpart->status());
-				printf ("\tpolarization phi: %f\n", phi);
-				printf ("\tpolarization theta: %f\n", theta);
-				//printf ("\tgenerated mass: %f\n", gpart->generated_mass());
-				//printf ("\tbarcode: %d\n", gpart->barcode());
-				//printf ("\tis_undecayed: %s\n", gpart->is_undecayed() ? "Yes" : "No");
-				//printf ("\thas_decayed: %s\n", gpart->has_decayed() ? "Yes" : "No");
-				//printf ("\tis_beam: %s\n", gpart->is_beam() ? "Yes" : "No");
-				printf ("\tpx= %f\n", px);
-				printf ("\tpy= %f\n", py);
-				printf ("\tpz= %f\n", pz);
-				printf ("\te= %f\n", e);
-				printf ("\tx= %f\n", x);
-				printf ("\ty= %f\n", y);
-				printf ("\tz= %f\n", z);
-				//gpart->print();
+				printf ("\tID: %d\n", id);
+				printf ("\tType: %s\n", getTypeName().c_str());
+				printf ("\tState: %s\n", getStateName().c_str());
+				printf ("\tPolarization (phi, theta): (%f, %f)\n", phi, theta);
+				printf ("\tP=(px,py,pz,e) = (%f, %f, %f, %f)\n", px, py, pz, e);
+				printf ("\tX=(x,y,z) = (%f, %f, %f)\n", x, y, z);
 				printf ("\n");
+			}
+			
+		private:
+			string getTypeName() const {
+				switch(type) {
+				case PT_JET:		return string("Jet");
+				case PT_BJET:		return string("B-Jet");
+				case PT_CJET:		return string("C-Jet");
+				case PT_CELL:		return string("Cell");
+				case PT_CLUSTER:	return string("Cluster");
+				case PT_MUON:		return string("Muon");
+				case PT_ELECTRON:	return string("Electron");
+				case PT_PHOTON:		return string("Photon");
+				case PT_TAU:		return string("Tau");
+				default:			return string("Unknown");
+				}
+			}
+			
+			string getStateName() const {
+				switch(state) {
+				case PS_BEAM:		return string("Beam");
+				case PS_FINAL:		return string("Final");
+				case PS_DECAYED:	return string("Decayed");
+				case PS_HISTORY:	return string("Historical");
+				default:			return string("Unknown");
+				}
 			}
 		};
 
