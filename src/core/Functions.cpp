@@ -4,19 +4,6 @@ using namespace AcerDet::core;
 
 #include <cmath>
 #include <algorithm>
-
-double radius(double x, double y) {
-	return sqrt(x*x + y*y);
-}
-
-double angle(double x, double y) {
-	/*
-	const double epsi = 1e-20;
-	double r = radius(x,y);
-	if (r < epsi) return 0.0;
-	*/
-	return 0.0; // dummy TODO
-}
 		
 Int32_t kfcomp(Real64_t KF) {
 	
