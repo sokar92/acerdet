@@ -1,7 +1,7 @@
 CC= g++
 CFLAGS= -g3 -O2 -fPIC -Wall
 
-OBJECTS= Histogram.o Functions.o 
+OBJECTS= Histogram.o Particle.o Functions.o 
 
 all: prepare $(OBJECTS) export_include
 
