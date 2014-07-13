@@ -4,6 +4,8 @@
 #pragma once
 
 #include <cmath>
+#include "Functions.h"
+#include "Typedefs.h"
 
 namespace AcerDet {
 	namespace core {
@@ -26,6 +28,9 @@ namespace AcerDet {
 			Vector3<T> operator - (const Vector3<T>&, const Vector3<T>&);
 			Vector3<T> operator * (const Vector3<T>&, T);
 			Vector3<T> operator / (const Vector3<T>&, T);
+			
+			Bool_t operator == (const Vector3<T>&);
+			Bool_t operator != (const Vector3<T>&); 
 
 			inline T length() const;
 			
@@ -39,6 +44,11 @@ namespace AcerDet {
 			inline T angleOX () const;
 			inline T angleOY () const;
 			inline T angleOZ () const;
+			
+			/*
+			 * Angle in XY plane
+			 */
+			inline T anglePhi () const;
 		};
 
 		/* Typedefs */
@@ -103,6 +113,17 @@ namespace AcerDet {
 		Vector3<T> vector3<T>::operator / (const Vector3<T>& v, T coef) {
 			return Vector3<T>(v.x / coef, v.y / coef, v.z / coef);
 		}
+		
+		/* Comparison operators */
+		template<typename T>
+		Bool_t Vector3<T>::operator == (const Vector3<T>& v) {
+			return x == v.x && y == v.y && z == v.z;
+		}
+		
+		template<typename T>
+		Bool_t Vector3<T>::operator != (const Vector3<T>& v) {
+			return !(*this == v);
+		}
 
 		/* Normalization */
 		template<typename T>
@@ -159,6 +180,11 @@ namespace AcerDet {
 		template<typename T>
 		inline T Vector3<T>::angleOZ () const {
 			return acos (z / length());
+		}
+		
+		template<typename T>
+		inline T Vector3<T>::anglePhi () const {
+			return angle(x,y);
 		}
 
 	}
