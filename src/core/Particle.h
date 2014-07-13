@@ -6,11 +6,13 @@
 #include <cmath>
 #include <cstdio>
 #include <string>
+#include <ostream>
 using namespace std;
 
 #include "Typedefs.h"
 #include "StlDefs.h"
 #include "Consts.h"
+#include "Vector4.h"
 
 namespace AcerDet {
 	namespace core {
@@ -53,54 +55,65 @@ namespace AcerDet {
 			ParticleType type;
 			Int32_t typeID;
 			
-			Real64_t px, py, pz, e; //momentum
+			Vector4f momentum;
+			Vector4f production;
+
 			Real64_t phi, theta; //angles
-			Real64_t prod_x, prod_y, prod_z, prod_time;	//production
 			
 			Int32_t id,mother;
 			pair<Int32_t,Int32_t> daughters;
-			
+
 			/*
 			 * Default ctor
 			 * Initialize particle data
 			 */
 			Particle();
-			
+
 			/*
 			 * Check if given particle has mother
 			 */
 			Bool_t hasMother() const;
-			
+
 			/*
 			 * Check if given particle has any daughters
 			 */
 			Bool_t hasDaughter() const;
-			
+
 			/*
 			 * Number of particle daughters
 			 */
 			Int32_t daughtersCount() const;
-			
+
 			/*
 			 * Check if particle is stable
 			 */
 			Bool_t isStable() const;
-			
+
 			/*
 			 * Check if particle is beam
 			 */
 			Bool_t isBeam() const;
-			
+
 			/*
 			 * Check if particle has decayed status
 			 */
 			Bool_t isDecayed() const;
-			
+
 			/*
-			 * Print basic informations about particle
-			 */
-			void print() const;
-			
+			* Print basic informations about particle
+			*/			
+			friend ostream& operator << (ostream& str, const Particle& p) {
+				str << "Particle:" << endl;
+				str << "\tID: " << p.id << endl;
+				str << "\tType: " << p.getTypeName() << endl;
+				str << "\tState: " << p.getStateName() << endl;
+				str << "\tPolarization (phi, theta): (" << p.phi << ", " << p.theta << ")" << endl;
+				str << "\tMomentum (px,py,pz,e) = " << p.momentum << endl;
+				str << "\tProduction (x,y,z,t) = " << p.production << endl;
+				str << endl;
+				return str;
+			}
+
 		private:
 			string getTypeName() const;
 			
@@ -114,32 +127,11 @@ namespace AcerDet {
 
 /*
 		public:
-			T getPx() const { return _px; }
-			T getPy() const { return _py; }
-			T getPz() const { return _pz; }
-			T getE () const { return _e; }
-			
 			T getPhi() const { return _phi; }
 			T getTheta() const { return _theta; }
 			
-			Int32_t getID() const { return _id; }
-			pair<Int32_t,Int32_t> getDaughters() const { return _idDaughter; }
-			ParticleState getState() const { return _state; }
-			
-			Bool_t	isBeam() const { return _state == PS_BEAM; }
-
-			void setPx(T px) { _px = px; }
-			void setPy(T py) { _py = py; }
-			void setPz(T pz) { _pz = pz; }
-			void setE (T e ) { _e  = e;  }
-			
 			void setPhi(T phi) { _phi = phi; }
 			void setTheta(T theta) { _theta = theta ; }
-			
-			void setID(Int32_t id) { _id = id; }
-			void setMother(Int32_t mother) { _idMother = mother; }
-			void setDaughters(Int32_t first, Int32_t last) { _idDaughter = make_pair(first,last); }
-			void setState(ParticleState ps) { _state = ps; }
 
 			// Invariant mass. If mass is negative then -sqrt(-mass) is returned
 			T recalculated_mass()  const

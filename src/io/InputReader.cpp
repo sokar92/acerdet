@@ -3,6 +3,10 @@ using namespace AcerDet::io;
 
 #include <cstdio>
 
+Vector4f vec4(const HepMC::FourVector& v) {
+	return Vector4f(v.x(), v.y(), v.z(), v.e());
+}
+
 ParticleType InputReader::getParticleType(int hepmc_code) {
 	int code = abs(hepmc_code);
 	PDGcode pdg = (PDGcode)code;
@@ -55,20 +59,12 @@ InputRecord InputReader::computeEvent( const GenEvent& event ) {
 		part.typeID = gpart->pdg_id();
 		
 		// momentum as Vector4
-		const HepMC::FourVector& momentum = gpart->momentum();
-		part.px = momentum.px();
-		part.py = momentum.py();
-		part.pz = momentum.pz();
-		part.e = momentum.e();
+		part.momentum = vec4(gpart->momentum());
 		
 		// production vertex (optional) as Vector4
 		HepMC::GenVertex* prod = gpart->production_vertex();
 		if (prod != NULL) {
-			const HepMC::FourVector& pv = prod->position();
-			part.prod_x = pv.x();
-			part.prod_y = pv.y();
-			part.prod_z = pv.z();
-			part.prod_time = pv.e();
+			part.production = vec4(prod->position());
 		}
 		
 		// angles
@@ -76,7 +72,7 @@ InputRecord InputReader::computeEvent( const GenEvent& event ) {
 		part.theta = gpart->polarization().theta();
 		
 		parts.push_back(part);
-		part.print(); // to delete in release!
+		cout << part; // to delete in release!
 	}
 	
 	return InputRecord(parts);

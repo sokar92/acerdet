@@ -24,10 +24,10 @@ namespace AcerDet {
 			Vector3<T>& operator *= (T);
 			Vector3<T>& operator /= (T);
 
-			Vector3<T> operator + (const Vector3<T>&, const Vector3<T>&);
-			Vector3<T> operator - (const Vector3<T>&, const Vector3<T>&);
-			Vector3<T> operator * (const Vector3<T>&, T);
-			Vector3<T> operator / (const Vector3<T>&, T);
+			Vector3<T> operator + (const Vector3<T>&);
+			Vector3<T> operator - (const Vector3<T>&);
+			Vector3<T> operator * (T);
+			Vector3<T> operator / (T);
 			
 			Bool_t operator == (const Vector3<T>&);
 			Bool_t operator != (const Vector3<T>&); 
@@ -52,7 +52,7 @@ namespace AcerDet {
 		};
 
 		/* Typedefs */
-		typedef Vector3<double> Vector3f;
+		typedef Vector3<Real64_t> Vector3f;
 
 		/* Mutable operators */
 		template<typename T>
@@ -95,23 +95,23 @@ namespace AcerDet {
 
 		/* Static operators */
 		template<typename T>
-		Vector3<T> vector3<T>::operator + (const Vector3<T>& l, const Vector3<T>& r) {
-			return Vector3<T>(l.x + r.x, l.y + r.y, l.z + r.z);
+		Vector3<T> Vector3<T>::operator + (const Vector3<T>& r) {
+			return Vector3<T>(x + r.x, y + r.y, z + r.z);
 		}
 
 		template<typename T>
-		Vector3<T> vector3<T>::operator - (const Vector3<T>& l, const Vector3<T>& r) {
-			return Vector3<T>(l.x - r.x, l.y - r.y, l.z - r.z);
+		Vector3<T> Vector3<T>::operator - (const Vector3<T>& r) {
+			return Vector3<T>(x - r.x, y - r.y, z - r.z);
 		}
 
 		template<typename T>
-		Vector3<T> vector3<T>::operator * (const Vector3<T>& v, T coef) {
-			return Vector3<T>(v.x * coef, v.y * coef, v.z * coef);
+		Vector3<T> Vector3<T>::operator * (T coef) {
+			return Vector3<T>(x * coef, y * coef, z * coef);
 		}
 
 		template<typename T>
-		Vector3<T> vector3<T>::operator / (const Vector3<T>& v, T coef) {
-			return Vector3<T>(v.x / coef, v.y / coef, v.z / coef);
+		Vector3<T> Vector3<T>::operator / (T coef) {
+			return Vector3<T>(x / coef, y / coef, z / coef);
 		}
 		
 		/* Comparison operators */

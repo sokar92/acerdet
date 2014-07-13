@@ -4,6 +4,8 @@
 #pragma once
 
 #include "Vector3.h"
+#include <ostream>
+using namespace std;
 
 namespace AcerDet {
 	namespace core {
@@ -18,13 +20,21 @@ namespace AcerDet {
 			T e;
 			
 			Vector4() : p(), e(0) {}
-			Vector4(const Vector4& v) : p(v.p), e(v.e) {}
-			Vector4(const Vector3& v, T val) : p(v), e(val) {}
+			Vector4(const Vector4<T>& v) : p(v.p), e(v.e) {}
+			Vector4(const Vector3<T>& v, T val) : p(v), e(val) {}
+			Vector4(T x, T y, T z, T w) : p(Vector3<T>(x,y,z)), e(w) {}
 			
 			Bool_t operator == (const Vector4<T>&);
 			Bool_t operator != (const Vector4<T>&);
+			
+			friend ostream& operator << (ostream& str, const Vector4<T>& v) {
+				str << "(" << v.p.x << ", " << v.p.y << ", " << v.p.z << ", " << v.e << ")";
+				return str;
+			}
 		};
 		
+		/* Typedefs */
+		typedef Vector4<Real64_t> Vector4f;
 		
 		/* Comparison operators */
 		template<typename T>

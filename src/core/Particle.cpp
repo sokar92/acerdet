@@ -7,10 +7,10 @@ Particle::Particle() :
 	state(PS_NULL), 
 	stateID(-1),
 	type(PT_UNKNOWN),
-	typeID(0), 
-	px(0), py(0), pz(0), e(0), 
-	phi(0), theta(0),
-	prod_x(0), prod_y(0), prod_z(0), prod_time(0), 
+	typeID(0),
+	momentum(),
+	production(),
+	phi(0), theta(0), 
 	id(-1), mother(-1), 
 	daughters(make_pair(-1,-1)) 
 {}
@@ -39,17 +39,6 @@ Bool_t Particle::isBeam() const {
 
 Bool_t Particle::isDecayed() const {
 	return state == PS_DECAYED;
-}
-
-void Particle::print() const {
-	printf ("Particle:\n");
-	printf ("\tID: %d\n", id);
-	printf ("\tType: %s\n", getTypeName().c_str());
-	printf ("\tState: %s\n", getStateName().c_str());
-	printf ("\tPolarization (phi, theta): (%f, %f)\n", phi, theta);
-	printf ("\tMomentum (px,py,pz,e) = (%f, %f, %f, %f)\n", px, py, pz, e);
-	printf ("\tProduction (x,y,z,t) = (%f, %f, %f, %f)\n", prod_x, prod_y, prod_z, prod_time);
-	printf ("\n");
 }
 
 string Particle::getTypeName() const {
