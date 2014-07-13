@@ -41,18 +41,27 @@ InputRecord InputReader::computeEvent( const GenEvent& event ) {
 		
 		core::Particle part;
 		
+		// particle tree hierarchy
 		part.id = gpart->barcode();
 		part.mother = -1;
 		part.daughters = make_pair(-1,-1);
 		
+		// state (named & id)
 		part.state = getParticleStatus(gpart->status());
+		part.stateID = gpart->status();
 		
+		// type (named & id)
+		part.type = getParticleType(gpart->pdg_id());
+		part.typeID = gpart->pdg_id();
+		
+		// momentum as Vector4
 		const HepMC::FourVector& momentum = gpart->momentum();
 		part.px = momentum.px();
 		part.py = momentum.py();
 		part.pz = momentum.pz();
 		part.e = momentum.e();
 		
+		// production vertex (optional) as Vector4
 		HepMC::GenVertex* prod = gpart->production_vertex();
 		if (prod != NULL) {
 			const HepMC::FourVector& pv = prod->position();
@@ -62,13 +71,13 @@ InputRecord InputReader::computeEvent( const GenEvent& event ) {
 			part.prod_time = pv.e();
 		}
 		
+		// angles
 		part.phi = gpart->polarization().phi();
 		part.theta = gpart->polarization().theta();
 		
 		parts.push_back(part);
-		part.print();
+		part.print(); // to delete in release!
 	}
 	
-	InputRecord record(parts);
-	return record;
+	return InputRecord(parts);
 }

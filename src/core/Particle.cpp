@@ -5,7 +5,9 @@ using namespace AcerDet::core;
 
 Particle::Particle() : 
 	state(PS_NULL), 
-	type(PT_UNKNOWN), 
+	stateID(-1),
+	type(PT_UNKNOWN),
+	typeID(0), 
 	px(0), py(0), pz(0), e(0), 
 	phi(0), theta(0),
 	prod_x(0), prod_y(0), prod_z(0), prod_time(0), 
@@ -13,11 +15,11 @@ Particle::Particle() :
 	daughters(make_pair(-1,-1)) 
 {}
 
-bool Particle::hasMother() const { 
+Bool_t Particle::hasMother() const { 
 	return mother != ParticleNull; 
 }
 
-bool Particle::hasDaughter() const { 
+Bool_t Particle::hasDaughter() const { 
 	return daughters.first != ParticleNull; 
 }
 
@@ -25,6 +27,18 @@ Int32_t Particle::daughtersCount() const {
 	if (hasDaughter())
 		return 1 + daughters.second - daughters.first;
 	return 0;
+}
+
+Bool_t Particle::isStable() const {
+	return 0 < stateID && stateID <= 10;
+}
+
+Bool_t Particle::isBeam() const {
+	return state == PS_BEAM;
+}
+
+Bool_t Particle::isDecayed() const {
+	return state == PS_DECAYED;
 }
 
 void Particle::print() const {

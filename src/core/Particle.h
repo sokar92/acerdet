@@ -48,7 +48,11 @@ namespace AcerDet {
 		class Particle {
 		public:
 			ParticleState state;
+			Int32_t stateID;
+			
 			ParticleType type;
+			Int32_t typeID;
+			
 			Real64_t px, py, pz, e; //momentum
 			Real64_t phi, theta; //angles
 			Real64_t prod_x, prod_y, prod_z, prod_time;	//production
@@ -65,17 +69,32 @@ namespace AcerDet {
 			/*
 			 * Check if given particle has mother
 			 */
-			bool hasMother() const;
+			Bool_t hasMother() const;
 			
 			/*
 			 * Check if given particle has any daughters
 			 */
-			bool hasDaughter() const;
+			Bool_t hasDaughter() const;
 			
 			/*
 			 * Number of particle daughters
 			 */
 			Int32_t daughtersCount() const;
+			
+			/*
+			 * Check if particle is stable
+			 */
+			Bool_t isStable() const;
+			
+			/*
+			 * Check if particle is beam
+			 */
+			Bool_t isBeam() const;
+			
+			/*
+			 * Check if particle has decayed status
+			 */
+			Bool_t isDecayed() const;
 			
 			/*
 			 * Print basic informations about particle
