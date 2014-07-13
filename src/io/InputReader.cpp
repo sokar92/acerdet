@@ -23,8 +23,8 @@ ParticleState InputReader::getParticleStatus(int hepmc_status) {
 	case 2: return PS_DECAYED;
 	case 3: return PS_HISTORY;
 	case 4: return PS_BEAM;
-	default: return PS_NULL;
 	}
+	return PS_NULL;
 	/*
 	if (gpart->is_beam()) part.state = PS_BEAM; 			// status_code == 4
 	else if (gpart->is_undecayed()) part.state = PS_FINAL;  // status_code == 1 -> final state
