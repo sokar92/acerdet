@@ -120,6 +120,14 @@ namespace AcerDet {
 			Real64_t pT() const;
 			
 			/*
+			 * Momentum short-linked accessors
+			 */
+			inline Real64_t pX() const;
+			inline Real64_t pY() const;
+			inline Real64_t pZ() const;
+			inline Real64_t e() const;
+			
+			/*
 			 * Angle in XY plane
 			 */
 			Real64_t getPhi() const;
