@@ -1,4 +1,5 @@
 #include "Particle.h"
+#include "Functions.h"
 using namespace AcerDet::core;
 
 #define ParticleNull (-1)
@@ -14,6 +15,10 @@ Particle::Particle() :
 	id(-1), mother(-1), 
 	daughters(make_pair(-1,-1)) 
 {}
+
+/*
+ * Properties
+ */
 
 Bool_t Particle::hasMother() const { 
 	return mother != ParticleNull; 
@@ -40,6 +45,29 @@ Bool_t Particle::isBeam() const {
 Bool_t Particle::isDecayed() const {
 	return state == PS_DECAYED;
 }
+
+/*
+ * Useful
+ */
+Real64_t Particle::pT() const {
+	return sqrt(momentum.p.x * momentum.p.x + momentum.p.y * momentum.p.y);
+}
+
+/*
+ * Angles
+ */
+ 
+Real64_t Particle::getPhi() const {
+	return angle(momentum.p.x, momentum.p.y);
+}
+
+Real64_t Particle::getEta() const {
+	return 0; // fake! TODO
+}
+
+/*
+ * Private functions
+ */
 
 string Particle::getTypeName() const {
 	switch(type) {

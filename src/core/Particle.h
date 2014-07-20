@@ -113,6 +113,18 @@ namespace AcerDet {
 				str << endl;
 				return str;
 			}
+			
+			/*
+			 * useful
+			 */
+			Real64_t pT() const;
+			
+			/*
+			 * Angle in XY plane
+			 */
+			Real64_t getPhi() const;
+			
+			Real64_t getEta() const;
 
 		private:
 			string getTypeName() const;
