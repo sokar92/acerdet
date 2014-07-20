@@ -54,14 +54,6 @@ Real64_t Particle::pT() const {
 }
 
 /*
- * Momentum accessors
- */
-Real64_t Particle::pX() const { return momentum.p.x; }
-Real64_t Particle::pY() const { return momentum.p.y; }
-Real64_t Particle::pZ() const { return momentum.p.z; }
-Real64_t Particle::e() const { return momentum.e; }
-
-/*
  * Angles
  */
  

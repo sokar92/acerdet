@@ -122,10 +122,10 @@ namespace AcerDet {
 			/*
 			 * Momentum short-linked accessors
 			 */
-			inline Real64_t pX() const;
-			inline Real64_t pY() const;
-			inline Real64_t pZ() const;
-			inline Real64_t e() const;
+			inline Real64_t pX() const { return momentum.p.x; }
+			inline Real64_t pY() const { return momentum.p.y; }
+			inline Real64_t pZ() const { return momentum.p.z; }
+			inline Real64_t e() const { return momentum.e; }
 			
 			/*
 			 * Angle in XY plane
