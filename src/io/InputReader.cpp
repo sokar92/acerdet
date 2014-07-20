@@ -68,8 +68,8 @@ InputRecord InputReader::computeEvent( const GenEvent& event ) {
 		}
 		
 		// angles
-		part.phi = gpart->polarization().phi();
-		part.theta = gpart->polarization().theta();
+		//part.phi = gpart->polarization().phi();
+		//part.theta = gpart->polarization().theta();
 		
 		parts.push_back(part);
 		cout << part; // to delete in release!
