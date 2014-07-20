@@ -70,7 +70,7 @@ Real64_t Particle::getPhi() const {
 }
 
 Real64_t Particle::getEta() const {
-	return 0; // fake! TODO
+	return sign(log( (momentum.p.length() + abs(momentum.p.z)) / pT()), momentum.p.z);
 }
 
 /*
