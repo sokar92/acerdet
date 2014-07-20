@@ -10,6 +10,18 @@ namespace AcerDet {
 	namespace core {
 		
 		/*
+		 * Saturates given angle to [-pi,pi] range
+		 */
+		template<typename T>
+		inline T saturatePi(T angle) {
+			if (angle > PI)
+				return angle - 2.0 * PI;
+			if (angle < PI)
+				return angle + 2.0 * PI;
+			return angle;
+		}
+		
+		/*
 		 * Compute radius from given coordinates
 		 */
 		template<typename T>
