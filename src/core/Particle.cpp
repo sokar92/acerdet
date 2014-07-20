@@ -11,7 +11,7 @@ Particle::Particle() :
 	typeID(0),
 	momentum(),
 	production(),
-	phi(0), theta(0), 
+//	phi(0), theta(0), 
 	id(-1), mother(-1), 
 	daughters(make_pair(-1,-1)) 
 {}
@@ -63,6 +63,12 @@ Real64_t Particle::getPhi() const {
 
 Real64_t Particle::getEta() const {
 	return sign(log( (momentum.p.length() + abs(momentum.p.z)) / pT()), momentum.p.z);
+}
+
+Real64_t Particle::getTheta() const {
+	if (abs(momentum.p.z / momentum.e) < 1.0) 
+		return acos(momentum.p.z / momentum.p.length());
+	return momentum.p.z > 0 ? 0 : PI;
 }
 
 /*

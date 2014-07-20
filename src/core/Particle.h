@@ -58,7 +58,7 @@ namespace AcerDet {
 			Vector4f momentum;
 			Vector4f production;
 
-			Real64_t phi, theta; //angles
+			//Real64_t phi, theta; //angles
 			
 			Int32_t id,mother;
 			pair<Int32_t,Int32_t> daughters;
@@ -107,7 +107,7 @@ namespace AcerDet {
 				str << "\tID: " << p.id << endl;
 				str << "\tType: " << p.getTypeName() << endl;
 				str << "\tState: " << p.getStateName() << endl;
-				str << "\tPolarization (phi, theta): (" << p.phi << ", " << p.theta << ")" << endl;
+				//str << "\tPolarization (phi, theta): (" << p.phi << ", " << p.theta << ")" << endl;
 				str << "\tMomentum (px,py,pz,e) = " << p.momentum << endl;
 				str << "\tProduction (x,y,z,t) = " << p.production << endl;
 				str << endl;
@@ -133,6 +133,8 @@ namespace AcerDet {
 			Real64_t getPhi() const;
 			
 			Real64_t getEta() const;
+			
+			Real64_t getTheta() const;
 
 		private:
 			string getTypeName() const;
