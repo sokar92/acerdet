@@ -4,7 +4,6 @@
 #pragma once
 
 #include <cmath>
-#include "Functions.h"
 #include "Typedefs.h"
 
 namespace AcerDet {
@@ -44,11 +43,6 @@ namespace AcerDet {
 			inline T angleOX () const;
 			inline T angleOY () const;
 			inline T angleOZ () const;
-			
-			/*
-			 * Angle in XY plane
-			 */
-			inline T anglePhi () const;
 		};
 
 		/* Typedefs */
@@ -180,11 +174,6 @@ namespace AcerDet {
 		template<typename T>
 		inline T Vector3<T>::angleOZ () const {
 			return acos (z / length());
-		}
-		
-		template<typename T>
-		inline T Vector3<T>::anglePhi () const {
-			return angle(x,y);
 		}
 
 	}
