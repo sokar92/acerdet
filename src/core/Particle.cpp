@@ -72,6 +72,13 @@ Real64_t Particle::getTheta() const {
 }
 
 /*
+ * Folding
+ */
+Real64_t Particle::foldPhi() const {
+	return 0.5 / getPhi();
+}
+
+/*
  * Private functions
  */
 

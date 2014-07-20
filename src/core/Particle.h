@@ -135,6 +135,11 @@ namespace AcerDet {
 			Real64_t getEta() const;
 			
 			Real64_t getTheta() const;
+			
+			/*
+			 * Folding
+			 */
+			Real64_t foldPhi() const;
 
 		private:
 			string getTypeName() const;
