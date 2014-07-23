@@ -15,18 +15,18 @@ namespace AcerDet {
 
 		class Cell {
 		private:
-			double ETACEL;
-			double PTMIN;
-			double ETTHR;
-			double CALOTH;
-			double DBETA;
-			double DBPHI;
+			Real64_t ETACEL;
+			Real64_t PTMIN;
+			Real64_t ETTHR;
+			Real64_t CALOTH;
+			Real64_t DBETA;
+			Real64_t DBPHI;
 			
-			int KEYHID;
-			bool KEYFLD;
-			int KFINVS;
+			Int32_t KEYHID;
+			Bool_t KEYFLD;
+			Int32_t KFINVS;
 			
-			int IEVENT;
+			Int32_t IEVENT;
 			
 			core::Histogram histo;
 		public:

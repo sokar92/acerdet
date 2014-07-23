@@ -15,19 +15,19 @@ namespace AcerDet {
 
 		class Cluster {
 		private:
-			double ETCLU;
-			double RCONE;
-			double ETACLU;
-			double ETINI;
+			Real64_t ETCLU;
+			Real64_t RCONE;
+			Real64_t ETACLU;
+			Real64_t ETINI;
 			
-			double PTMIN;
-			double CALOTH;
+			Real64_t PTMIN;
+			Real64_t CALOTH;
 			
-			int KEYHID;
-			bool KEYFLD;
-			int KFINVS;
+			Int32_t KEYHID;
+			Bool_t KEYFLD;
+			Int32_t KFINVS;
 			
-			int IEVENT;
+			Int32_t IEVENT;
 			
 			core::Histogram histo_bJets; //IDENT + 1
 			core::Histogram histo_delta_phi; //IDENT + 11
