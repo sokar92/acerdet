@@ -27,6 +27,17 @@ namespace AcerDet {
 			Bool_t operator == (const Vector4<T>&);
 			Bool_t operator != (const Vector4<T>&);
 			
+			Vector4<T>& operator - ();
+			Vector4<T>& operator += (const Vector4<T>&);
+			Vector4<T>& operator -= (const Vector4<T>&);
+			Vector4<T>& operator *= (T);
+			Vector4<T>& operator /= (T);
+
+			Vector4<T> operator + (const Vector4<T>&);
+			Vector4<T> operator - (const Vector4<T>&);
+			Vector4<T> operator * (T);
+			Vector4<T> operator / (T);
+			
 			friend ostream& operator << (ostream& str, const Vector4<T>& v) {
 				str << "(" << v.p.x << ", " << v.p.y << ", " << v.p.z << ", " << v.e << ")";
 				return str;
@@ -35,6 +46,62 @@ namespace AcerDet {
 		
 		/* Typedefs */
 		typedef Vector4<Real64_t> Vector4f;
+		
+		/* Mutable operators */
+		template<typename T>
+		Vector4<T>& Vector4<T>::operator - () {
+			p = -p; e = -e;
+			return *this;
+		}
+
+		template<typename T>
+		Vector4<T>& Vector4<T>::operator += (const Vector4<T>& v) {
+			p += v.p;
+			e += v.e;
+			return *this;
+		}
+
+		template<typename T>
+		Vector4<T>& Vector4<T>::operator -= (const Vector4<T>& v) {
+			p -= v.p;
+			e -= v.e;
+			return *this;
+		}
+
+		template<typename T>
+		Vector4<T>& Vector4<T>::operator *= (T coef) {
+			p *= coef;
+			e *= coef;
+			return *this;
+		}
+
+		template<typename T>
+		Vector4<T>& Vector4<T>::operator /= (T coef) {
+			p /= coef;
+			e /= coef;
+			return *this;
+		}
+
+		/* Static operators */
+		template<typename T>
+		Vector4<T> Vector4<T>::operator + (const Vector4<T>& r) {
+			return Vector4<T>(p + r.p, e + r.e);
+		}
+
+		template<typename T>
+		Vector4<T> Vector4<T>::operator - (const Vector4<T>& r) {
+			return Vector4<T>(p - r.p, e - r.e);
+		}
+
+		template<typename T>
+		Vector4<T> Vector4<T>::operator * (T coef) {
+			return Vector4<T>(p * coef, e * coef);
+		}
+
+		template<typename T>
+		Vector4<T> Vector4<T>::operator / (T coef) {
+			return Vector4<T>(p / coef, e / coef);
+		}
 		
 		/* Comparison operators */
 		template<typename T>
