@@ -22,3 +22,10 @@ Dum& Dum::operator = (const Dum& d) {
 	}
 	return *this;
 }
+
+/*
+ * sorting
+ */
+vector<Dum> Dum::sortByE(const vector<Dum>& vec) {
+	return vec;
+}

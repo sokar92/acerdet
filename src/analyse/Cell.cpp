@@ -52,20 +52,20 @@ void Cell::printInfo() const {
 
 void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
 
+	// new event to compute
+	IEVENT++;
+	
 	// corrections to much detector granularity
 	Int32_t NBETA = round(2.0 * ETACEL / DBETA);
 	Int32_t NBPHI = round(6.4 / DBPHI);
-	
-	// new event to compute
-	IEVENT++;
-	Int32_t NDUM = 0;
-	
 	Real64_t PTLRAT = 1.0 / pow(sinh(ETACEL), 2.0);
 	
 	// Loop over all particles.
 	// Find cell that was hit by given particle.
 	const vector<Particle>& parts = irecord.particles();
 	Int32_t N = parts.size();
+	
+	vector<CellData> tempCells;
 	
 	for (int i=0;i<N;++i) {
 		const Particle& part = parts[i];
@@ -107,10 +107,10 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 		
 		// Add to cell already hit
 		Bool_t found = false;
-		for (int j=0; j<orecord.vDum.size(); ++j) {
-			if (IEPTH == orecord.vDum[j].K[2]) {
-				orecord.vDum[j].K[3]++;				// new part hits this cell
-				orecord.vDum[j].P[4] += PT;			// summing pT of part hits 
+		for (int j=0; j<tempCells.size(); ++j) {
+			if (IEPTH == tempCells[j].iepth) {
+				tempCells[j].hits++;		// new part hits this cell
+				tempCells[j].pT += PT;		// summing pT of part hits 
 				found = true;
 				break;
 			}
@@ -118,32 +118,32 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 		
 		// Or book new cell
 		if (!found) {
-			Dum newDum;
-			newDum.K[2] = IEPTH;			// not used ID?
-			newDum.K[3] = 1;				// only single hit for now
-			newDum.K[4] = 2;				// type?
-			newDum.P[4] = PT;				// pT from single hit
+			CellData newCell;
+			newCell.iepth = IEPTH;			// not used ID?
+			newCell.hits = 1;				// only single hit for now
+			newCell.state = 2;				// type?
+			newCell.pT = PT;				// pT from single hit
 			
 			if (abs(ETA) < CALOTH) {
-				newDum.P[0] = 2.0 * ETACEL * (IETA - 1.0 + 0.5) / NBETA - ETACEL;
-				newDum.P[1] = 2.0 * PI * (IPHI - 1.0 + 0.5) / NBPHI - PI;
+				newCell.eta = 2.0 * ETACEL * (IETA - 1.0 + 0.5) / NBETA - ETACEL;
+				newCell.phi = 2.0 * PI * (IPHI - 1.0 + 0.5) / NBPHI - PI;
 			} else {
-				newDum.P[0] = 2.0 * ETACEL * (IETA - 1.0 + 1.0) / NBETA - ETACEL;
-				newDum.P[1] = 2.0 * PI * (IPHI - 1.0 + 1.0) / NBPHI - PI;
+				newCell.eta = 2.0 * ETACEL * (IETA - 1.0 + 1.0) / NBETA - ETACEL;
+				newCell.phi = 2.0 * PI * (IPHI - 1.0 + 1.0) / NBPHI - PI;
 			}
 
-			orecord.vDum.push_back(newDum);
+			tempCells.push_back(newCell);
 		}
 	}
 	
 	// Remove cells below threshold and store cells-map in output record
-	for (int j=0; j<orecord.vDum.size(); ++j) {
+	for (int j=0; j<tempCells.size(); ++j) {
 		// enough pT to create new cell
-		if (orecord.vDum[j].P[4] > ETTHR) {
-			orecord.vCell.push_back(orecord.vDum[j]);
+		if (tempCells[j].pT > ETTHR) {
+			orecord.cells.push_back(tempCells[j]);
 		}
 	}
 	
 	// call histogram
-	// CALL HF1(IDENT+1, Real64_t(NCELL), 1.0)
+	// CALL HF1(IDENT+1, Real64_t(orecord.cells.size()), 1.0)
 }

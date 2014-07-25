@@ -5,7 +5,6 @@ OutputRecord::OutputRecord() {
 }
 
 void OutputRecord::clear() {
-	vector<Dum>().swap(vDum);
 	vector<Dum>().swap(vCell);
 
 	vector<Particle>().swap(vCluster);

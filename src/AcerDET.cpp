@@ -28,7 +28,7 @@ AcerDET::~AcerDET() {
 }
 
 /*
- * Analyse single InputRecord from event (dodatkowy parametr pointer na kontener)
+ * Analyse single InputRecord from event
  */
 void AcerDET::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
 	analyse_Cell		.analyseRecord( irecord, orecord );

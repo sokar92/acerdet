@@ -50,57 +50,39 @@ void Jet::printInfo() const {
 }
 
 void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
-	//printf ("Jet: analyse record\n");
-	/*
-      SUBROUTINE ACDJET(MODE,LPAR,YPAR)
+	IEVENT++;
+	
+	// smear clusters energy
+	if (KEYSME) {      
+		for (int i=0; i<orecord.vCluster.size(); ++i) {
+			EECLU = orecord.vCluster[i].P[4] * cosh(orecord.vCluster[i].P[2]);
+			SIGMA = RESHAD(EECLU,orecord.vCluster[i].P[2],CALOTH,orecord.vCluster[i].P[4],RCONE);
+			
+			Real64_t coef = orecord.vCluster[i].P[4] * (1.0 + SIGMA);
+			PXCLU = coef * cos (orecord.vCluster[i].P[3]);
+			PYCLU = coef * sin (orecord.vCluster[i].P[3]);
+			PZCLU = coef * sinh(orecord.vCluster[i].P[2]);
+			EECLU = coef * cosh(orecord.vCluster[i].P[2]);
 
-      INTEGER KDUM,IDU,IMU, IMAX
-      INTEGER I, II, MUCLU, IJET
-      REAL ETA, PHI, PT, DR, DDR
-      REAL ETJET,ETAJET,CALOTH
-      REAL PXCLU, PYCLU, PZCLU, EECLU
-      REAL RESHAD, SIGMA
-      REAl PTCLU, PHICLU, THETA, ETACLU
-      REAL DPHIA,PTLRAT,DETPHI
-      REAL PTREC, ETAREC, PHIREC, DETR, DETRMIN
-      REAL FLDPHI,CHRG
-      INTEGER KUCHGE, KFCOMP
-      INTEGER KC
-      REAL ANGLE
-      INTEGER NBINA,IDENT
-      REAL TMAXA,TMINA
-
-      ELSEIF(MODE.EQ.0) THEN
-C     ======================
-	IEVENT = IEVENT+1
-
-c.....smear clusters energy
-	IF(KEYSME) {      
-		DO I from 1 to NCLU {
-			EECLU = PCLU(I,5)*COSH(PCLU(I,3))
-			SIGMA = RESHAD(EECLU,PCLU(I,3),CALOTH,PCLU(I,5),RCONE)
-			PXCLU = PCLU(I,5)*COS(PCLU(I,4)) *(1.+SIGMA)
-			PYCLU = PCLU(I,5)*SIN(PCLU(I,4)) *(1.+SIGMA)
-			PZCLU = PCLU(I,5)*SINH(PCLU(I,3))*(1.+SIGMA)
-			EECLU = PCLU(I,5)*COSH(PCLU(I,3))*(1.+SIGMA)
-
-			IF(ABS(PZCLU / EECLU) < 1) {
+			// PCLU.getTheta()   az sie prosi zapisac wektorowo
+			if (abs(PZCLU / EECLU) < 1) {
 				THETA = ACOS(PZCLU / SQRT(PXCLU**2+PYCLU**2+PZCLU**2))
 			} ELSE {
 				IF (PZCLU > 0) THETA = 0
 				IF (PZCLU < 0) THETA = PI
 			}
 
-			ETACLU = -LOG(MAX(.0001,ABS(TAN(.5*THETA))))
-			PTCLU  = SQRT(PXCLU**2+PYCLU**2)
-			PHICLU = ANGLE(PXCLU,PYCLU)
+			ETACLU = -log(max(0.0001, abs(tan(0.5*THETA))));
+			PTCLU  = SQRT(PXCLU**2+PYCLU**2)  // pClu.pT()
+			PHICLU = ANGLE(PXCLU,PYCLU) // pClu.getPhi();
 
 			PCLU(I,5) = PTCLU
 			PCLU(I,3) = ETACLU
 			PCLU(I,4) = PHICLU
 		}
 	}
-
+	
+	/*
 c.....add nonisolated muons to jets
 	DO I from 1 to NMUOX {
 		ETA = PMUOX(I,3)

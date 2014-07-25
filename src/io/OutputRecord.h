@@ -3,21 +3,30 @@
 
 #include "../core/Particle.h"
 #include "../core/Dum.h"
+#incldue "../core/CellData.h"
+#include "../core/ClusterData.h"
 using namespace AcerDet::core;
 
 namespace AcerDet {
 	namespace io {
 		
 		class OutputRecord {
-		public:
-			vector<Dum> vDum;
+		public:			
+			vector<CellData> cells;
+			vector<ClusterData> clusters;
 			
-			vector<Dum> vCell;
-			vector<Particle> vCluster;
-			vector<Particle> vJet;
-			vector<Particle> vElectron;
-			vector<Particle> vPhoton;
-			vector<Particle> vMuon;
+			vector<Particle> muons;
+			vector<Particle> isolatedMuons;
+			
+			vector<Particle> electrons;
+			vector<Particle> isolatedElectrons;
+			
+			vector<Particle> photons;
+			vector<Particle> isolatedPhotons;
+			
+			vector<Particle> jets;
+			vector<Particle> Bjets;
+			vector<Particle> Cjets;
 		
 			OutputRecord();
 			

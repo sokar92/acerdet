@@ -1,7 +1,12 @@
 CC= g++
 CFLAGS= -g3 -O2 -fPIC -Wall
 
-OBJECTS= Histogram.o Dum.o Particle.o Functions.o 
+OBJECTS= Histogram.o \
+	Functions.o \
+	CellData.o \
+	ClusterData.o \
+	Dum.o \
+	Particle.o 
 
 all: prepare $(OBJECTS) export_include
 
