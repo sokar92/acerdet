@@ -9,7 +9,7 @@ CellData::CellData() :
 	hits (0),
 	state (0),
 	eta (0.0),
-	phi (0.0)
+	phi (0.0),
 	pT (0.0)
 {}
 
@@ -32,6 +32,10 @@ CellData& CellData::operator = (const CellData& d) {
 	return *this;
 }
 
-void CellData::sortByE(vector<CellData>& vec) {
-	return vec;
+bool CellData::comparator_pT(const CellData& l, const CellData& r) {
+	return l.pT > r.pT;
+}
+
+void CellData::sortBy_pT(vector<CellData>& vec) {
+	sort(vec.begin(), vec.end(), comparator_pT);
 }

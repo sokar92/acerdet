@@ -9,8 +9,8 @@ ClusterData::ClusterData() :
 	hits (0),
 	state (0),
 	eta (0.0),
-	phi (0.0)
-	eT (0.0)
+	phi (0.0),
+	pT (0.0)
 {}
 
 ClusterData::ClusterData(const ClusterData& d) :
@@ -19,7 +19,7 @@ ClusterData::ClusterData(const ClusterData& d) :
 	state (d.state),
 	eta (d.eta),
 	phi (d.phi),
-	eT (d.eT)
+	pT (d.pT)
 {}
 
 ClusterData& ClusterData::operator = (const ClusterData& d) {
@@ -28,10 +28,14 @@ ClusterData& ClusterData::operator = (const ClusterData& d) {
 	state = d.state;
 	eta = d.eta;
 	phi = d.phi;
-	eT = d.eT;
+	pT = d.pT;
 	return *this;
 }
 
-void ClusterData::sortByE(vector<ClusterData>& vec) {
-	return vec;
+bool ClusterData::comparator_pT(const ClusterData& l, const ClusterData& r) {
+	return l.pT > r.pT;
+}
+
+void ClusterData::sortBy_pT(vector<ClusterData>& vec) {
+	sort(vec.begin(), vec.end(), comparator_pT);
 }

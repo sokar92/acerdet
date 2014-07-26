@@ -8,7 +8,8 @@
 
 namespace AcerDet {
 	namespace core {
-		struct ClusterData {
+		class ClusterData {
+		public:
 			/*
 			 * K
 			 * 0 -
@@ -28,14 +29,17 @@ namespace AcerDet {
 			 */
 			
 			Int32_t iepth, hits, state;
-			Real64_t eta, phi, eT;
+			Real64_t eta, phi, pT;
 			
 			ClusterData();
 			ClusterData(const ClusterData&);
 			
 			ClusterData& operator = (const ClusterData&);
 			
-			static void sortByE(vector<ClusterData>&);
+			static void sortBy_pT(vector<ClusterData>&);
+			
+		private:
+			static bool comparator_pT(const ClusterData&, const ClusterData&);
 		};
 	}
 }

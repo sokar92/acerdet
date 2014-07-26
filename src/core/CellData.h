@@ -8,7 +8,8 @@
 
 namespace AcerDet {
 	namespace core {
-		struct CellData {
+		class CellData {
+		public:
 			/*
 			 * K
 			 * 0 -
@@ -35,7 +36,10 @@ namespace AcerDet {
 			
 			CellData& operator = (const CellData&);
 			
-			static void sortByE(vector<CellData>&);
+			static void sortBy_pT(vector<CellData>&);
+		
+		private:
+			static bool comparator_pT(const CellData&, const CellData&);
 		};
 	}
 }
