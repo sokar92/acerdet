@@ -51,7 +51,7 @@ void Electron::printInfo() const {
 
 void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
 	IEVENT++;
-	
+/*	
 	const vector<Particle>& parts;
 	
 	Int32_t NSTOP = 0, NSTART = 1;
@@ -165,7 +165,7 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 			// fill /ISOELE/ with isolated electron 
 			// remove ele-cluster from /CLUSTER/
 			if (ISOL) {
-				/* usun stowarzyszony cluster z listy clustrow
+				 usun stowarzyszony cluster z listy clustrow
 				if (LCLU != -1) {
 					DO II from LCLU to NCLU-1 {
 						DO III from 1 to 5 {
@@ -175,7 +175,7 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 					}
 					NCLU = NCLU-1
 				}
-				*/
+				
 
 				KELE(NELE,1) = NELE
 				KELE(NELE,2) = K(I,2)			// typ elktronu
@@ -275,4 +275,5 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 	
 	// CALL HF1(IDENT+21, REAL(IELE), 1.0)
 	// CALL HF1(IDENT+31, REAL(IELEISO), 1.0)
+*/
 }
