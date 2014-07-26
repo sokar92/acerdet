@@ -52,6 +52,7 @@ void Cluster::printInfo() const {
 }
 
 void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
+	/*
 	IEVENT++;
 	Real64_t PTLRAT = 1.0 / pow(sinh(ETACLU), 2.0);
 	
@@ -249,5 +250,5 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 			// CALL HF1(IDENT+24,PCLU(ICLU,5)/PTREC,1.0)
 		}
 	}
-
+*/
 }

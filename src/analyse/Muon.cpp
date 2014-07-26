@@ -51,7 +51,7 @@ void Muon::printInfo() const {
 
 void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
 	IEVENT++;
-	
+/*	
 	const vector<Particle>& parts = irecord.particles();
 
 	// znajdz poczatek danych
@@ -218,5 +218,5 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 
 	// CALL HF1(IDENT+21,REAL(IMUO),1.0)
 	// CALL HF1(IDENT+31,REAL(IMUOISO),1.0)
-
+*/
 }

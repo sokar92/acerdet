@@ -51,7 +51,7 @@ void Jet::printInfo() const {
 
 void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
 	IEVENT++;
-	
+/*	
 	// smear clusters energy
 	if (KEYSME) {      
 		for (int i=0; i<orecord.vCluster.size(); ++i) {
@@ -253,32 +253,6 @@ c....reconstruct baricenter of particles
 			CALL HF1(IDENT+24,PJET(IJET,5)/PTREC,1.0)
 		}
 	}
-
-
-C
-      ELSEIF(MODE.EQ.1) THEN
-C     =========================
-
-      WRITE(NOUT,BXOPE)
-      WRITE(NOUT,BXTXT) '*********************************'
-      WRITE(NOUT,BXTXT) '        OUTPUT FROM AcerDET      '
-      WRITE(NOUT,BXTXT) '              ACDJET             '
-      WRITE(NOUT,BXTXT) '*********************************'
-      
-      WRITE(NOUT,BXCLO)
-
-      CALL HPRINT(IDENT+1)
-      CALL HPRINT(IDENT+11)
-      CALL HPRINT(IDENT+12)
-      CALL HPRINT(IDENT+13)
-      CALL HPRINT(IDENT+14)
-      CALL HPRINT(IDENT+23)
-      CALL HPRINT(IDENT+24)
-
-      ENDIF
-C     =====
-
-      END
 */
 
 }

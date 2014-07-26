@@ -51,7 +51,7 @@ void Photon::printInfo() const {
 
 void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
 	IEVENT++;
-	
+/*	
 	const vector<Particle>& parts = irecord.particles();
 	
 	// look for isolated photons, sort cluster commons
@@ -275,5 +275,5 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 
 	// CALL HF1(IDENT+21, REAL(IPHO), 1.0)
 	// CALL HF1(IDENT+31, REAL(IPHISO), 1.0)
-
+*/
 }
