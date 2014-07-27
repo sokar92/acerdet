@@ -60,13 +60,15 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	Int32_t NBPHI = round(6.4 / DBPHI);
 	Real64_t PTLRAT = 1.0 / pow(sinh(ETACEL), 2.0);
 	
-	// Loop over all particles.
-	// Find cell that was hit by given particle.
+	// reference to particle container
 	const vector<Particle>& parts = irecord.particles();
 	Int32_t N = parts.size();
 	
+	// temporary cells container
 	vector<CellData> tempCells;
 	
+	// Loop over all particles.
+	// Find cell that was hit by given particle.
 	for (int i=0;i<N;++i) {
 		const Particle& part = parts[i];
 		
@@ -76,18 +78,18 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 		if (part.pT() <= PTLRAT * part.pZ() * part.pZ())
 			continue;
 			
-		Int32_t KC = kfcomp(part.typeID);
+		Int32_t KC = part.getKfcomp();
 		if (KC == 0 || KC == 12 || KC == 13 || KC == 14 || KC == 16 || KC == KFINVS)
 			continue;
 			
 		Real64_t DETPHI = 0.0;
-		Real64_t ETA, PHI, THETA, PT;
+		Real64_t ETA, PHI, PT;
 
-		if (KEYFLD && kuchge(part.typeID) != 0) {
+		if (KEYFLD && part.getKuchge() != 0) {
 			if (part.pT() < PTMIN)
 				continue;
 				
-			Real64_t CHRG = kuchge(part.typeID) / 3.0;
+			Real64_t CHRG = part.getKuchge() / 3.0;
 			DETPHI = CHRG * part.foldPhi();
 		}
 		
@@ -97,11 +99,11 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 		
 		Int32_t IETA, IPHI;
 		if (abs(ETA) < CALOTH) {
-			IETA = 1 + (Int32_t)( (ETA + ETACEL) / 2.0 / ETACEL * NBETA );
-			IPHI = 1 + (Int32_t)( (PHI + PI) / 2.0 / PI * NBPHI );
+			IETA = 1 + static_cast<Int32_t>( (ETA + ETACEL) / 2.0 / ETACEL * NBETA );
+			IPHI = 1 + static_cast<Int32_t>( (PHI + PI) / 2.0 / PI * NBPHI );
 		} else {
-			IETA = 1 + 2 * (Int32_t)( (ETA + ETACEL) / 2.0 / ETACEL * NBETA / 2.0 );
-			IPHI = 1 + 2 * (Int32_t)( (PHI + PI) / 2.0 / PI * NBPHI / 2.0 );
+			IETA = 1 + 2 * static_cast<Int32_t>( (ETA + ETACEL) / 2.0 / ETACEL * NBETA / 2.0 );
+			IPHI = 1 + 2 * static_cast<Int32_t>( (PHI + PI) / 2.0 / PI * NBPHI / 2.0 );
 		}
 		Int32_t IEPTH = NBPHI * IETA + IPHI;
 		
@@ -145,5 +147,19 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	}
 	
 	// call histogram
-	// CALL HF1(IDENT+1, Real64_t(orecord.cells.size()), 1.0)
+	histo.insert( orecord.cells.size() );
+}
+
+void Cell::printResults() const {
+	printf ("***********************************\n");
+	printf ("*                                 *\n");
+	printf ("*     ***********************     *\n");
+	printf ("*     ***   Output from   ***     *\n");
+	printf ("*     ***  analyse::Cell  ***     *\n");
+	printf ("*     ***********************     *\n");
+	printf ("*                                 *\n");
+	printf ("***********************************\n");
+	
+	printf (" Analysed records: %d\n", IEVENT);
+	histo.print();
 }

@@ -89,14 +89,16 @@ int main( int argc, char **argv ) {
 		
 		resetRecord(oRec);
 
-        GenEvent *hepmc = new GenEvent();
-        toHepMC.fill_next_event( event, hepmc );
-        
-        acerDet.analyseRecord( InputReader::computeEvent( *hepmc ), oRec );
-    
+		GenEvent *hepmc = new GenEvent();
+		toHepMC.fill_next_event( event, hepmc );
+
+		acerDet.analyseRecord( InputReader::computeEvent( *hepmc ), oRec );
+
 		db.store(oRec);
-        delete hepmc;
+		delete hepmc;
 	}
+
+	acerDet.printResults();
 
 	return 0;
 }

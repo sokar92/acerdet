@@ -5,7 +5,7 @@ using namespace AcerDet::core;
 #include <cmath>
 #include <algorithm>
 		
-Int32_t kfcomp(Real64_t KF) {
+Int32_t AcerDet::core::kfcomp(Real64_t KF) {
 	
 	// MOCK fixed value TODO
 	return 0;
@@ -161,7 +161,7 @@ Int32_t kfcomp(Real64_t KF) {
 	return result;  
 }
 
-Int32_t kuchge(Real64_t ku) {
+Int32_t AcerDet::core::kuchge(Real64_t ku) {
 	// MOCK fixed value -> TODO
 	return 0;
 }

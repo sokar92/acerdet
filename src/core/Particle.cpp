@@ -46,6 +46,14 @@ Bool_t Particle::isDecayed() const {
 	return state == PS_DECAYED;
 }
 
+Int32_t Particle::getKfcomp() const {
+	return kfcomp(typeID);
+}
+
+Int32_t Particle::getKuchge() const {
+	return kuchge(typeID);
+}
+
 /*
  * Useful
  */

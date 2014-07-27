@@ -98,6 +98,13 @@ namespace AcerDet {
 			 * Check if particle has decayed status
 			 */
 			Bool_t isDecayed() const;
+			
+			/*
+			 * TODO: better names needed!!
+			 */
+			Int32_t getKfcomp() const;
+			
+			Int32_t getKuchge() const;
 
 			/*
 			* Print basic informations about particle

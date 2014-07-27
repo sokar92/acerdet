@@ -55,6 +55,8 @@ namespace AcerDet {
 		void printInfo() const;
 		
 		void analyseRecord( const io::InputRecord&, io::OutputRecord& );
+		
+		void printResults() const;
 	};
 
 }

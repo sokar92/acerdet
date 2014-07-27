@@ -75,3 +75,7 @@ void AcerDET::printInfo() const {
 	analyse_Tau			.printInfo();
 	analyse_Calibration	.printInfo();
 }
+
+void AcerDET::printResults() const {
+	analyse_Cell.printResults();
+}

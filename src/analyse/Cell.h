@@ -13,6 +13,9 @@ using namespace AcerDet::conf;
 namespace AcerDet {
 	namespace analyse {
 
+		/*
+		 * Algorithm class for finding cells
+		 */
 		class Cell {
 		private:
 			Real64_t ETACEL;
@@ -33,9 +36,21 @@ namespace AcerDet {
 			Cell( const Configuration& );
 			~Cell();
 			
+			/*
+			 * Print basic informations about class
+			 * and configuration to stdout.
+			 */
 			void printInfo() const;
 			
+			/*
+			 * Analyse input record.
+			 */
 			void analyseRecord( const io::InputRecord&, io::OutputRecord& ); 
+			
+			/*
+			 * Prints statistics to stdout.
+			 */
+			void printResults() const;
 		};
 
 	}
