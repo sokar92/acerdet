@@ -80,7 +80,7 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			
 		Int32_t KC = part.getKfcomp();
 		if (KC == 0 || KC == 12 || KC == 13 || KC == 14 || KC == 16 || KC == KFINVS)
-			continue;
+			continue; // wykona sie zawsze bo Kfcomp zwraca 0 zawsze !!! TODO
 			
 		Real64_t DETPHI = 0.0;
 		Real64_t ETA, PHI, PT;
