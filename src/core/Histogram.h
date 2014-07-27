@@ -95,7 +95,7 @@ namespace AcerDet {
 			/*
 			 * Print statistics to standard output (stdout by default)
 			 */
-			void print() const;
+			void print( bool onlyNonZero ) const;
 		};
 		
 	}

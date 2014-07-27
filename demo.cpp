@@ -70,7 +70,7 @@ int main( int argc, char **argv ) {
 	histo.insert(12.5);
 	histo.insert(-2.5);
 	histo.insert(12.5001);
-	histo.print();
+	histo.print( false );
 	
 	printf (" proper -> %d\n", histo.storedProperlyCount());
 	printf (" all -> %d\n", histo.storedCount());

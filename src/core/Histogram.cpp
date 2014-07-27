@@ -74,15 +74,23 @@ void Histogram::reset() {
 	storedAll = storedProperly = 0;
 }
 
-void Histogram::print() const {
+void Histogram::print( bool onlyNonZero ) const {
 	printf ("AcerDet Histogram: \"%s\"\n", title.c_str());
-	printf ("(-inf, %lf) = %d\n", minimumValue, arr[0]);
+	
+	if (arr[0] > 0) 
+		printf ("(-inf, %lf) = %d\n", minimumValue, arr[0]);
+	
 	for (int i=0;i<resolution;++i) {
+		if (arr[i+1] == 0)
+			continue;
+			
 		double coef_lower = (double)i / (double)resolution;
 		double coef_upper = (double)(i+1) / (double)resolution;
 		double lower = minimumValue + (maximumValue - minimumValue) * coef_lower;
 		double upper = minimumValue + (maximumValue - minimumValue) * coef_upper;
 		printf ("[%lf, %lf) = %d\n", lower, upper, arr[1+i]);
 	}
-	printf ("(%lf, +inf) = %d\n", maximumValue, arr[resolution+1]);
+	
+	if (arr[resolution+1] > 0)
+		printf ("(%lf, +inf) = %d\n", maximumValue, arr[resolution+1]);
 }

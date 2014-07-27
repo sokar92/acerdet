@@ -161,5 +161,5 @@ void Cell::printResults() const {
 	printf ("***********************************\n");
 	
 	printf (" Analysed records: %d\n", IEVENT);
-	histo.print();
+	histo.print( true );
 }
