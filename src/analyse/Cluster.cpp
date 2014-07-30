@@ -52,28 +52,32 @@ void Cluster::printInfo() const {
 }
 
 void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
-	/*
+
+	// new event to compute
 	IEVENT++;
-	Real64_t PTLRAT = 1.0 / pow(sinh(ETACLU), 2.0);
 	
 	// Find initiator cell: the one with highest pT of not yet used ones.
-	Real64_t ETMAX = 0.0;
-	Int32_t ICMAX = -1;
-	Real64_t ETA, PHI, THETA, PT;
+	Real64_t PTLRAT = 1.0 / pow(sinh(ETACLU), 2.0);
+	Real64_t ETA, PHI, PT;
+	Real64_t DPHIA, PHIC;
+
+	// temporary clusters container
+	vector<ClusterData> tempClusters;
 	
 	// compute till maxET > ETINI
-	vector<Dum>().swap(orecord.vDum); // wyczysc tmp table
 	while (true) {
 		
 		// find indicator cell with maximum associated energy
-		for (int i=0; i<orecord.vCell.size(); ++i) {
-			if (orecord.vCell[i].K[4] != 2) 
+		Int32_t ICMAX = -1;
+		Real64_t ETMAX = 0.0;
+		for (int i=0; i<orecord.cells.size(); ++i) {
+			if (orecord.cells[i].state != 2) 
 				continue;
 
 			ICMAX = i;
-			ETA = orecord.vCell[i].P[0];
-			PHI = orecord.vCell[i].P[1];
-			ETMAX = orecord.vCell[i].P[4];
+			ETA = orecord.cells[i].eta;
+			PHI = orecord.cells[i].phi;
+			ETMAX = orecord.cells[i].pT;
 		}
 		
 		// stop condition - maximum energy is less then required minimum
@@ -81,116 +85,102 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 			break;
 
 		// change state of indicator cell to 'computed'
-		orecord.vCell[ICMAX].K[4] = 1;
+		orecord.cells[ICMAX].state = 1; // TODO: create markAsComputed method
 
 		// create new cluster from this cell
-		Dum newDum;
-		newDum.K[2] = 1;						// single hit
-		newDum.K[3] = orecord.vCell[i].K[3];	// cell -> cluster
-		newDum.K[4] = 1;						// state ok
+		ClusterData newCluster;
+		newCluster.iepth = orecord.cells[ICMAX].iepth;	// cell -> cluster
+		newCluster.hits = 1;							// single hit
+		newCluster.state = 1;							// state ok
 		
-		newDum.P[0] = ETA;
-		newDum.P[1] = PHI;
-		newDum.P[2] = 0; 
-		newDum.P[3] = 0;
-		newDum.P[4] = 0;
+		newCluster.eta = ETA;
+		newCluster.phi = PHI;
+		newCluster.pT = 0;
 		
 		// Sum up unused cells within required distance of initiator.
-		for (int i=0; i<orecord.vCell.size(); ++i) {
-			if (orecord.vCell[i].K[4] == 0) 
+		for (int i=0; i<orecord.cells.size(); ++i) {
+			if (orecord.cells[i].state == 0) 
 				continue;
 				
-			DPHIA = abs(orecord.vCell[i].P[1] - PHI); 
-			PHIC = orecord.vCell[i].P[1]; 
+			DPHIA = abs(orecord.cells[i].phi - PHI); 
+			PHIC = orecord.cells[i].phi; 
 
 			if (DPHIA > PI) 
-				PHIC = PHIC + sign(2.0 * PI, PHI)
+				PHIC = PHIC + sign(2.0 * PI, PHI);
 
-			if (ABS(ETA) < CALOTH && pow((orecord.vCell[i].P[0]-ETA), 2.0) + pow((PHIC-PHI), 2.0) > pow(RCONE, 2.0)) continue;
-			if (ABS(ETA) > CALOTH && pow((orecord.vCell[i].P[0]-ETA), 2.0) + pow((PHIC-PHI), 2.0) > pow(RCONE, 2.0)) continue;
+			if (abs(ETA) < CALOTH && pow((orecord.cells[i].eta - ETA), 2.0) + pow((PHIC-PHI), 2.0) > pow(RCONE, 2.0)) continue;
+			if (abs(ETA) > CALOTH && pow((orecord.cells[i].eta - ETA), 2.0) + pow((PHIC-PHI), 2.0) > pow(RCONE, 2.0)) continue;
 			
-			orecord.vCell[i].K[4] = -orecord.vCell[i].K[4]; 
-			newDum.K[2]++; // another hit
-			newDum.K[3] += orecord.vCell[i].K[3];
-			newDum.P[2] += orecord.vCell[i].P[4] * orecord.vCell[i].P[0]; 
-			newDum.P[3] += orecord.vCell[i].P[4] * PHIC;
-			newDum.P[4] += orecord.vCell[i].P[4]; // sum energy in cluster
+			orecord.cells[i].state = -orecord.cells[i].state; // negate cell state temporalily 
+			newCluster.hits++; // another hit
+			newCluster.hits += orecord.cells[i].hits;
+			// TODO P[2] i P[3] for cluster should be defined
+			//newCluster.P[2] += orecord.cells[i].pT * orecord.cells[i].eta; 
+			//newCluster.P[3] += orecord.cells[i].pT * PHIC;
+			newCluster.pT += orecord.cells[i].pT; // sum energy in cluster
 			
 			i++;
 		}
 		
 		// Reject cluster below minimum ET, else accept. 
-		if (newDum.P[4] < ETCLU) {
+		if (newCluster.pT < ETCLU) {
 			// revert changes
-			for (int i=0;i<orecord.vCell.size();i++	{
-				if (orecord.vCell[i].K[4] < 0) 
-					orecord.vCell[i].K[4] = -orecord.vCell[i].K[4]; 
+			for (int j=0; j<orecord.cells.size(); j++) {
+				if (orecord.cells[j].state < 0) 
+					orecord.cells[j].state = -orecord.cells[j].state; 
 			}
 		} else {
-			newDum.P[2] /= newDum.P[4]; 
-			newDum.P[3] /= newDum.P[4]; 
+			//newCluster.P[2] /= newCluster.pT; 
+			//newCluster.P[3] /= newCluster.pT; 
 			
-			if (abs(newDum.P[3]) > PI) 
-				newDum.P[3] -= sign(2.0 * PI, newDum.P[3]) 
+			//if (abs(newCluster.P[3]) > PI) 
+			//	newCluster.P[3] -= sign(2.0 * PI, newCluster.P[3]) 
 
 			//mark used cells in orecord.vCell
-			for (int i=0;i<orecord.vCell.size();i++	{
-				if (orecord.vCell[i].K[4] < 0) 
-					orecord.vCell[i].K[4] = 0; 
+			for (int j=0; j<orecord.cells.size(); j++) {
+				if (orecord.cells[j].state < 0) // marked to cluster 
+					orecord.cells[j].state = 0; // joined with cluster
 			}
 			
-			orecord.vDum.push_back(newDum);
+			tempClusters.push_back(newCluster);
 		}
 	}
+
+	// Arrange clusters in falling ET sequence
+	ClusterData::sortBy_pT(tempClusters);
+
+	// store in /Clusters/
+	// TODO : orecord.clusters.insert(tempClusters.begin(), tempClusters.end());
 	
-	// Arrange clusters in falling ET sequence and store clusters in /CLUSTER/
-	for (int i=0; i<orecord.vDum.size(); i++) {
-		// orecord.vCluster = sort(dum);
-	//	ETMAX = 0
-	//	DO IDUM = from 1 to NDUM {						// szukaj maxa
-	//		IF(KDUM(IDUM,5) == 0) continue
-	//		IF(PDUM(IDUM,5) < ETMAX) continue
-	//		IMAX = IDUM
-	//		ETMAX = PDUM(IDUM,5)
-	//	}
-	//	KDUM(IMAX,5) = 0 //sorted state
-	//	NCLU = NCLU + 1								// zapisz nowy cluster na outputrecord
-	//	DO II = from 1 to 5 {
-	//		KCLU(NCLU,II) = KDUM(IMAX,II)
-	//		PCLU(NCLU,II) = PDUM(IMAX,II)
-	//	}
-	//	KCLU(NCLU,5) = 1
-	}
-	
-	// histogram NCLU
-	// CALL HF1(IDENT+1,REAL(NCLU),1.0)
+	// call histogram
+	// .insert(tempClusters.size()) ? ktory to histogram TODO
 	
 	// reconstruct baricenter of particles
-	for (int ICLU = 0; ICLU < orecord.vCluster.size(); ICLU++) {
-		ETAREC = 0;
-		PTREC = 0;
-		PHIREC = 0;
+	const vector<Particle>& parts = irecord.particles();
+	for (int ICLU = 0; ICLU < orecord.clusters.size(); ICLU++) {
+		Real64_t ETAREC = 0.0, PTREC = 0.0, PHIREC = 0.0;
 
-		const vector<Particle>& parts = irecord.particles();
-		for (int i=0;i<parts.size();++i) {
-			if (!parts[i].isStable()) 
+		for (int i=0; i<parts.size(); ++i) {
+			const Particle& part = parts[i];
+
+			if (!part.isStable()) 
 				continue;
 				 
-			if (parts[i].pT() <= PTLRAT * parts[i].pZ() * parts[i].pZ()) 
+			if (part.pT() <= PTLRAT * part.pZ() * part.pZ()) 
 				continue;
  
-			KC = kfcomp(parts[i].typeID); 
+			Int32_t KC = part.getKfcomp(); 
 			if (KC == 0 || KC == 12 || KC == 14 || KC == 16 || KC == 13 || KC == KFINVS) 
 				continue;
 
 			Real64_t DETPHI = 0.0;
-			Real64_t ETA, PHI, THETA, PT;
+			Real64_t ETA, PHI, PT;
 
-			if (KEYFLD && kuchge(part.typeID) != 0) {
+			if (KEYFLD && part.getKuchge() != 0) {
 				if (part.pT() < PTMIN)
 					continue;
 					
-				Real64_t CHRG = kuchge(part.typeID) / 3.0;
+				Real64_t CHRG = part.getKuchge() / 3.0;
 				DETPHI = CHRG * part.foldPhi();
 			}
 			
@@ -199,13 +189,13 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 			PHI = saturatePi(part.getPhi() + DETPHI);
 			
 			// czy nie rownowazne saturatePi?
-			DPHIA = abs(orecord.vCluster[ICLU].P[1]-PHI);
+			DPHIA = abs(orecord.clusters[ICLU].phi - PHI);
 
 			if (DPHIA > PI) 
 				DPHIA = DPHIA - 2 * PI;
 
-			if (abs(orecord.vCluster[ICLU].P[0]) < CALOTH && pow((orecord.vCluster[ICLU].P[0]-ETA),2) + pow((DPHIA),2) > pow(RCONE,2)) continue;
-			if (abs(orecord.vCluster[ICLU].P[0]) > CALOTH && pow((orecord.vCluster[ICLU].P[0]-ETA),2) + pow((DPHIA),2) > pow(RCONE,2)) continue;
+			if (abs(orecord.clusters[ICLU].eta) < CALOTH && pow((orecord.clusters[ICLU].eta - ETA),2) + pow((DPHIA),2) > pow(RCONE,2)) continue;
+			if (abs(orecord.clusters[ICLU].eta) > CALOTH && pow((orecord.clusters[ICLU].eta - ETA),2) + pow((DPHIA),2) > pow(RCONE,2)) continue;
 
 			PTREC += PT;
 			ETAREC += ETA * PT;
@@ -214,41 +204,43 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 
 		ETAREC /= PTREC;
 		PHIREC /= PTREC;
-		DETR = sqrt( pow((ETAREC-orecord.vCluster[ICLU].P[2]),2) + pow((PHIREC-orecord.vCluste[ICLU].P[3]),2) );
-      
-		// CALL HF1(IDENT+11, ETAREC-PCLU(ICLU,3), 1.0)
-		// CALL HF1(IDENT+12, PHIREC-PCLU(ICLU,4), 1.0)
-		// CALL HF1(IDENT+13, DETR, 1.0)
-		// CALL HF1(IDENT+14, PCLU(ICLU,5)/PTREC, 1.0)
+		//Real64_t DETR = sqrt( pow((ETAREC-orecord.clusters[ICLU].P[2]),2) + pow((PHIREC-orecord.clusters[ICLU].P[3]),2) );
+		
+		// call histograms ... TODO : ktore?
+		// IDENT+11, .insert(ETAREC - orecord.clusters[ICLU].P[2]);
+		// IDENT+12, .insert(PHIREC - orecord.clusters[ICLU].P[3]);
+		// IDENT+13, .insert(DETR);
+		// IDENT+14, .insert(orecord.clusters[ICLU].pT / PTREC);
 	}
 
-	for (int ICLU=0; ICLU<orecord.vCluster.size(); ICLU++) {
-		PTREC = 0;
-		DETRMIN = RCONE;
+	for (int ICLU=0; ICLU<orecord.clusters.size(); ICLU++) {
+		Real64_t PTREC = 0.0, DETR;
+		Real64_t DETRMIN = RCONE;
 
+		// magic
 		for (int i=6; i<parts.size(); i++) { 
-			if (parts[i].statusID != 21 || abs(parts[i].typeID) > 10) 
+			if (parts[i].stateID != 21 || abs(parts[i].typeID) > 10) // TODO: boolean method for this condition
 				continue;
 
 			PT = parts[i].pT();
 			ETA = parts[i].getEta(); 
 			PHI = parts[i].getPhi();
 			
-			DPHIA = abs(orecord.vCluster[ICLU].P[3] - PHI); 
+			//DPHIA = abs(orecord.clusters[ICLU].P[3] - PHI); 
 			if (DPHIA > PI) 
 				DPHIA = DPHIA - 2 * PI;
 			
-			DETR = sqrt( pow((ETA-orecord.vCluster[ICLU].P[2]), 2) + pow(DPHIA, 2))
-			IF(DETR < DETRMIN) {
+			//DETR = sqrt( pow((ETA - orecord.clusters[ICLU].P[2]), 2) + pow(DPHIA, 2));
+			if (DETR < DETRMIN) {
 				PTREC = PT;
 				DETRMIN = DETR;
 			}
 		}
 
 		if (PTREC) {
-			// CALL HF1(IDENT+23,DETRMIN,1.0)
-			// CALL HF1(IDENT+24,PCLU(ICLU,5)/PTREC,1.0)
+			// call histograms ... TODO : ktore ?
+			// IDENT+23, .insert(DETRMIN);
+			// IDENT+24, .insert(orecord.clusters[ICLU].pT / PTREC);
 		}
 	}
-*/
 }

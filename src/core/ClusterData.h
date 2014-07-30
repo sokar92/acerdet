@@ -23,8 +23,8 @@ namespace AcerDet {
 			 * P
 			 * 0 - eta
 			 * 1 - phi
-			 * 2 -
-			 * 3 -
+			 * 2 - ? TODO : eta_rec
+			 * 3 - ? TODO : phi_rec 
 			 * 4 - eT
 			 */
 			
