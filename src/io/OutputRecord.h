@@ -2,7 +2,6 @@
 #define _AcerDet_IO_OutputRecord_
 
 #include "../core/Particle.h"
-#include "../core/Dum.h"
 #include "../core/CellData.h"
 #include "../core/ClusterData.h"
 using namespace AcerDet::core;
