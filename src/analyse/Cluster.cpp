@@ -148,8 +148,8 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 	// Arrange clusters in falling ET sequence
 	ClusterData::sortBy_pT(tempClusters);
 
-	// store in /Clusters/
-	// TODO : orecord.clusters.insert(tempClusters.begin(), tempClusters.end());
+	// store in outputrecord
+	orecord.clusters.insert(orecord.clusters.end(), tempClusters.begin(), tempClusters.end());
 	
 	// call histogram
 	histo_bJets.insert(tempClusters.size());
