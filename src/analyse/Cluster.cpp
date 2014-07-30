@@ -81,7 +81,7 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		}
 		
 		// stop condition - maximum energy is less then required minimum
-		if (ETMAX < ETINI)
+		if (ICMAX < 0 || ETMAX < ETINI) // without first condition Segmentation Fault possible
 			break;
 
 		// change state of indicator cell to 'computed'
@@ -113,10 +113,9 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 			
 			orecord.cells[i].state = -orecord.cells[i].state; // negate cell state temporalily 
 			newCluster.hits++; // another hit
-			newCluster.hits += orecord.cells[i].hits;
-			// TODO P[2] i P[3] for cluster should be defined
-			//newCluster.P[2] += orecord.cells[i].pT * orecord.cells[i].eta; 
-			//newCluster.P[3] += orecord.cells[i].pT * PHIC;
+			newCluster.hits += orecord.cells[i].hits; // ? TODO: makes sense ?
+			newCluster.eta_rec += orecord.cells[i].pT * orecord.cells[i].eta; 
+			newCluster.phi_rec += orecord.cells[i].pT * PHIC;
 			newCluster.pT += orecord.cells[i].pT; // sum energy in cluster
 			
 			i++;
@@ -130,11 +129,11 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 					orecord.cells[j].state = -orecord.cells[j].state; 
 			}
 		} else {
-			//newCluster.P[2] /= newCluster.pT; 
-			//newCluster.P[3] /= newCluster.pT; 
+			newCluster.eta_rec /= newCluster.pT; 
+			newCluster.phi_rec /= newCluster.pT; 
 			
-			//if (abs(newCluster.P[3]) > PI) 
-			//	newCluster.P[3] -= sign(2.0 * PI, newCluster.P[3]) 
+			if (abs(newCluster.phi_rec) > PI) 
+				newCluster.phi_rec -= sign(2.0 * PI, newCluster.phi_rec); 
 
 			//mark used cells in orecord.vCell
 			for (int j=0; j<orecord.cells.size(); j++) {
@@ -204,7 +203,7 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 
 		ETAREC /= PTREC;
 		PHIREC /= PTREC;
-		//Real64_t DETR = sqrt( pow((ETAREC-orecord.clusters[ICLU].P[2]),2) + pow((PHIREC-orecord.clusters[ICLU].P[3]),2) );
+		Real64_t DETR = sqrt( pow((ETAREC - orecord.clusters[ICLU].eta_rec),2) + pow((PHIREC - orecord.clusters[ICLU].phi_rec),2) );
 		
 		// call histograms ... TODO : ktore?
 		// IDENT+11, .insert(ETAREC - orecord.clusters[ICLU].P[2]);
@@ -243,4 +242,18 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 			// IDENT+24, .insert(orecord.clusters[ICLU].pT / PTREC);
 		}
 	}
+}
+
+void Cluster::printResults() const {
+	printf ("**************************************\n");
+	printf ("*                                    *\n");
+	printf ("*     **************************     *\n");
+	printf ("*     ***    Output from     ***     *\n");
+	printf ("*     ***  analyse::Cluster  ***     *\n");
+	printf ("*     **************************     *\n");
+	printf ("*                                    *\n");
+	printf ("**************************************\n");
+	
+	printf (" Analysed records: %d\n", IEVENT);
+	//histo.print( true );
 }

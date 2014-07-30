@@ -10,6 +10,8 @@ ClusterData::ClusterData() :
 	state (0),
 	eta (0.0),
 	phi (0.0),
+	eta_rec (0.0),
+	phi_rec (0.0),
 	pT (0.0)
 {}
 
@@ -19,6 +21,8 @@ ClusterData::ClusterData(const ClusterData& d) :
 	state (d.state),
 	eta (d.eta),
 	phi (d.phi),
+	eta_rec (d.eta_rec),
+	phi_rec (d.phi_rec),
 	pT (d.pT)
 {}
 
@@ -28,6 +32,8 @@ ClusterData& ClusterData::operator = (const ClusterData& d) {
 	state = d.state;
 	eta = d.eta;
 	phi = d.phi;
+	eta_rec = d.eta_rec;
+	phi_rec = d.phi_rec;
 	pT = d.pT;
 	return *this;
 }

@@ -77,5 +77,6 @@ void AcerDET::printInfo() const {
 }
 
 void AcerDET::printResults() const {
-	analyse_Cell.printResults();
+	analyse_Cell		.printResults();
+	analyse_Cluster		.printResults();
 }
