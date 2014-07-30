@@ -5,4 +5,6 @@ OutputRecord::OutputRecord() {
 }
 
 void OutputRecord::clear() {
+	vector<CellData>().swap(cells);
+	vector<ClusterData>().swap(clusters);
 }

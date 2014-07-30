@@ -8,7 +8,7 @@ using namespace AcerDet::core;
 Int32_t AcerDet::core::kfcomp(Real64_t KF) {
 	
 	// MOCK fixed value TODO
-	return 0;
+	return 1;
 	
 	Int32_t KCHG[3][500] = 
 	{
@@ -163,5 +163,5 @@ Int32_t AcerDet::core::kfcomp(Real64_t KF) {
 
 Int32_t AcerDet::core::kuchge(Real64_t ku) {
 	// MOCK fixed value -> TODO
-	return 0;
+	return 1;
 }

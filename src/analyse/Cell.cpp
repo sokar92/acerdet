@@ -80,7 +80,7 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			
 		Int32_t KC = part.getKfcomp();
 		if (KC == 0 || KC == 12 || KC == 13 || KC == 14 || KC == 16 || KC == KFINVS)
-			continue; // wykona sie zawsze bo Kfcomp zwraca 0 zawsze !!! TODO
+			continue;
 			
 		Real64_t DETPHI = 0.0;
 		Real64_t ETA, PHI, PT;
@@ -137,7 +137,7 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			tempCells.push_back(newCell);
 		}
 	}
-	
+
 	// Remove cells below threshold and store cells-map in output record
 	for (int j=0; j<tempCells.size(); ++j) {
 		// enough pT to create new cell
@@ -145,7 +145,7 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			orecord.cells.push_back(tempCells[j]);
 		}
 	}
-	
+
 	// call histogram
 	histo.insert( orecord.cells.size() );
 }

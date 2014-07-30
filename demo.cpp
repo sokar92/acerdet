@@ -28,6 +28,7 @@ public:
 // -- clean temp record --
 // -----------------------
 void resetRecord( io::OutputRecord& rec ) {
+	rec.clear();
 }
 
 int main( int argc, char **argv ) {

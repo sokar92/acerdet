@@ -72,7 +72,7 @@ InputRecord InputReader::computeEvent( const GenEvent& event ) {
 		//part.theta = gpart->polarization().theta();
 		
 		parts.push_back(part);
-		cout << part; // to delete in release!
+		// cout << part; // to delete in release!
 	}
 	
 	return InputRecord(parts);
