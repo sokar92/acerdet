@@ -152,7 +152,7 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 	// TODO : orecord.clusters.insert(tempClusters.begin(), tempClusters.end());
 	
 	// call histogram
-	// .insert(tempClusters.size()) ? ktory to histogram TODO
+	histo_bJets.insert(tempClusters.size());
 	
 	// reconstruct baricenter of particles
 	const vector<Particle>& parts = irecord.particles();
@@ -205,11 +205,11 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		PHIREC /= PTREC;
 		Real64_t DETR = sqrt( pow((ETAREC - orecord.clusters[ICLU].eta_rec),2) + pow((PHIREC - orecord.clusters[ICLU].phi_rec),2) );
 		
-		// call histograms ... TODO : ktore?
-		// IDENT+11, .insert(ETAREC - orecord.clusters[ICLU].P[2]);
-		// IDENT+12, .insert(PHIREC - orecord.clusters[ICLU].P[3]);
-		// IDENT+13, .insert(DETR);
-		// IDENT+14, .insert(orecord.clusters[ICLU].pT / PTREC);
+		// call histograms
+		histo_delta_eta.insert(ETAREC - orecord.clusters[ICLU].eta_rec); //IDENT + 11
+		histo_delta_phi.insert(PHIREC - orecord.clusters[ICLU].phi_rec); //IDENT + 12
+		histo_delta_barycenter.insert(DETR); // IDENT + 13
+		histo_pT_bySum.insert(orecord.clusters[ICLU].pT / PTREC); // IDENT + 14
 	}
 
 	for (int ICLU=0; ICLU<orecord.clusters.size(); ICLU++) {
@@ -225,11 +225,11 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 			ETA = parts[i].getEta(); 
 			PHI = parts[i].getPhi();
 			
-			//DPHIA = abs(orecord.clusters[ICLU].P[3] - PHI); 
+			DPHIA = abs(orecord.clusters[ICLU].phi_rec - PHI); 
 			if (DPHIA > PI) 
 				DPHIA = DPHIA - 2 * PI;
 			
-			//DETR = sqrt( pow((ETA - orecord.clusters[ICLU].P[2]), 2) + pow(DPHIA, 2));
+			DETR = sqrt( pow((ETA - orecord.clusters[ICLU].eta_rec), 2) + pow(DPHIA, 2));
 			if (DETR < DETRMIN) {
 				PTREC = PT;
 				DETRMIN = DETR;
@@ -237,9 +237,9 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		}
 
 		if (PTREC) {
-			// call histograms ... TODO : ktore ?
-			// IDENT+23, .insert(DETRMIN);
-			// IDENT+24, .insert(orecord.clusters[ICLU].pT / PTREC);
+			// call histograms
+			histo_delta_parton.insert(DETRMIN); // IDENT + 23
+			histo_pT_byPart.insert(orecord.clusters[ICLU].pT / PTREC); // IDENT + 24
 		}
 	}
 }
@@ -255,5 +255,11 @@ void Cluster::printResults() const {
 	printf ("**************************************\n");
 	
 	printf (" Analysed records: %d\n", IEVENT);
-	//histo.print( true );
+	histo_bJets				.print( true ); //IDENT + 1
+	histo_delta_phi			.print( true ); //IDENT + 11
+	histo_delta_eta			.print( true ); //IDENT + 12
+	histo_delta_barycenter	.print( true ); //IDENT + 13
+	histo_delta_parton		.print( true ); //IDENT + 23
+	histo_pT_bySum			.print( true ); //IDENT + 14
+	histo_pT_byPart			.print( true ); //IDENT + 24
 }
