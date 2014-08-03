@@ -50,9 +50,13 @@ void Muon::printInfo() const {
 }
 
 void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
+/*
+	// new event to compute
 	IEVENT++;
-/*	
+
+	// reference to particles container
 	const vector<Particle>& parts = irecord.particles();
+	Int32_t N = parts.size();
 
 	// znajdz poczatek danych
 	Int32_t NSTOP = 0, NSTART = 1;
@@ -66,32 +70,34 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 
 	// look for isolated muons, sort clusters common
 	for (int i=NSTART; i<parts.size(); ++i) {
+		const Particle& part = parts[i];
+
 		if (!parts[i].isStable()) 
 			continue;
 
-		// it is muon
-		if (ABS(parts[i].typeID) == 13) {
-			
+		if (part.type == PT_MUON) {
+			Real64_t ETA, PHI, PT;
+
 			// analyse not decayed muons
-			ISOL = true;
+			Bool_t ISOL = true;
 			
-			PT = parts[i].pT();
+			PT = part.pT();
 			if (PT < PTMUMINT) 
 				continue;
 			
-			ETA = parts[i].getEta(); 
-			IF(ABS(ETA) > ETAMAX) 
+			ETA = part.getEta(); 
+			if (abs(ETA) > ETAMAX) 
 				continue;  
 			
-			PHI = parts[i].getPhi();
+			PHI = part.getPhi();
 
 			// apply smearing
 			if (KEYSME) {
-				SIGMA = RESMUO(PT,ETA,PHI)
-				PXMUO = parts[i].pX() / (1.0 + SIGMA);
-				PYMUO = parts[i].pY() / (1.0 + SIGMA);
-				PZMUO = parts[i].pZ() / (1.0 + SIGMA);
-				EEMUO = parts[i].e()  / (1.0 + SIGMA);
+				// TODO : SIGMA = RESMUO(PT,ETA,PHI)
+				PXMUO = part.pX() / (1.0 + SIGMA);
+				PYMUO = part.pY() / (1.0 + SIGMA);
+				PZMUO = part.pZ() / (1.0 + SIGMA);
+				EEMUO = part.e()  / (1.0 + SIGMA);
 				PT    = sqrt(PXMUO*PXMUO + PYMUO*PYMUO);
 			}
 			
@@ -99,44 +105,43 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 				continue;
 			
 			// check if muon is isolated from clusters
-			for (int j=0; j<orecord.vCluster.size(); ++j) {
+			for (int j=0; j<orecord.clusters.size(); ++j) {
 				DDR = sqrt( 
-					pow(ETA-orecord.vCluster[j].P[2], 2.0) + 
-					pow(PHI-orecord.vCluster[j].P[3], 2.0) 
+					pow(ETA - orecord.clusters[j].eta_rec, 2.0) + 
+					pow(PHI - orecord.clusters[j].phi_rec, 2.0) 
 				);
-				if (abs(PHI-orecord.vCluster[j].P[3]) > PI)
+
+				if (abs(PHI - orecord.clusters[j].phi_rec) > PI)
 					DDR = sqrt( 
-						pow(ETA-orecord.vCluster[j].P[2], 2.0) + 
-						pow(abs(PHI-orecord.vCluster[j].P[3])-2.0*PI, 2.0) 
+						pow(ETA - orecord.clusters[j].eta_rec, 2.0) + 
+						pow(abs(PHI - orecord.clusters[j].phi_rec)-2.0*PI, 2.0) 
 					);
+
 				if (DDR < RISOLJ) 
 					ISOL = false;
 			}
 
 			// check on energy deposition of cells EDEP in cone RDEP
 			Real64_t EDEP = 0.0;
-			for (int j=0; j<orecord.vCell.size(); ++j) {
+			for (int j=0; j<orecord.cells.size(); ++j) {
 				DDR = sqrt(
-					pow(ETA - orecord.vCell[j].P[0], 2.0) +
-					pow(PHI - orecord.vCell[j].P[1], 2.0)
+					pow(ETA - orecord.cells[j].eta, 2.0) +
+					pow(PHI - orecord.cells[j].phi, 2.0)
 				);
 				
-				if (abs(PHI - orecord.vCell[j].P[1]) > PI)
+				if (abs(PHI - orecord.cells[j].phi) > PI)
 					DDR = sqrt( 
-						pow(ETA - orecord.vCell[j].P[0], 2) + 
-						pow(abs(PHI - orecord.vCell[j].P[1]) - 2*PI, 2) 
+						pow(ETA - orecord.cells[j].eta, 2) + 
+						pow(abs(PHI - orecord.cells[j].phi) - 2*PI, 2) 
 					);
 				
 				if (DDR < RDEP) 
-					EDEP += orecord.vCell[j].P[4];
-		
-		
-		
+					EDEP += orecord.cells[j].pT;		
 			}
 			
 			if (EDEP > EDMAX) 
 				ISOL = false;
-// PARTICLE STRUCTURE				
+// TODO : PARTICLE STRUCTURE				
 			// fill /ISOMUO/ with isolated muon
 			if (ISOL) {
 				NMUO = NMUO + 1
@@ -169,17 +174,17 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 		}
 	}
 	
-	// save to histogram
-	// CALL HF1(IDENT+11, REAl(NMUO), 1.0);
-	// CALL HF1(IDENT+10, REAl(NMUOX), 1.0);
+	// call histograms
+	// IDENT+11, .insert(NMUO);
+	// IDENT+10, .insert(NMUOX);
 	
 	// cross-check with partons
 	Int32_t IMUO = 0, IMUOISO = 0;
 	for (int i=0; i<=NSTOP; ++i) {
-		if (abs(parts[i].typeID) == 13) { // is muon
-			PT = parts[i].pT();
-			ETA = parts[i].getEta(); 
-			PHI = parts[i].getPhi();
+		if (part.type == PT_MUON) {
+			PT = part.pT();
+			ETA = part.getEta(); 
+			PHI = part.getPhi();
 			ENER = 0.0;
 			ISOL = true;
 			
@@ -189,9 +194,9 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 					abs(parts[j].typeID) != 14 && 
 					abs(parts[j].typeID) != 16) 
 				{
-					JPT = part[j].pT(); 
-					JETA = part[j].getEta(); 
-					JPHI = part[j].getPhi();
+					JPT = parts[j].pT(); 
+					JETA = parts[j].getEta(); 
+					JPHI = parts[j].getPhi();
 					
 					DDR = sqrt( pow(ETA-JETA, 2) + pow(JPHI-PHI, 2) );
 					if (abs(JPHI-PHI) > PI)
@@ -214,9 +219,25 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			if (abs(ETA) < ETAMAX && PT > PTMUMIN && ISOL)
 				IMUOISO++;
 		}
-	}
+	}*/
 
-	// CALL HF1(IDENT+21,REAL(IMUO),1.0)
-	// CALL HF1(IDENT+31,REAL(IMUOISO),1.0)
-*/
+	// IDENT+21 .insert(IMUO);
+	// IDENT+31 .insert(IMUOISO);
+}
+
+void Muon::printResults() const {
+	printf ("***********************************\n");
+	printf ("*                                 *\n");
+	printf ("*     ***********************     *\n");
+	printf ("*     ***   Output from   ***     *\n");
+	printf ("*     ***  analyse::Muon  ***     *\n");
+	printf ("*     ***********************     *\n");
+	printf ("*                                 *\n");
+	printf ("***********************************\n");
+	
+	printf (" Analysed records: %d\n", IEVENT);
+	histo_nonisol	.print( true );
+	histo_isol		.print( true );
+	histo_hard		.print( true );
+	histo_sum		.print( true );
 }

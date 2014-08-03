@@ -48,3 +48,20 @@ void Mis::printInfo() const {
 void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
 	//printf ("Mis: analyse record\n");
 }
+
+void Mis::printResults() const {
+	printf ("***********************************\n");
+	printf ("*                                 *\n");
+	printf ("*     ***********************     *\n");
+	printf ("*     ***   Output from   ***     *\n");
+	printf ("*     ***  analyse::Miss  ***     *\n");
+	printf ("*     ***********************     *\n");
+	printf ("*                                 *\n");
+	printf ("***********************************\n");
+	
+	printf (" Analysed records: %d\n", IEVENT);
+	histo_reconstructed_pT			.print( true );
+	histo_reconstructed_pT_cells	.print( true );
+	histo_pTmiss					.print( true );
+	histo_pTnu						.print( true );
+}

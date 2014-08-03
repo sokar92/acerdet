@@ -14,13 +14,13 @@ namespace AcerDet {
 
 		class Calibration {
 		private:
-			double RCONE;
+			Real64_t RCONE;
 			
-			int KEYHID;
-			bool KEYCAL;
+			Int32_t KEYHID;
+			Bool_t KEYCAL;
 			
-			int IEVENT;
-			int IDENT;
+			Int32_t IEVENT;
+			Int32_t IDENT;
 		public:
 			Calibration( const Configuration& );
 			~Calibration();

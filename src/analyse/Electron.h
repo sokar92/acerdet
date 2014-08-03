@@ -15,19 +15,19 @@ namespace AcerDet {
 
 		class Electron {
 		private:
-			double ETCLU;
-			double RCONE;
-			double PTLMIN;
-			double ETAMAX;
-			double RJE;
-			double RISOLJ;
-			double RDEP;
-			double EDMAX;
+			Real64_t ETCLU;
+			Real64_t RCONE;
+			Real64_t PTLMIN;
+			Real64_t ETAMAX;
+			Real64_t RJE;
+			Real64_t RISOLJ;
+			Real64_t RDEP;
+			Real64_t EDMAX;
 
-			int KEYHID;
-			bool KEYSME;
+			Int32_t KEYHID;
+			Bool_t KEYSME;
 
-			int IEVENT;
+			Int32_t IEVENT;
 			
 			core::Histogram histo_isol;
 			core::Histogram histo_hard;
@@ -39,6 +39,8 @@ namespace AcerDet {
 			void printInfo() const;
 			
 			void analyseRecord( const io::InputRecord&, io::OutputRecord& );
+			
+			void printResults() const;
 		};
 
 	}

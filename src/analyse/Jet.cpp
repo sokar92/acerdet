@@ -256,3 +256,23 @@ c....reconstruct baricenter of particles
 */
 
 }
+
+void Jet::printResults() const {
+	printf ("**********************************\n");
+	printf ("*                                *\n");
+	printf ("*     **********************     *\n");
+	printf ("*     ***  Output from   ***     *\n");
+	printf ("*     ***  analyse::Jet  ***     *\n");
+	printf ("*     **********************     *\n");
+	printf ("*                                *\n");
+	printf ("**********************************\n");
+	
+	printf (" Analysed records: %d\n", IEVENT);
+	histo_bJets				.print( true ); //IDENT + 1
+	histo_delta_phi			.print( true ); //IDENT + 11
+	histo_delta_eta			.print( true ); //IDENT + 12
+	histo_delta_barycenter	.print( true ); //IDENT + 13
+	histo_delta_parton		.print( true ); //IDENT + 23
+	histo_pT_bySum			.print( true ); //IDENT + 14
+	histo_pT_byPart			.print( true ); //IDENT + 24
+}

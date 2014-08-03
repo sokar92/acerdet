@@ -15,16 +15,16 @@ namespace AcerDet {
 
 		class Tau {
 		private:
-			double ETJET;
-			double PTTAU;
-			double ETATAU;
-			double RJTAU;
-			double PTFRAC;
+			Real64_t ETJET;
+			Real64_t PTTAU;
+			Real64_t ETATAU;
+			Real64_t RJTAU;
+			Real64_t PTFRAC;
 
-			int KEYHID;
-			bool KEYTAU;
+			Int32_t KEYHID;
+			Bool_t KEYTAU;
 
-			int IEVENT;
+			Int32_t IEVENT;
 			
 			core::Histogram histo_jets;
 			core::Histogram histo_taus;
@@ -35,6 +35,8 @@ namespace AcerDet {
 			void printInfo() const;
 			
 			void analyseRecord( const io::InputRecord&, io::OutputRecord& );
+
+			void printResults() const;
 		};
 		
 	}

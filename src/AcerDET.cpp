@@ -79,4 +79,12 @@ void AcerDET::printInfo() const {
 void AcerDET::printResults() const {
 	analyse_Cell		.printResults();
 	analyse_Cluster		.printResults();
+	analyse_Muon		.printResults();
+	analyse_Electron	.printResults();
+	analyse_Photon		.printResults();
+	analyse_Jet			.printResults();
+	analyse_Mis			.printResults();
+	analyse_BJet		.printResults();
+	analyse_CJet		.printResults();
+	analyse_Tau			.printResults();
 }

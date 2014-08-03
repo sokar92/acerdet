@@ -15,19 +15,19 @@ namespace AcerDet {
 
 		class Muon {
 		private:
-			double ETCLU;
-			double RCONE;
-			double PTMUMIN;
-			double ETAMAX;
-			double RISOLJ;
-			double RDEP;
-			double EDMAX;
-			double PTMUMINT;
+			Real64_t ETCLU;
+			Real64_t RCONE;
+			Real64_t PTMUMIN;
+			Real64_t ETAMAX;
+			Real64_t RISOLJ;
+			Real64_t RDEP;
+			Real64_t EDMAX;
+			Real64_t PTMUMINT;
 
-			int KEYHID;
-			bool KEYSME;
+			Int32_t KEYHID;
+			Bool_t KEYSME;
 
-			int IEVENT;
+			Int32_t IEVENT;
 			
 			core::Histogram histo_nonisol; //10
 			core::Histogram histo_isol; //11
@@ -40,6 +40,8 @@ namespace AcerDet {
 			void printInfo() const;
 			
 			void analyseRecord( const io::InputRecord&, io::OutputRecord& );
+			
+			void printResults() const;
 		};
 
 	}

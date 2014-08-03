@@ -15,28 +15,30 @@ namespace AcerDet {
 
 		class CJet {
 		private:
-			double ETJET;
-			double RCONE;
-			double PTCMIN;
-			double ETCMAX;
-			double RJC;
+			Real64_t ETJET;
+			Real64_t RCONE;
+			Real64_t PTCMIN;
+			Real64_t ETCMAX;
+			Real64_t RJC;
 
-			int KEYHID;
-			bool KEYBCL;
+			Int32_t KEYHID;
+			Bool_t KEYBCL;
 
-			int IEVENT;
+			Int32_t IEVENT;
 			
-			core::Histogram histo_bJets; //IDENT + 11
-			core::Histogram histo_bQuarks; //IDENT + 21
+			core::Histogram histo_cJets; //IDENT + 11
+			core::Histogram histo_cQuarks; //IDENT + 21
 			core::Histogram histo_delta; //IDENT + 23
 			core::Histogram histo_pT; //IDENT + 24
 		public:
 			CJet( const Configuration& );
 			~CJet();
-			
+
 			void printInfo() const;
-			
+
 			void analyseRecord( const io::InputRecord&, io::OutputRecord& );
+
+			void printResults() const;
 		};
 
 	}

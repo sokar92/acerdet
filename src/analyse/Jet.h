@@ -15,18 +15,18 @@ namespace AcerDet {
 
 		class Jet {
 		private:
-			double ETJET;
-			double ETAJET;
-			double RCONE;
-			double PTMIN;
-			double CALOTH;
+			Real64_t ETJET;
+			Real64_t ETAJET;
+			Real64_t RCONE;
+			Real64_t PTMIN;
+			Real64_t CALOTH;
 
-			int KEYHID;
-			bool KEYSME;
-			bool KEYFLD;
-			int KFINVS;
+			Int32_t KEYHID;
+			Bool_t KEYSME;
+			Bool_t KEYFLD;
+			Int32_t KFINVS;
 
-			int IEVENT;
+			Int32_t IEVENT;
 			
 			core::Histogram histo_bJets; //IDENT + 1
 			core::Histogram histo_delta_phi; //IDENT + 11
@@ -43,6 +43,8 @@ namespace AcerDet {
 			void printInfo() const;
 			
 			void analyseRecord( const io::InputRecord&, io::OutputRecord& );
+			
+			void printResults() const;
 		};
 
 	}

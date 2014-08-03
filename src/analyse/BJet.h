@@ -15,16 +15,16 @@ namespace AcerDet {
 		
 		class BJet {
 		private:
-			double ETJET;
-			double RCONE;
-			double PTBMIN;
-			double ETBMAX;
-			double RJB;
+			Real64_t ETJET;
+			Real64_t RCONE;
+			Real64_t PTBMIN;
+			Real64_t ETBMAX;
+			Real64_t RJB;
 
-			int KEYHID;
-			bool KEYBCL;
+			Int32_t KEYHID;
+			Bool_t KEYBCL;
 
-			int IEVENT;
+			Int32_t IEVENT;
 			
 			core::Histogram histo_bJets; //IDENT + 11
 			core::Histogram histo_bQuarks; //IDENT + 21
@@ -37,6 +37,8 @@ namespace AcerDet {
 			void printInfo() const;
 			
 			void analyseRecord( const io::InputRecord&, io::OutputRecord& );
+			
+			void printResults() const;
 		};
 
 	}

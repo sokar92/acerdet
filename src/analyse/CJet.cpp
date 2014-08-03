@@ -16,8 +16,8 @@ CJet::CJet( const Configuration& config ) :
 
 	IEVENT	( 0 ),
 	
-	histo_bJets		("CJet: c-jets multiplicity", 0.0, 10.0, 10),
-	histo_bQuarks	("CJet: c-quarks HARD multiplicity", 0.0, 10.0, 10),
+	histo_cJets		("CJet: c-jets multiplicity", 0.0, 10.0, 10),
+	histo_cQuarks	("CJet: c-quarks HARD multiplicity", 0.0, 10.0, 10),
 	histo_delta		("CJet: delta r cjet-cquark", 0.0, 0.5, 50),
 	histo_pT		("CJet: pTcjet / pTcquark", 0.0, 2.0, 50)
 {}
@@ -205,23 +205,25 @@ C
       ELSEIF(MODE == 1 && KEYBCL != 0) THEN
 C     ========================================
 
-      WRITE(NOUT,BXOPE)
-      WRITE(NOUT,BXTXT) '*********************************'
-      WRITE(NOUT,BXTXT) '        OUTPUT FROM AcerDET      '
-      WRITE(NOUT,BXTXT) '              ACDCJE             '
-      WRITE(NOUT,BXTXT) '*********************************'
-      WRITE(NOUT,BXCLO)
-
-
-      CALL HPRINT(IDENT+11)
-      CALL HPRINT(IDENT+21)
-      CALL HPRINT(IDENT+23)
-      CALL HPRINT(IDENT+24)
-
-      ENDIF
-C     =====
-
-      END
 */
 
+}
+
+void CJet::printResults() const {
+	if (KEYBCL) {
+		printf ("***********************************\n");
+		printf ("*                                 *\n");
+		printf ("*     ***********************     *\n");
+		printf ("*     ***   Output from   ***     *\n");
+		printf ("*     ***  analyse::CJet  ***     *\n");
+		printf ("*     ***********************     *\n");
+		printf ("*                                 *\n");
+		printf ("***********************************\n");
+	
+		printf (" Analysed records: %d\n", IEVENT);
+		histo_cJets		.print( true ); // IDENT + 11
+		histo_cQuarks	.print( true ); // IDENT + 21
+		histo_delta		.print( true ); // IDENT + 23
+		histo_pT		.print( true ); // IDENT + 24
+	}
 }

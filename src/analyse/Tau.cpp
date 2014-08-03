@@ -158,3 +158,18 @@ C     =====
       END
 */
 }
+
+void Tau::printResults() const {
+	printf ("**********************************\n");
+	printf ("*                                *\n");
+	printf ("*     **********************     *\n");
+	printf ("*     ***  Output from   ***     *\n");
+	printf ("*     ***  analyse::Tau  ***     *\n");
+	printf ("*     **********************     *\n");
+	printf ("*                                *\n");
+	printf ("**********************************\n");
+	
+	printf (" Analysed records: %d\n", IEVENT);
+	histo_jets.print( true );
+	histo_taus.print( true );
+}

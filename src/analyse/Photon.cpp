@@ -277,3 +277,19 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 	// CALL HF1(IDENT+31, REAL(IPHISO), 1.0)
 */
 }
+
+void Photon::printResults() const {
+	printf ("*************************************\n");
+	printf ("*                                   *\n");
+	printf ("*     *************************     *\n");
+	printf ("*     ***    Output from    ***     *\n");
+	printf ("*     ***  analyse::Photon  ***     *\n");
+	printf ("*     *************************     *\n");
+	printf ("*                                   *\n");
+	printf ("*************************************\n");
+	
+	printf (" Analysed records: %d\n", IEVENT);
+	histo_isol	.print( true );
+	histo_hard	.print( true );
+	histo_sum	.print( true );
+}

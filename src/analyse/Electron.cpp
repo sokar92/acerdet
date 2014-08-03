@@ -277,3 +277,19 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 	// CALL HF1(IDENT+31, REAL(IELEISO), 1.0)
 */
 }
+
+void Electron::printResults() const {
+	printf ("***************************************\n");
+	printf ("*                                     *\n");
+	printf ("*     ***************************     *\n");
+	printf ("*     ***     Output from     ***     *\n");
+	printf ("*     ***  analyse::Electron  ***     *\n");
+	printf ("*     ***************************     *\n");
+	printf ("*                                     *\n");
+	printf ("***************************************\n");
+	
+	printf (" Analysed records: %d\n", IEVENT);
+	histo_isol	.print( true );
+	histo_hard	.print( true );
+	histo_sum	.print( true );
+}
