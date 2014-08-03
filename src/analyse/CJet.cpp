@@ -76,7 +76,7 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			// if there are still jets
 			if (!orecord.Jets.isEmpty()) {
 				Bool_t CJET = true;
-				Int32_t JETC = 0;
+				Int32_t JETC = -1;
 				
 				// and this c-quark is the last one in the FSR cascade
 				if (part.hasDaughter()) {

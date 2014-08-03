@@ -46,211 +46,187 @@ void BJet::printInfo() const {
 	printf ("\n");
 }
 
-#define KEY_HISTO 21
-
 void BJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
-	//printf ("BJet: analyse record\n");
-	
-	// option is off
-	if(!KEYBCL)
+	if (!KEYBCL)
 		return;
-		
-	// next analysed event
+/*
+	// new event to compute
 	IEVENT++;
-	
-	// search for history partition
-	/*
+
+	// reference to particles container
 	const vector<Particle>& parts = irecord.particles();
-	int n = parts.size();
+	Int32_t N = parts.size();
+
+	// znajdz poczatek danych
+	Int32_t NSTOP = 0, NSTART = 1;
+	for (int i=0; i<parts.size(); ++i) {
+		if (parts[i].stateID != 21) {
+			NSTOP = i-1;
+			NSTART = i;
+			break;
+		}
+	}
 	
-	int nstart = 0;
-	while(nstart < n && parts[nstart].state != PS_HISTORY) 
-		nstart++;
-	int nstop = nstart-1;*/
-	
-	/*
-      SUBROUTINE ACDBJE(MODE,LPAR,YPAR)
-      
-      INTEGER I, II, NSTART,NSTOP
-      REAL  DR, DDR
-      REAL ANGLE
-      REAL ETA, PHI, PT
-      REAL PTBMIN, ETBMAX, RJB, ETJET
-      INTEGER NJETB
-      INTEGER JETB
-      LOGICAL BJET
-      INTEGER IQUAB, IBJET
-      REAL RCONE, PTREC,DETRMIN, DETR, DPHIA
-      INTEGER IJET
-      INTEGER NBINA
-      INTEGER IDENT
-      REAl TMAXA,TMINA
-
-processing ->
- 
-->      NSTOP=0
-->      NSTART=1
-->      DO I=1, N
-->       IF(K(I,1) != 21) THEN
-->           NSTOP = I-1
-->           NSTART= I
-->           GOTO 500
-->       ENDIF
-->      ENDDO
--> 500  CONTINUE
-
-        NJETB = 0								// na poczatku jest 0 b-jetow
-
-c....look for b-jets
-	DO I = from NSTART to N {						// przegladaj nie historyczne elementy ' for (int i=start; i<n;++i) { '
-		IF(ABS(K(I,2)) == 5 && K(I,1) != 21) {				// K(2) = 5 | -5 -> id czastki	' if (p->type() == B_JETS && p->status() != PS_HISTORY) { '
-
-c....if there is a b-quark found before hadronization
-c....if there are still jets
-			IF(NJET > 0) {
-				BJET = TRUE
-				JETB = 0
-
-c....and this b-quark is the last one in the FSR cascade
-				IF (K(I,4) != 0) {					// istnieje corka w drzewku
-					DO II = from K(I,4) to K(I,5) {			// przegladaj corki
-						IF (ABS(K(II,2)) == 5) 
-							BJET = FALSE			// jesli typ ktorejkolwiek to B_JET to glowny nie jest B_JETEM
+	// look for c-jets
+	for (int i=NSTART; i<parts.size(); ++i) {
+		const Particle& part = parts[i];
+		
+		if (part.type == PT_BJET) {  // && part.statusID != 21 ? po co
+			// if there is a b-quark found before hadronization
+			// if there are still jets
+			if (!orecord.Jets.isEmpty()) {
+				Bool_t BJET = true;
+				Int32_t JETB = -1;
+				
+				// and this b-quark is the last one in the FSR cascade
+				if (part.hasDaughter()) {
+					for (int j=part.daughters.first; j<=part.daughters.second; ++j) {
+						if (parts[j].type == PT_BJET)
+							BJET = false;
 					}
 				}
 
-				IF(!BJET) continue					// jesli nie jest B_JETEM to koniec
+				if (!BJET) 
+					continue;
 
-				PT = SQRT(P(I,1) * 2 + P(I,2) * 2) 
-				IF(PT < PTBMIN) BJET = FALSE  					// ponizej normy (z config)
-				IF(!BJET) continue						// nie jest
+				PT = part.pT(); 
+				if (PT < PTBMIN) 
+					continue;
 
-				ETA = SIGN(LOG((SQRT(PT*2+P(I,3)*2)+ABS(P(I,3)))/PT),P(I,3)) 	// wyznacz kat	
-				IF(ABS(ETA) > ETBMAX) BJET = FALSE					// kat poza zakresem (z config)
-				IF(!BJET) continue							// nie jest
+				ETA = part.getEta();
+				if (abs(ETA) > ETBMAX)
+					continue;
 			
-				PHI = ANGLE(P(I,1),P(I,2))						// kat pomiedzy px i py
-
-c === mark b-jet
-				DR = 100.0
-				DO II = from 1 to NJET {
-					DDR = SQRT((ETA-PJET(II,3))*2+(PHI-PJET(II,4))*2)
-					IF( ABS(PHI-PJET(II,4)) > PI )
-						DDR = SQRT( (ETA-PJET(II,3))*2 + (ABS(PHI-PJET(II,4))-2*PI)*2 )		// jest na to juz procedurka
-					IF(DDR < DR) 
-						JETB = II
-					DR = MIN(DDR,DR)
+				PHI = part.getPhi();
+				
+				// mark b-jet
+				DR = 100.0;
+				for (int j=0; j<orecord.Jets.size(); ++j) {
+					DDR = sqrt(
+						pow(ETA - PJET(II,3), 2) +
+						pow(PHI - PJET(II,4), 2)
+					);
+					
+					if (abs(PHI - PJET(II,4)) > PI )
+						DDR = sqrt(
+							pow(ETA - PJET(II,3), 2) + 
+							pow(abs(PHI - PJET(II,4))-2*PI, 2)
+						);
+						
+					if (DDR < DR) 
+						JETB = j;
+						
+					DR = min(DDR,DR);
 				}
 
-				IF(DR > RJB) {
-					BJET = FALSE
-					JETB = 0
-				}
-
-				IF(!BJET) continue							// nie jest b-jetem
-
-c ===  labell  b-jet
-				KJET(JETB,2) = 5
-				KJET(JETB,5) = I
-				NJETB = NJETB + 1							// jest b-jetem -> zwieksz licznik wykrytych
+				if (DR > RJB)
+					continue;
+					
+				// label  b-jet
+				KJET(JETB,2) = 5;
+				KJET(JETB,5) = I;
+				NJETB = NJETB + 1;
 			}
 		}
 	}
 
-	CALL HF1(IDENT+11, REAL(NJETB), 1.0)							// zapis do histogramow
+	histo_bJets.insert(NJETB);
+	
+	// check partons
+	Int32_t IQUAB = 0, IBJET = 0;
+	for (int i=6; i<=NSTOP; ++i) {								// 7? -> barcode = numery czastek w zdarzeniu
+		const Particle& part = parts[i];
+		
+		if (part.type == PT_BJET) {
+			PT = part.pT();
+			ETA = part.getEta();
+			PHI = part.getPhi();
 
-c === check partons
-	IQUAB = 0
-	IBJET = 0
-	DO I = from 7 to NSTOP {								// CZEMU OD 7? -> barcode = numery czastek w zdarzeniu
-		IF(ABS(K(I,2)) == 5) {								// jest to B_JET -> przetworz
-			PT = SQRT(P(I,1)*2+P(I,2)*2)						// pt = sqrt( px^2 + py^2 ) 
-			ETA = SIGN(LOG((SQRT(PT**2+P(I,3)**2)+ABS(P(I,3)))/PT),P(I,3)) 
-			PHI = ANGLE(P(I,1),P(I,2))						// kat pomiedzy px i py
+			if (abs(ETA) < ETBMAX && PT > ETJET) {
+				IQUAB++;
+				DR = 18.0;
 
-			IF(ABS(ETA) < ETBMAX && PT > ETJET) {					// miesci sie w granicach z configa
-				IQUAB = IQUAB + 1
-				DR = 18.0
-
-				DO II = from 1 to NJET {
-					IF(ABS(KJET(II,2)) == 5) {				// jest b_jetem
-						DDR = SQRT((ETA-PJET(II,3))*2+(PHI-PJET(II,4))*2)		// jest na to procedura
-						IF( ABS(PHI-PJET(II,4)) > PI )
-							DDR = SQRT(  (ETA-PJET(II,3))*2 +(ABS(PHI-PJET(II,4))-2*PI)*2 )
-						IF(DDR < DR) 
-							IBJET = II
-						IF(DDR < DR) 
-							DR = DDR
+				for (int j=0; j<orecord.Jets.size(); ++j) {
+					if (orecord.Jets[j].type == PT_BJET) {
+						DDR = sqrt(
+							pow(ETA - PJET(II,3), 2) +
+							pow(PHI - PJET(II,4), 2)
+						);
+						
+						if (abs(PHI - PJET(II,4)) > PI)
+							DDR = sqrt(
+								pow(ETA - PJET(II,3), 2) +
+								pow(abs(PHI - PJET(II,4))-2*PI, 2)
+							);
+						
+						if (DDR < DR) 
+							IBJET = j;
+							
+						if (DDR < DR) 
+							DR = DDR;
 					}
 				}
 			}
 		}
 	}
 
-	CALL HF1(IDENT+21,REAL(IQUAB),1.0)					// zapis do histo
+	// store count of b-quarks in histogram
+	histo_bQuarks.insert(IQUAB);
+	
+	for (int i=0; i<orecord.Jets.size(); ++i) {
+		PTREC = 0;
+		DETRMIN = RCONE;
 
-	DO IJET = from 1 to NJET {
-		PTREC = 0
-		DETRMIN = RCONE
+		if (orecord.Jets[i].type == 5) {
+			for (int j=6; j<parts.size(); ++j) {
+				const Particle& part = parts[j];
+				
+				if (part.type != PT_BJET) // && part.stateID != 21
+					continue;
 
-		IF(ABS(KJET(IJET,2)) == 5) {						// jest b_jetem
-			DO I = from 7 to N {						// CZEMU OD 7 
-				IF(K(I,1) != 21 || ABS(K(I,2)) != 5) continue		// if (p->status() != 21 || p->type() != B_JET) {
+				PT = part.pT();
+				ETA = part.getEta();
+				PHI = part.getPhi();
+				DPHIA = abs(orecord.Jets[i].phi (PJET(IJET,4)) - PHI); 
 
-				PT = SQRT(P(I,1)*2+P(I,2)*2)						// pt = sqrt( px^2 + py^2 )
-				ETA = SIGN(LOG((SQRT(PT*2+P(I,3)*2)+ABS(P(I,3)))/PT),P(I,3)) 
-				PHI = ANGLE(P(I,1),P(I,2))						// kat pomiedzy px i py
-				DPHIA = ABS(PJET(IJET,4)-PHI) 
+				if (DPHIA > PI) 
+					DPHIA -= 2*PI;
 
-				IF(DPHIA > PI) 
-					DPHIA = DPHIA-2*PI					// kat w przedziale [-pi,pi]
-
-				DETR = SQRT((ETA-PJET(IJET,3))*2+DPHIA*2)
-				IF(DETR > DETRMIN) continue 
-
-				PTREC = PT
-				DETRMIN = DETR
+				DETR = sqrt(
+					pow(ETA - orecord.Jets[i].eta (PJET(IJET,3)) , 2) +
+					pow(DPHIA, 2)
+				);
+				
+				if(DETR < DETRMIN) {
+					PTREC = PT;
+					DETRMIN = DETR;
+				}
 			}
 		}
 
-		IF( PTREC != 0 ) {
-			CALL HF1(IDENT+23,DETRMIN,1.0)
-			CALL HF1(IDENT+24,PJET(IJET,5)/PTREC,1.0)
+		if (PTREC != 0) {
+			histo_delta.insert(DETRMIN);
+			histo_pT.insert(orecord.Jets[i].pT (PJET(IJET,5)) / PTREC);
 		}
 	}
-
-end ->
-      ELSEIF(MODE.EQ.1.AND.KEYBCL.NE.0) THEN
-
-      WRITE(NOUT,BXOPE)
-      WRITE(NOUT,BXTXT) '*********************************'
-      WRITE(NOUT,BXTXT) '        OUTPUT FROM AcerDET      '
-      WRITE(NOUT,BXTXT) '              ACDBJE             '
-      WRITE(NOUT,BXTXT) '*********************************'
-      WRITE(NOUT,BXCLO)
-
-
-      CALL HPRINT(IDENT+11)
-      CALL HPRINT(IDENT+21)
-
-      ENDIF
-*/
-
+	*/
 }
 
 void BJet::printResults() const {
-	printf ("***********************************\n");
-	printf ("*                                 *\n");
-	printf ("*     ***********************     *\n");
-	printf ("*     ***   Output from   ***     *\n");
-	printf ("*     ***  analyse::BJet  ***     *\n");
-	printf ("*     ***********************     *\n");
-	printf ("*                                 *\n");
-	printf ("***********************************\n");
+	if (KEYBCL) {
+		printf ("***********************************\n");
+		printf ("*                                 *\n");
+		printf ("*     ***********************     *\n");
+		printf ("*     ***   Output from   ***     *\n");
+		printf ("*     ***  analyse::BJet  ***     *\n");
+		printf ("*     ***********************     *\n");
+		printf ("*                                 *\n");
+		printf ("***********************************\n");
 	
-	printf (" Analysed records: %d\n", IEVENT);
-	histo_bJets		.print( true );
-	histo_bQuarks	.print( true );
-	histo_delta		.print( true );
-	histo_pT		.print( true );
+		printf (" Analysed records: %d\n", IEVENT);
+		histo_bJets		.print( true );
+		histo_bQuarks	.print( true );
+		histo_delta		.print( true );
+		histo_pT		.print( true );
+	}
 }
