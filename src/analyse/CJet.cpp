@@ -47,166 +47,174 @@ void CJet::printInfo() const {
 }
 
 void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
-	//printf ("CJet: analyse record\n");
+	if (!KEYBCL)
+		return;
 	/*
-      SUBROUTINE ACDCJE(MODE,LPAR,YPAR)
-      
-      INTEGER KEYHID, KEYBCL, IEVENT 
-      INTEGER I, II, NSTART,NSTOP
-      REAL  DR, DDR
-      REAL ANGLE
-      REAL ETA, PHI, PT
-      REAL RJC, PTCMIN, ETCMAX, ETJET
-      INTEGER NJETC
-      INTEGER JETC
-      LOGICAL CJET
-      INTEGER IQUAC, ICJET
-      REAL RCONE, PTREC,DETRMIN, DETR, DPHIA
-      INTEGER IJET
-      INTEGER NBINA
-      INTEGER IDENT
-      REAl TMAXA,TMINA
+	// new event to compute
+	IEVENT++;
 
-      ELSEIF(MODE == 0 && KEYBCL == true) THEN
-C     ========================================
-	IEVENT = IEVENT + 1
+	// reference to particles container
+	const vector<Particle>& parts = irecord.particles();
+	Int32_t N = parts.size();
 
-	NSTOP = 0
-	NSTART = 1
-	DO I = from 1 to N {
-		IF(K(I,1) != 21) {
-			NSTOP = I-1
-			NSTART = I
-			break
+	// znajdz poczatek danych
+	Int32_t NSTOP = 0, NSTART = 1;
+	for (int i=0; i<parts.size(); ++i) {
+		if (parts[i].stateID != 21) {
+			NSTOP = i-1;
+			NSTART = i;
+			break;
 		}
 	}
-
-	NJETC = 0
-
-c....look for c-jets
-	DO I = from NSTART to N {							// przegladaj nie historyczne
-		IF(ABS(K(I,2)) == 4 && K(I,1) != 21) {					// if (p->type() == C_JET && p->status() != PS_HISTORY) {
-
-c....if there is a c-quark found before hadronization
-c....if there are still jets
-			IF(NJET > 0) {
-				CJET = TRUE
-				JETC = 0
-
-c....and this c-quark is the last one in the FSR cascade
-				IF (K(I,4) != 0) {							// istnieje corka
-					DO II = form K(I,4) to K(I,5) {					// iteruj po corkach
-						IF (ABS(K(II,2)) == 4) 
-							CJET = FALSE					// jakas corka jets cjetem
+	
+	// look for c-jets
+	for (int i=NSTART; i<parts.size(); ++i) {
+		const Particle& part = parts[i];
+		
+		if (part.type == PT_CJET) {  // && part.statusID != 21 ? po co
+			// if there is a c-quark found before hadronization
+			// if there are still jets
+			if (!orecord.Jets.isEmpty()) {
+				Bool_t CJET = true;
+				Int32_t JETC = 0;
+				
+				// and this c-quark is the last one in the FSR cascade
+				if (part.hasDaughter()) {
+					for (int j=part.daughters.first; j<=part.daughters.second; ++j) {
+						if (parts[j].type == PT_CJET) 
+							CJET = false;
 					}
 				}
 
-				IF(!CJET) continue
+				if (!CJET) 
+					continue;
 
-				PT = SQRT(P(I,1)*2+P(I,2)*2) 						// pt = srqt( px^2 + py^2 )
-				IF(PT < PTCMIN) CJET = FALSE						// pt mniejsze niz minimum z configa
-				IF(!CJET) continue
+				PT = part.pT();
+				if (PT < PTCMIN) 
+					continue;
 
-				ETA = SIGN(LOG((SQRT(PT*2+P(I,3)*2)+ABS(P(I,3)))/PT),P(I,3)) 
-				IF(ABS(ETA) > ETCMAX) CJET = FALSE					// kat poza zakresem stozka z configa
-				IF(!CJET) continue
+				ETA = part.getEta(); 
+				if (abs(ETA) > ETCMAX)
+					continue;
 
-				PHI = ANGLE(P(I,1),P(I,2))						// kat pomiedzy px i py
+				PHI = part.getPhi();
+				
+				// mark c-jet
+				DR = 100.0;
+				for (int j=0; j<orecord.Jets.size(); ++j) {
+					if (orecord.Jets[j].type != PT_BJET) {
+						DDR = sqrt(
+							pow(ETA - orecord.Jets[j].eta_rec (PJET(II,3)), 2) +
+							pow(PHI - orecord.Jets[j].phi_rec (PJET(II,4)), 2)
+						);
+						
+						if (abs(PHI - orecord.Jets[j].phi_rec (PJET(II,4)) ) > PI)
+							DDR = sqrt(
+								pow(ETA - PJET(II,3), 2) +
+								pow(abs(PHI - PJET(II,4))-2*PI, 2)
+							);
 
-c === mark c-jet
-				DR = 100.0
-				DO II = from 1 to NJET {
-					IF(ABS(KJET(II,2)) != 5) {					// ma sens ze wzgledu na kolejnosc B->C  if (p->type() != B_JET) {
-						DDR = SQRT((ETA-PJET(II,3))*2+(PHI-PJET(II,4))*2)
-						IF(ABS(PHI-PJET(II,4)) > PI)
-							DDR = SQRT(  (ETA-PJET(II,3))*2+(ABS(PHI-PJET(II,4))-2*PI)*2 )
-						IF(DDR < DR) 
-							JETC = II
-						DR = MIN(DDR,DR)
+						if (DDR < DR) 
+							JETC = j;
+						
+						DR = min(DDR,DR);
 					}
 				}
 
-				IF(DR > RJC) {
-					CJET = FALSE
-					JETC = 0
+				if (DR > RJC) {
+					continue;
 				}
-				IF(!CJET) continue
 
-c ===  labell  c-jet
-				KJET(JETC,2) = 4
+				// labell  c-jet
+				KJET(JETC,2) = 4							// JETC = indeks znalezionego jetu
 				KJET(JETC,5) = I
 				NJETC = NJETC + 1							// kolejny cjet znaleziony
 			}
 		}
 	}
 
-	CALL HF1(IDENT+11,REAL(NJETC),1.0)					// zapis do histogramu
+	// store count in histogram
+	histo_cJets.insert(NJETC);
+	
+	// check partons
+	Int32_t IQUAC = 0, ICJET = 0;
+	for (int i=6; i<=NSTOP; ++i) {
+		const Particle& part = parts[i];
+		
+		if (part.type == PT_CJET) {
+			PT = part.pT();
+			ETA = part.getEta(); 
+			PHI = part.getPhi();
 
-c === check partons
-	IQUAC = 0
-	ICJET = 0
-	DO I = from 7 to NSTOP {						// CZEMU OD 7 ?
-		IF(ABS(K(I,2)) == 4) {						// if (p->type() == C_JET) {
-			PT = SQRT(P(I,1)*2+P(I,2)*2)						// pt = sqrt( px^2 + py^2 ) 
-			ETA = SIGN(LOG((SQRT(PT*2+P(I,3)*2)+ABS(P(I,3)))/PT),P(I,3)) 
-			PHI = ANGLE(P(I,1),P(I,2))						// kat pomiedzy px i py
+			if (abs(ETA) < ETCMAX && PT > ETJET) {
+				IQUAC++;
+				DR = 18.0;
 
-			IF(ABS(ETA) < ETCMAX && PT > ETJET) {					// spelnia widelki z configa
-				IQUAC = IQUAC + 1
-				DR = 18.0
-
-				DO II = from 1 to NJETC {
-					IF(ABS(KJET(II,2)) == 4) {
-						DDR = SQRT((ETA-PJET(II,3))*2+(PHI-PJET(II,4))*2)
-						IF(ABS(PHI-PJET(II,4)) > PI)
-							DDR = SQRT( (ETA-PJET(II,3))*2+(ABS(PHI-PJET(II,4))-2*PI)*2 )
-						IF(DDR < DR) 
-							ICJET = II
-						IF(DDR < DR) 
-							DR = DDR
+				for (int j=0; j<orecord.Jets.size(); ++j) {
+					if (orecord.Jets[j].type == PT_CJET) {  // skoro iterujemy sie po CJetach to po co sprawdzac to jeszcze raz
+						DDR = sqrt(
+							pow(ETA - PJET(II,3), 2) +
+							pow(PHI - PJET(II,4), 2)
+						);
+													
+						if (abs(PHI - PJET(II,4)) > PI)
+							DDR = sqrt(
+								pow(ETA - PJET(II,3), 2) +
+								pow(abs(PHI - PJET(II,4))-2*PI, 2)
+							);
+							
+						if (DDR < DR) 
+							ICJET = j;
+							
+						if (DDR < DR) 
+							DR = DDR;
 					}
 				}
 			}
 		}
 	}
 
-	CALL HF1(IDENT+21,REAL(IQUAC),1.0)					// zapis do histogramu
+	// store quarks-count in histogram
+	histo_cQuarks.insert(IQUAC);
 
-	DO IJET = from 1 to NJET {
-		PTREC = 0
-		DETRMIN = RCONE
+	for (int i=0; i<orecord.Jets.size(); ++i) {
+		PTREC = 0;
+		DETRMIN = RCONE;
 
-		IF(ABS(KJET(IJET,2)) == 4) {						// if (p->type() == C_JET)
-			DO I = from 7 to N { 						// for (int i=7;i<n;++i)
-				IF(K(I,1) != 21 || ABS(K(I,2)) != 4) continue		// if (p->status() != PS_HISTORY || p->type() != C_JET)
-				PT = SQRT(P(I,1)**2+P(I,2)**2)						// pt = sqrt( px^2 + py^2 )       ** = ^ ?					
-				ETA = SIGN(LOG((SQRT(PT*2+P(I,3)*2)+ABS(P(I,3)))/PT),P(I,3)) 
-				PHI = ANGLE(P(I,1),P(I,2))						// kat pomiedzy px i py
+		if (orecord.Jets[i].type == PT_CJET) {
+			for (int j=6; j<parts.size(); ++j) {
+				const Particle& part = parts[j];
+				
+				if (part.stateID != 21 || part.type != PT_CJET) 
+					continue;
+				
+				PT = part.pT();
+				ETA = part.getEta();
+				PHI = part.getPhi();
 
-				DPHIA = ABS(PJET(IJET,4)-PHI) 
-				IF(DPHIA > PI) 
-					DPHIA = DPHIA-2*PI
+				DPHIA = abs(orecord.Jets[i].phi (PJET(IJET,4)) - PHI); 
+				if (DPHIA > PI) 
+					DPHIA -= 2*PI;
 
-				DETR = SQRT((ETA-PJET(IJET,3))**2+DPHIA**2)
-				IF(DETR > DETRMIN) continue
+				DETR = sqrt(
+					pow(ETA - orecord.Jets[i].eta (PJET(IJET,3)) , 2) +
+					pow(DPHIA, 2)
+				);
+				
+				if (DETR > DETRMIN) 
+					continue;
 
-				PTREC = PT
-				DETRMIN = DETR
+				PTREC = PT;
+				DETRMIN = DETR;
 			}
 		}
 
-		IF(PTREC != 0) {
-			CALL HF1(IDENT+23,DETRMIN,1.0)
-			CALL HF1(IDENT+24,PJET(IJET,5)/PTREC,1.0)
+		if (PTREC) {
+			histo_delta.insert(DETRMIN);
+			histo_pT.insert(PJET(IJET,5) / PTREC);
 		}
 	}
-
-C
-      ELSEIF(MODE == 1 && KEYBCL != 0) THEN
-C     ========================================
-
-*/
-
+	*/
 }
 
 void CJet::printResults() const {
