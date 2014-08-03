@@ -54,171 +54,213 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 /*	
 	// smear clusters energy
 	if (KEYSME) {      
-		for (int i=0; i<orecord.vCluster.size(); ++i) {
-			EECLU = orecord.vCluster[i].P[4] * cosh(orecord.vCluster[i].P[2]);
-			SIGMA = RESHAD(EECLU,orecord.vCluster[i].P[2],CALOTH,orecord.vCluster[i].P[4],RCONE);
+		for (int i=0; i<orecord.Clusters.size(); ++i) {
+			EECLU = orecord.Clusters[i].pT * cosh(orecord.Clusters[i].eta_rec); // Po co tu liczyc jak zaraz jest nadpisane?
+			SIGMA = RESHAD(EECLU, orecord.Clusters[i].eta_rec, CALOTH, orecord.Clusters[i].pT, RCONE);
 			
-			Real64_t coef = orecord.vCluster[i].P[4] * (1.0 + SIGMA);
-			PXCLU = coef * cos (orecord.vCluster[i].P[3]);
-			PYCLU = coef * sin (orecord.vCluster[i].P[3]);
-			PZCLU = coef * sinh(orecord.vCluster[i].P[2]);
-			EECLU = coef * cosh(orecord.vCluster[i].P[2]);
+			Real64_t coef = orecord.Clusters[i].pT * (1.0 + SIGMA);
+			
+			//PXCLU = coef * cos (orecord.Clusters[i].phi_rec);
+			//PYCLU = coef * sin (orecord.Clusters[i].phi_rec);
+			//PZCLU = coef * sinh(orecord.Clusters[i].eta_rec);
+			//EECLU = coef * cosh(orecord.Clusters[i].eta_rec);
+	
+			Particle pClu;
+			pClu.momentum = Vector4(
+				cos (orecord.Clusters[i].phi_rec),
+				sin (orecord.Clusters[i].phi_rec),
+				sinh(orecord.Clusters[i].eta_rec),
+				cosh(orecord.Clusters[i].eta_rec)
+			);
+			
+			pClu *= coef;
 
-			// PCLU.getTheta()   az sie prosi zapisac wektorowo
-			if (abs(PZCLU / EECLU) < 1) {
-				THETA = ACOS(PZCLU / SQRT(PXCLU**2+PYCLU**2+PZCLU**2))
-			} ELSE {
-				IF (PZCLU > 0) THETA = 0
-				IF (PZCLU < 0) THETA = PI
-			}
+			THETA = pClu.getTheta();
+			//if (abs(PZCLU / EECLU) < 1) {
+			//	THETA = ACOS(PZCLU / SQRT(PXCLU**2+PYCLU**2+PZCLU**2))
+			//} ELSE {
+			//	IF (PZCLU > 0) THETA = 0
+			//	IF (PZCLU < 0) THETA = PI
+			//}
 
 			ETACLU = -log(max(0.0001, abs(tan(0.5*THETA))));
-			PTCLU  = SQRT(PXCLU**2+PYCLU**2)  // pClu.pT()
-			PHICLU = ANGLE(PXCLU,PYCLU) // pClu.getPhi();
+			//PTCLU  = SQRT(PXCLU**2+PYCLU**2)
+			//PHICLU = ANGLE(PXCLU,PYCLU)
+			PTCLU = pClu.pT();
+			PHICLU = pClu.getPhi();
 
-			PCLU(I,5) = PTCLU
-			PCLU(I,3) = ETACLU
-			PCLU(I,4) = PHICLU
+			//PCLU(I,5) = PTCLU
+			//PCLU(I,3) = ETACLU
+			//PCLU(I,4) = PHICLU
+			orecord.Clusters[i].eta_rec = ETACLU;
+			orecord.Clusters[i].phi_rec = PHICLU;
+			orecord.Clusters[i].pT = PTCLU;
 		}
 	}
 	
-	/*
-c.....add nonisolated muons to jets
-	DO I from 1 to NMUOX {
+	// add nonisolated muons to jets
+	for (int i=0; i<NMUOX; ++i) {
 		ETA = PMUOX(I,3)
 		PHI = PMUOX(I,4)
 		PT = PMUOX(I,5)
 
-		DR = 100.0
-		MUCLU = 0
-		DO II from 1 to NCLU {
-			DDR = SQRT((ETA-PCLU(II,3))**2+(PHI-PCLU(II,4))**2)
-			IF(ABS(PHI-PCLU(II,4)) > PI)
-				DDR = SQRT( (ETA-PCLU(II,3))**2 + (ABS(PHI-PCLU(II,4))-2*PI)**2 )
+		DR = 100.0;
+		MUCLU = -1;
+		for (int j=0; j<orecord.Clusters.size(); ++j) {
+			DDR = sqrt(
+				pow(ETA - orecord.Clusters[j].eta_rec, 2) +
+				pow(PHI - orecord.Clusters[j].phi_rec, 2)
+			);
+			
+			if (abs(PHI - orecord.Clusters[j].phi_rec) > PI)
+				DDR = sqrt(
+					pow(ETA - orecord.Clusters[j].eta_rec, 2) + 
+					pow(abs(PHI - orecord.Clusters[j].phi_rec)-2*PI, 2)
+				);
 
-			IF(DDR < DR) {
-				MUCLU = II
-				DR = DDR
+			if (DDR < DR) {
+				MUCLU = j;
+				DR = DDR;
 			}
 		}
 
-		IF(MUCLU != 0) {
-			IF((ABS(PCLU(MUCLU,3)) <= CALOTH && DR < RCONE) || (ABS(PCLU(MUCLU,3)) > CALOTH && DR < RCONE) ) {
-				PXCLU = PCLU(MUCLU,5)*COS(PCLU(MUCLU,4)) + PT*COS(PHI)
-				PYCLU = PCLU(MUCLU,5)*SIN(PCLU(MUCLU,4)) + PT*SIN(PHI)
-				PZCLU = PCLU(MUCLU,5)*SINH(PCLU(MUCLU,3)) + PT*SINH(ETA)
-				EECLU = PCLU(MUCLU,5)*COSH(PCLU(MUCLU,3)) + PT*COSH(ETA)
+		// found candidate
+		if (MUCLU >= 0) {
+			if ((abs(orecord.Clusters[MUCLU].eta_rec) < CALOTH && DR < RCONE) || 
+				(abs(orecord.Clusters[MUCLU].eta_rec) > CALOTH && DR < RCONE) 
+			) {
+				Real64_t coef = orecord.Clusters[MUCLU].pT;
+				//PXCLU = PCLU(MUCLU,5) * COS(PCLU(MUCLU,4)) + PT * COS(PHI)
+				//PYCLU = PCLU(MUCLU,5) * SIN(PCLU(MUCLU,4)) + PT * SIN(PHI)
+				//PZCLU = PCLU(MUCLU,5) * SINH(PCLU(MUCLU,3)) + PT * SINH(ETA)
+				//EECLU = PCLU(MUCLU,5) * COSH(PCLU(MUCLU,3)) + PT * COSH(ETA)
 
-				PTCLU = SQRT(PXCLU**2+PYCLU**2)
-				ETACLU = SIGN(LOG((SQRT(PTCLU**2+PZCLU**2)+ABS(PZCLU))/PTCLU),PZCLU) 
-				PHICLU = ANGLE(PXCLU,PYCLU)
+				Vector4f muVec = Vector4f(
+					cos(orecord.Clusters[MUCLU].phi_rec),
+					sin(orecord.Clusters[MUCLU].phi_rec),
+					sinh(orecord.Clusters[MUCLU].eta_rec),
+					cosh(orecord.Clusters[MUCLU].eta_rec)
+				);
+				Vector4f Vec = Vector4f(cos(PHI), sin(PHI), sinh(ETA), cosh(ETA));
+				Particle pClu;
+				pClu.momentum = muVec * orecord.Clusters[MUCLU].pT + PT * Vec;
+				
+				//PTCLU = SQRT(PXCLU**2+PYCLU**2)
+				//ETACLU = SIGN(LOG((SQRT(PTCLU**2+PZCLU**2)+ABS(PZCLU))/PTCLU),PZCLU) 
+				//PHICLU = ANGLE(PXCLU,PYCLU)
+				PTCLU = pClu.pT();
+				ETACLU = pClu.getEta();
+				PHICLU = pClu.getPhi();
 
-				PCLU(MUCLU,3) = ETACLU
-				PCLU(MUCLU,4) = PHICLU
-				PCLU(MUCLU,5) = PTCLU
+				PCLU(MUCLU,3) = ETACLU;
+				PCLU(MUCLU,4) = PHICLU;
+				PCLU(MUCLU,5) = PTCLU;
 
-				KMUOX(I,5) = 0
+				KMUOX(I,5) = 0;
 			}
 		}
 	}
+	
+	// store accepted jets in \JETALL\ common and flagg in common /CLUSTER/
+	for (int i=0; i<orecord.Clusters.size(); ++i) {
+		if (orecord.Clusters[i].pT > ETJET && 
+			abs(orecord.Clusters[i].eta_rec) < ETAJET) 
+		{
+			// przenies Cluster -> Jet
+			//NJET = NJET + 1
+			//DO II from 1 to 5 {          
+			//	KJET(NJET,II) = KCLU(I,II) 
+			//	PJET(NJET,II) = PCLU(I,II)
+			//}
 
-c.... store accepted jets in \JETALL\ common and flagg in common /CLUSTER/
-	NJET = 0
-	DO I from 1 to NCLU {
-		IF(PCLU(I,5) > ETJET && ABS(PCLU(I,3)) < ETAJET) {
-			NJET = NJET + 1
-			DO II from 1 to 5 {          
-				KJET(NJET,II) = KCLU(I,II) 
-				PJET(NJET,II) = PCLU(I,II)
-			}
-
-			KJET(NJET,1) = NJET
-			KCLU(I,5) = 0
+			//KJET(NJET,1) = NJET
+			//KCLU(I,5) = 0
 		}
 	}
-
-c.....histogram NJET
+	
+	// histogram NJET
 	CALL HF1(IDENT+1,REAL(NJET),1.0)
 
-c.....arrange jets in falling E_T sequence // sort by E_T
-	DO IDU from 1 to NJET {
-		ETMAX = 0
-		DO IMU from 1 to NJET {
-			IF(KJET(IMU,5) == 0) continue
-			IF(PJET(IMU,5) < ETMAX) continue
-			IMAX = IMU
-			ETMAX = PJET(IMU,5)
-		}
+	// arrange jets in falling E_T sequence
+	
+	//DO IDU from 1 to NJET {
+	//	ETMAX = 0
+	//	DO IMU from 1 to NJET {
+	//		IF(KJET(IMU,5) == 0) continue
+	//		IF(PJET(IMU,5) < ETMAX) continue
+	//		IMAX = IMU
+	//		ETMAX = PJET(IMU,5)
+	//	}
 
-		KJET(IMAX,5) = 0
-		DO II from 1 to 5 {
-			KDUM(IDU,II) = KJET(IMAX,II)
-			PDUM(IDU,II) = PJET(IMAX,II)
-		}
-	}
+	//	KJET(IMAX,5) = 0
+	//	DO II from 1 to 5 {
+	//		KDUM(IDU,II) = KJET(IMAX,II)
+	//		PDUM(IDU,II) = PJET(IMAX,II)
+	//	}
+	//}
 
-	DO I from 1 to NJET {
-		DO II from 1 to 5 {
-			KJET(I,II) = KDUM(I,II)
-			PJET(I,II) = PDUM(I,II)
-		}
-		KJET(I,1) = I
-		KJET(I,5) = 1
-	}
+	//DO I from 1 to NJET {
+	//	DO II from 1 to 5 {
+	//		KJET(I,II) = KDUM(I,II)
+	//		PJET(I,II) = PDUM(I,II)
+	//	}
+	//	KJET(I,1) = I
+	//	KJET(I,5) = 1
+	//}
+	
+	JetData.sortBy_pT(orecord.Jets);
 
-c....reconstruct baricenter of particles
-	DO IJET from 1 to NJET {
-		ETAREC = 0
-		PTREC = 0
-		PHIREC = 0
+	// reconstruct baricenter of particles
+	for (int i=0; i<orecord.Jets.size(); ++i) {
+		Real64_t ETAREC = 0, PTREC = 0, PHIREC = 0;
 
-		DO I from 1 to N { 
-			IF(K(I,1) <= 0 || K(I,1) > 10) continue
-			IF(P(I,1)**2+P(I,2)**2 <= PTLRAT*P(I,3)**2) continue 
+		for (int j=0; j<parts.size(); ++j) {
+			const Particle& part = parts[j];
+			 
+			if (!part.isStable()) 
+				continue;
+			
+			Real64_t PT = part.pT(), PZ = part.pZ();
+			if(PT * PT <= PTLRAT * PZ * PZ) 
+				continue; 
 
-			KC = KFCOMP(K(I,2)) 
-			IF(KC == 0 || KC == 12 || KC == 14 || KC == 16 || KC == 13 || KC == KFINVS) continue 
+			Int32_t KC = part.getKfcomp(); 
+			if (KC == 0 || KC == 12 || KC == 14 || KC == 16 || KC == 13 || KC == KFINVS) 
+				continue;
 
-			DETPHI = 0.0
-			IF(KEYFLD && KUCHGE(K(I,2)) != 0) {
-				PT = SQRT(P(I,1)**2+P(I,2)**2)
-				IF(PT < PTMIN) 
-					continue
+			Real64_t DETPHI = 0.0;
+			if (KEYFLD && part.getKuchge() != 0) {
+				PT = part.pT();
+				if (PT < PTMIN) 
+					continue;
 
-				ETA = SIGN(LOG((SQRT(PT**2+P(I,3)**2)+ABS(P(I,3)))/PT),P(I,3)) 
-				PHI = ANGLE(P(I,1),P(I,2))
-				CHRG = KUCHGE(K(I,2))/3.
-
-				IF(ABS(P(I,3)/P(I,4)) < 1) {
-					THETA = ACOS(P(I,3)/SQRT(PT**2+P(I,3)**2))
-				} ELSE {
-					IF(P(I,3) > 0) THETA = 0
-					IF(P(I,3) < 0) THETA = PI
-				}
-
-				DETPHI = CHRG*FLDPHI(PT,ETA,THETA)
+				CHRG = part.getKuchge() / 3.0;
+				DETPHI = CHRG * part.foldPhi();
 			}
 
-			PT = SQRT(P(I,1)**2+P(I,2)**2)
-			ETA = SIGN(LOG((SQRT(PT**2+P(I,3)**2)+ABS(P(I,3)))/PT),P(I,3)) 
-			PHI = ANGLE(P(I,1),P(I,2))
-			PHI = PHI + DETPHI
-			DPHIA = ABS(PJET(IJET,2)-PHI) 
+			PT = part.pT();
+			ETA = part.getEta();
+			PHI = part.getPhi();
+			PHI = PHI + DETPHI;
+			DPHIA = abs(PJET(IJET,2) - PHI); // TODO 
 
-			IF(DPHIA > PI) 
-				DPHIA = DPHIA - 2*PI
+			if (DPHIA > PI) 
+				DPHIA = DPHIA - 2*PI;
 
-			IF(ABS(PJET(IJET,1)) < CALOTH && (PJET(IJET,1)-ETA)**2+(DPHIA)**2 > RCONE**2) continue 
-			IF(ABS(PJET(IJET,1)) > CALOTH && (PJET(IJET,1)-ETA)**2+(DPHIA)**2 > RCONE**2) continue 
+			if (abs(PJET(IJET,1)) < CALOTH && pow(PJET(IJET,1) - ETA, 2 + pow(DPHIA, 2) > pow(RCONE, 2)) continue;
+			if (abs(PJET(IJET,1)) > CALOTH && pow(PJET(IJET,1) - ETA, 2 + pow(DPHIA, 2) > pow(RCONE, 2)) continue;
 
-			PTREC = PTREC + PT
-			ETAREC = ETAREC + ETA * PT
-			PHIREC = PHIREC + PHI * PT
+			PTREC = PTREC + PT;
+			ETAREC = ETAREC + ETA * PT;
+			PHIREC = PHIREC + PHI * PT;
 		}
 
-		ETAREC /= PTREC
-		PHIREC /= PTREC
-		DETR = SQRT((ETAREC-PJET(IJET,3))**2+(PHIREC-PJET(IJET,4))**2)
+		ETAREC /= PTREC;
+		PHIREC /= PTREC;
+		DETR = sqrt(
+			pow(ETAREC - PJET(IJET,3), 2) +
+			pow(PHIREC - PJET(IJET,4), 2)
+		);
 
 		CALL HF1(IDENT+11,ETAREC-PJET(IJET,3),1.0)
 		CALL HF1(IDENT+12,PHIREC-PJET(IJET,4),1.0)
@@ -226,35 +268,41 @@ c....reconstruct baricenter of particles
 		CALL HF1(IDENT+14,PJET(IJET,5)/PTREC,1.0)
 	}
 
-	DO IJET from 1 to NJET {
-		PTREC = 0
-		DETRMIN = RCONE
+	for (int i=0; i<orecord.Jets.size(); ++i) {
+		PTREC = 0;
+		DETRMIN = RCONE;
 
-		DO I from 7 to N { 
-			IF(K(I,1) != 21 || ABS(K(I,2)) > 10) continue
+		for (int j=6; j<parts.size(); ++j) {
+			const Particle& part = parts[j];
+			 
+			if (part.stateID != 21 || abs(part.typeID) > 10) 
+				continue;
 
-			PT = SQRT(P(I,1)**2+P(I,2)**2)
-			ETA = SIGN(LOG((SQRT(PT**2+P(I,3)**2)+ABS(P(I,3)))/PT),P(I,3)) 
-			PHI = ANGLE(P(I,1),P(I,2))
+			PT = part.pT();
+			ETA = part.getEta();
+			PHI = part.getPhi();
 
-			DPHIA = ABS(PJET(IJET,4)-PHI) 
-			IF(DPHIA > PI) 
-				DPHIA = DPHIA - 2*PI
+			DPHIA = abs(PJET(IJET,4) - PHI); 
+			if (DPHIA > PI) 
+				DPHIA -= 2*PI;
 
-			DETR = SQRT((ETA-PJET(IJET,3))**2+DPHIA**2)
-			IF(DETR > DETRMIN) continue
-			
-			PTREC = PT
-			DETRMIN = DETR
+			DETR = sqrt(
+				pow(ETA - PJET(IJET,3), 2) +
+				pow(DPHIA, 2)
+			);
+							
+			if (DETR < DETRMIN) {
+				PTREC = PT;
+				DETRMIN = DETR;
+			}
 		}
 
-		IF(PTREC != 0) {
-			CALL HF1(IDENT+23,DETRMIN,1.0)
-			CALL HF1(IDENT+24,PJET(IJET,5)/PTREC,1.0)
+		if (PTREC != 0) {
+			histo_delta_parton.insert(DETRMIN);
+			histo_pT_byPart.insert(PJET(IJET,5) / PTREC);
 		}
 	}
 */
-
 }
 
 void Jet::printResults() const {

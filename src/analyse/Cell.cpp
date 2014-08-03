@@ -74,16 +74,18 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 		
 		if (!part.isStable())
 			continue;
+			
+		Real64_t DETPHI = 0.0;
+		Real64_t ETA, PHI, PT, PZ;
 
-		if (part.pT() <= PTLRAT * part.pZ() * part.pZ())
+		PT = part.pT();
+		PZ = part.pZ();
+		if (PT * PT <= PTLRAT * PZ * PZ)
 			continue;
 			
 		Int32_t KC = part.getKfcomp();
 		if (KC == 0 || KC == 12 || KC == 13 || KC == 14 || KC == 16 || KC == KFINVS)
 			continue;
-			
-		Real64_t DETPHI = 0.0;
-		Real64_t ETA, PHI, PT;
 
 		if (KEYFLD && part.getKuchge() != 0) {
 			if (part.pT() < PTMIN)
