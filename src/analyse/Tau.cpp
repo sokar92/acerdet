@@ -46,116 +46,107 @@ void Tau::printInfo() const {
 }
 
 void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
-	//printf ("Tau: analyse record\n");
-	/*
-      SUBROUTINE ACDTAU(MODE,LPAR,YPAR)
+/*
+ 	// new event to compute
+	IEVENT++;
 
-      INCLUDE 'acerdet_inc/acdnout.inc'
-      INCLUDE 'acerdet_inc/acmcevent.inc'
-      INCLUDE 'acerdet_inc/jetall.inc'
-      INTEGER KEYHID, KEYTAU, IEVENT 
-      INTEGER I, II, NSTART,NSTOP
-      REAL  DR, DDR
-      REAL ANGLE
-      REAL ETA, PHI, PT, PTFRAC
-      REAL RJTAU, PTTAU, ETATAU, ETJET
-      INTEGER NTAU, NJETTAU, JETTAU, IN
-      LOGICAL TAUJET
-      INTEGER NBINA
-      INTEGER IDENT
-      REAl TMAXA,TMINA
-      INCLUDE 'acerdet_inc/ftbxdx.inc'
+	// reference to particles container
+	const vector<Particle>& parts = irecord.particles();
 
-      ELSEIF(MODE.EQ.0.AND.KEYTAU.NE.0) THEN
-C     =======================================
-      IEVENT = IEVENT+1
+	// znajdz poczatek danych
+	Int32_t NSTOP = 0, NSTART = 1;
+	for (int i=0; i<parts.size(); ++i) {
+		if (parts[i].stateID != 21) {
+			NSTOP = i-1;
+			NSTART = i;
+			break;
+		}
+	}
+	
+	// look for tau-jets
+	Int32_t NTAU = 0, NJETTAU = 0;
+	for (int i=NSTART; i<parts.size(); ++i) {
+		const Particle& part = parts[i];
+		
+		if (part.type == PT_TAU) {
+			// if there are still jets
+			if (!orecord.Jets.isEmpty()) {
+				Bool_t TAUJET = true;
+				
+				// choose only hadronic tau-decay
+				IN = -1;
+				if (!part.hasDaughter())
+					continue;
+				
+				for (int j=part.daughters.first, j<=part.daughters.second; ++j) {
+					if (abs(parts[j].typeID) == 11 || abs(parts[j].typeID) == 13)
+						TAUJET = false;
+					// TODO uzyj enumow do typow
+					if (abs(parts[j].typeID) == 16)
+						IN = j;
+				}
+				
+				if (IN < 0)
+					continue;
+				
+				Particle tmpPart = part;
+				tmpPart.momentum -= parts[IN].momentum;
+				
+				//PT = sqrt(
+				//	pow(part.pX() - parts[IN].pX(), 2) +
+				//	pow(part.pY() - parts[IN].pY(), 2)
+				//);
+				PT = tmpPart.pT(); 
+				if (PT < PTTAU) 
+					TAUJET = false;
+				
+				
+				//ETA = SIGN(LOG((SQRT(PT**2+(P(I,3)-P(IN,3))**2)+ABS(P(I,3)-P(IN,3)))/PT),P(I,3)-P(IN,3)) 
+				ETA = tmpPArt.getEta();
+				if (abs(ETA) > ETATAU) 
+					TAUJET = false;
+					
+				//PHI = ANGLE(P(I,1)-P(IN,1),P(I,2)-P(IN,2))
+				PHI = tmpPart.getPhi();
+				if (TAUJET) 
+					NTAU++;
+				
+				// mark tau-jet
+				Real64_t DR = 100.0;
+				for (int j=0; j<orecord.Jets.size(); ++j) {
+					
+					Real64_t DDR = sqrt(
+						pow(ETA - PJET(II,3), 2) +
+						pow(PHI - PJET(II,4), 2)
+					);
+					
+					if (abs(PHI - PJET(II,4)) > PI)
+						DDR = sqrt(
+							pow(ETA - PJET(II,3), 2) +
+							pow(abs(PHI - PJET(II,4)) - 2*PI, 2)
+						);
 
-      NSTOP=0
-      NSTART=1
-      DO I=1, N
-       IF(K(I,1).NE.21) THEN
-           NSTOP = I-1
-           NSTART= I
-           GOTO 500
-       ENDIF
-      ENDDO
- 500  CONTINUE
-
-c....look for tau-jets
-      NTAU    = 0
-      NJETTAU = 0
-      DO I=NSTART,N
-      IF(ABS(K(I,2)).EQ.15) THEN
-c....if there are still jets
-        IF(NJET.GT.0) THEN
-c-------
-        TAUJET  = .TRUE.
-c....   choose only hadronic tau-decay
-        IN=0
-        IF(K(I,4).EQ.0.OR.K(I,5).EQ.0) GOTO 9999
-        DO II=K(I,4),K(I,5)
-         IF(ABS(K(II,2)).EQ.11.OR.ABS(K(II,2)).EQ.13)TAUJET= .FALSE.
-         IF(ABS(K(II,2)).EQ.16)IN=II
-        ENDDO
-        IF(IN.EQ.0) GOTO 9999
-c....
-        PT=SQRT((P(I,1)-P(IN,1))**2+(P(I,2)-P(IN,2))**2) 
-        IF(PT.LT.PTTAU) TAUJET= .FALSE.
-        ETA=SIGN(LOG((SQRT(PT**2+(P(I,3)-P(IN,3))**2)
-     #     +ABS(P(I,3)-P(IN,3)))/PT),P(I,3)-P(IN,3)) 
-        IF(ABS(ETA).GT.ETATAU) TAUJET=.FALSE.
-        PHI=ANGLE(P(I,1)-P(IN,1),P(I,2)-P(IN,2))
-        IF(TAUJET) NTAU=NTAU+1
-c === mark tau-jet
-        DR=100.0
-        DO II=1,NJET
-          DDR=SQRT((ETA-PJET(II,3))**2+(PHI-PJET(II,4))**2)
-          IF(ABS(PHI-PJET(II,4)).GT.PI)
-     #     DDR=SQRT(   (ETA-PJET(II,3))**2
-     #            +(ABS(PHI-PJET(II,4))-2*PI)**2 )
-          IF(DDR.LT.DR) JETTAU=II
-          DR=MIN(DDR,DR)
-        ENDDO
-        IF(DR.GT.RJTAU) THEN
-            TAUJET=.FALSE.
-            JETTAU=0
-        ENDIF
-        IF(TAUJET.AND.ABS(PJET(JETTAU,3)).LT.2.5.AND.
-     #     PT/PJET(JETTAU,5).GT.PTFRAC) THEN
-            KJET(JETTAU,2)=K(I,2)
-            NJETTAU=NJETTAU+1
-        ENDIF
- 
-c-------
-        ENDIF
-c-------
-       ENDIF
- 9999  CONTINUE
-       ENDDO
-       CALL HF1(IDENT+11,REAL(NJETTAU),1.0)
-       CALL HF1(IDENT+21,REAL(NTAU),1.0)
-
-C......
-
-C
-      ELSEIF(MODE.EQ.1.AND.KEYTAU.NE.0) THEN
-C     ========================================
-
-      WRITE(NOUT,BXOPE)
-      WRITE(NOUT,BXTXT) '*********************************'
-      WRITE(NOUT,BXTXT) '        OUTPUT FROM              '
-      WRITE(NOUT,BXTXT) '   ACDTAU      : WINDOW A        '
-      WRITE(NOUT,BXTXT) '*********************************'
-      WRITE(NOUT,BXCLO)
-
-
-      CALL HPRINT(IDENT+11)
-      CALL HPRINT(IDENT+21)
-
-      ENDIF
-C     =====
-
-      END
+					if (DDR < DR) {
+						JETTAU = j;
+						DDR = DR;
+					}
+				}
+				
+				if (DR > RJTAU) {
+					TAUJET = false;
+					JETTAU = 0;
+				}
+				
+				if (TAUJET && abs(PJET(JETTAU,3)) < 2.5 && PT/PJET(JETTAU,5) > PTFRAC) {
+					KJET(JETTAU,2) = K(I,2); // ?
+					NJETTAU++;
+				}
+			}
+		}
+	}
+	
+	// CALL HF1(IDENT+11,REAL(NJETTAU),1.0)
+	// CALL HF1(IDENT+21,REAL(NTAU),1.0)
 */
 }
 
