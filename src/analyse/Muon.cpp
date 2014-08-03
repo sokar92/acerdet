@@ -56,7 +56,6 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 
 	// reference to particles container
 	const vector<Particle>& parts = irecord.particles();
-	Int32_t N = parts.size();
 
 	// znajdz poczatek danych
 	Int32_t NSTOP = 0, NSTART = 1;
@@ -72,7 +71,7 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	for (int i=NSTART; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
 
-		if (!parts[i].isStable()) 
+		if (!part.isStable()) 
 			continue;
 
 		if (part.type == PT_MUON) {
@@ -93,12 +92,18 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 
 			// apply smearing
 			if (KEYSME) {
-				// TODO : SIGMA = RESMUO(PT,ETA,PHI)
-				PXMUO = part.pX() / (1.0 + SIGMA);
-				PYMUO = part.pY() / (1.0 + SIGMA);
-				PZMUO = part.pZ() / (1.0 + SIGMA);
-				EEMUO = part.e()  / (1.0 + SIGMA);
-				PT    = sqrt(PXMUO*PXMUO + PYMUO*PYMUO);
+				// SIGMA = RESMUO(PT,ETA,PHI)
+				// PXMUO = part.pX() / (1.0 + SIGMA);
+				// PYMUO = part.pY() / (1.0 + SIGMA);
+				// PZMUO = part.pZ() / (1.0 + SIGMA);
+				// EEMUO = part.e()  / (1.0 + SIGMA);
+				// PT    = sqrt(PXMUO*PXMUO + PYMUO*PYMUO);
+				
+				SIGMA = RESMUO(PT,ETA,PHI)
+				
+				Particle pMuo = part;
+				pMuo.momentum /= (1.0 + SIGMA);
+				PT = pMuo.pT();
 			}
 			
 			if (PT < PTMUMIN) 
@@ -114,7 +119,7 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 				if (abs(PHI - orecord.clusters[j].phi_rec) > PI)
 					DDR = sqrt( 
 						pow(ETA - orecord.clusters[j].eta_rec, 2.0) + 
-						pow(abs(PHI - orecord.clusters[j].phi_rec)-2.0*PI, 2.0) 
+						pow(abs(PHI - orecord.clusters[j].phi_rec) - 2.0*PI, 2.0) 
 					);
 
 				if (DDR < RISOLJ) 
@@ -181,26 +186,35 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	// cross-check with partons
 	Int32_t IMUO = 0, IMUOISO = 0;
 	for (int i=0; i<=NSTOP; ++i) {
+		const Particle& part = parts[i];
+		
 		if (part.type == PT_MUON) {
-			PT = part.pT();
-			ETA = part.getEta(); 
-			PHI = part.getPhi();
-			ENER = 0.0;
-			ISOL = true;
+			Real64_t PT = part.pT();
+			Real64_t ETA = part.getEta(); 
+			Real64_t PHI = part.getPhi();
+			Real64_t ENER = 0.0;
+			Bool_t ISOL = true;
 			
 			for (int j=0; j<=NSTOP; ++j) {
 				if (abs(parts[j].typeID) <= 21 && i != j && 
-					abs(parts[j].typeID) != 12 && 
+					abs(parts[j].typeID) != 12 && // do enuma
 					abs(parts[j].typeID) != 14 && 
 					abs(parts[j].typeID) != 16) 
 				{
-					JPT = parts[j].pT(); 
-					JETA = parts[j].getEta(); 
-					JPHI = parts[j].getPhi();
+					Real64_t JPT = parts[j].pT(); 
+					Real64_t JETA = parts[j].getEta(); 
+					Real64_t JPHI = parts[j].getPhi();
 					
-					DDR = sqrt( pow(ETA-JETA, 2) + pow(JPHI-PHI, 2) );
-					if (abs(JPHI-PHI) > PI)
-						DDR = sqrt( pow(ETA-JETA, 2) + pow(abs(JPHI-PHI)-2*PI, 2) );
+					DDR = sqrt(
+						pow(ETA - JETA, 2) + 
+						pow(JPHI - PHI, 2) 
+					);
+					
+					if (abs(JPHI - PHI) > PI)
+						DDR = sqrt(
+							pow(ETA - JETA, 2) + 
+							pow(abs(JPHI - PHI) - 2*PI, 2) 
+						);
 
 					if (DDR < RISOLJ && JPT > ETCLU) 
 						ISOL = false;

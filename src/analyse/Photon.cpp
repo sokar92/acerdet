@@ -9,7 +9,7 @@ Photon::Photon( const Configuration& config ) :
 
 	PTLMIN	( config.Photon.MinMomenta ),
 	ETAMAX	( config.Photon.MaxEta ),
-	RJE	( config.Photon.MinJetsRlj ),
+	RJE		( config.Photon.MinJetsRlj ),
 	RISOLJ	( config.Photon.MinIsolRlj ),
 	RDEP	( config.Photon.ConeR ),
 	EDMAX	( config.Photon.MaxEnergy ),
@@ -50,34 +50,41 @@ void Photon::printInfo() const {
 }
 
 void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
-	IEVENT++;
 /*	
+	// new event to compute
+	IEVENT++;
+
+	// reference to particles container
 	const vector<Particle>& parts = irecord.particles();
-	
-	// look for isolated photons, sort cluster commons
+
+	// znajdz poczatek danych
 	Int32_t NSTOP = 0, NSTART = 1;
 	for (int i=0; i<parts.size(); ++i) {
 		if (parts[i].stateID != 21) {
-			NSTOP = I-1;
-			NSTART = I;
+			NSTOP = i-1;
+			NSTART = i;
 			break;
 		}
 	}
 
+	// look for isolated electrons, sort clusters common
 	for (int i=NSTART; i<parts.size(); ++i) {
-		if (!parts[i].isStable()) 
+		const Particle& part = parts[i];
+	
+		if (!part.isStable()) 
+			continue;
+		
+		if (parts.pT() == 0) 
 			continue;
 			
-		if (parts[i].pT() == 0) 
-			continue;
-
 		// analyse photons
-		if (abs(parts[i].typeID) == 22) {
-			ISOL = true;
-			LCLU = -1;
-			PT = parts[i].pT();
-			ETA = parts[i].getEta();
-			PHI = parts[i].getPhi();
+		if (part.type == PT_PHOTON) {
+			Boolt_t ISOL = true;
+			Int32_t LCLU = -1;
+			
+			PT = part.pT();
+			ETA = part.getEta();
+			PHI = part.getPhi();
 			PTCRU = PT;
 			
 			// apply smearing
@@ -86,13 +93,19 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 				if (ENE <= 0.0) 
 					continue;
 					
-				SIGPH = RESPHO(ENE,PT,ETA,PHI);
-				pxpho = parts[i].pX() * (1.0 + sigph);
-				pypho = parts[i].pY() * (1.0 + sigph);
-				pzpho = parts[i].pZ() * (1.0 + sigph);
-				eepho = parts[i].e()  * (1.0 + sigph);
-				PT = sqrt(pxpho*pxpho + pypho*pypho);
-				ENE = eepho;
+				// SIGPH = RESPHO(ENE,PT,ETA,PHI);
+				// pxpho = parts[i].pX() * (1.0 + sigph);
+				// pypho = parts[i].pY() * (1.0 + sigph);
+				// pzpho = parts[i].pZ() * (1.0 + sigph);
+				// eepho = parts[i].e()  * (1.0 + sigph);
+				// PT = sqrt(pxpho*pxpho + pypho*pypho);
+				// ENE = eepho;
+				
+				Particle pPho = part;
+				pPho.momentum *= (1.0 + SIGPH);
+				
+				PT = pPho.pT();
+				ENE = pPho.e();
 			}
 
 			if (PT < PTLMIN) 
@@ -102,42 +115,42 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 				continue; 
 
 			// mark photon-cluster
-			DR = 100.0;
-			for (int j=0; j<orecord.vCluster.size(); ++j) {
+			Real64_t DR = 100.0;
+			for (int j=0; j<orecord.Clusters.size(); ++j) {
 				DDR = sqrt(
-					pow(ETA - orecord.vCluster[j].P[2], 2) +
-					pow(PHI - orecord.vCluster[j].P[3], 2)
+					pow(ETA - orecord.Clusters[j].eta_rec, 2) +
+					pow(PHI - orecord.Clusters[j].phi_rec, 2)
 				);
 				
-				if (abs(PHI - orecord.vCluster[j]) > PI)
+				if (abs(PHI - orecord.Clusters[j]) > PI)
 					DDR = sqrt(
-						pow(ETA - orecord.vCluster[j].P[2], 2) + 
-						pow(abs(PHI - orecord.vCluster[j].P[3])-2*PI, 2)
+						pow(ETA - orecord.Clusters[j].eta_rec, 2) + 
+						pow(abs(PHI - orecord.Clusters[j].phi_rec) - 2*PI, 2)
 					);
 					
-				if (DDR < DR) 
+				if (DDR < DR) {
 					LCLU = j;
-					
-				DR = min(DDR,DR);
+					DR = DDR;
+				}
 			}
 
 			if (DR > RJE) 
 				LCLU = -1;
 				
 			// check if photon  isolated from clusters
-			for (int j=0; j<orecord.vCluster.size(); ++j) {
+			for (int j=0; j<orecord.Clusters.size(); ++j) {
 				if (j == LCLU) {
 					DDR = 100.0;
 				} else {
 					DDR = sqrt(
-						pow(ETA - orecord.vCluster[j].P[2], 2) + 
-						pow(PHI - orecord.vCluster[j].P[3], 2)
+						pow(ETA - orecord.Clusters[j].eta_rec, 2) + 
+						pow(PHI - orecord.Clusters[j].phi_rec, 2)
 					);
 					
-					if (abs(PHI - orecord.vCluster[j].P[3]) > PI)
+					if (abs(PHI - orecord.Clusters[j].phi_rec) > PI)
 						DDR = sqrt(
-							pow(ETA - orecord.vCluster[j].P[2], 2) + 
-							pow(abs(PHI - orecord.vCluster[j].P[3])-2*PI, 2)
+							pow(ETA - orecord.Clusters[j].eta_rec, 2) + 
+							pow(abs(PHI - orecord.Clusters[j].phi_rec) - 2*PI, 2)
 						);
 				}
 
@@ -147,38 +160,32 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 		
 			// check on energy deposition of cells EDEP in cone RDEP
 			Real64_t EDEP = 0.0;
-			for (int j=0; j<orecord.vCell.size(); ++j) {
+			for (int j=0; j<orecord.Cells.size(); ++j) {
 				DDR = sqrt(
-					pow(ETA - orecord.vCell[j].P[0], 2) + 
-					pow(PHI - orecord.vCell[j].P[1], 2)
+					pow(ETA - orecord.Cells[j].eta, 2) + 
+					pow(PHI - orecord.Cells[j].phi, 2)
 				);
 				
-				if (abs(PHI - orecord.vCell[j].P[1]) > PI)
+				if (abs(PHI - orecord.Cells[j].phi) > PI)
 					DDR = sqrt(
-						pow(ETA - orecord.vCell[j].P[0], 2) + 
-						pow(abs(PHI - orecord.vCell[j].P[1])-2*PI, 2)
+						pow(ETA - orecord.Cells[j].eta, 2) + 
+						pow(abs(PHI - orecord.Cells[j].phi) - 2*PI, 2)
 					);
 					
 				if (DDR < RDEP) 
-					EDEP += orecord.vCell[j].P[4];
+					EDEP += orecord.Cells[j].pT;
 			}
 
 			if (EDEP - PT > EDMAX) 
 				ISOL = false;
 		
-			// fill /ISOPHO/ with isolated photon 
-			// remove pho-cluster from /CLUSTER/
+			// fill /ISOPHO/ with isolated photon
 			if (ISOL) {
-				if (LCLU != -1) {
-					DO II from LCLU to NCLU-1 {
-						DO III from 1 to 5 {          
-							KCLU(II,III) = KCLU(II+1,III) 
-							PCLU(II,III) = PCLU(II+1,III)
-						}
-					}
-					NCLU = NCLU - 1
-				}
+				// remove pho-cluster from /CLUSTER/
+				if (LCLU >= 0) 
+					orecord.Jets.erase(orecord.Jets.begin() + LCLU);
 
+				// TODO
 				KPHO(NPHO,1) = NPHO;
 				KPHO(NPHO,2) = K(I,2);
 				KPHO(NPHO,3) = I;
@@ -197,61 +204,62 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 	// CALL HF1(IDENT+11,REAL(NPHO),1.0)
 
 	// arrange photons in falling E_T sequence
-	IDU from 1 to NPHO {
-		ETMAX = 0
-		DO IMU from 1 to NPHO {
-			IF(KPHO(IMU,5) == 0) continue
-			IF(PPHO(IMU,5) < ETMAX) continue
-			IMAX = IMU
-			ETMAX = PPHO(IMU,5)
-		}
+	//IDU from 1 to NPHO {
+	//	ETMAX = 0
+	//	DO IMU from 1 to NPHO {
+	//		IF(KPHO(IMU,5) == 0) continue
+	//		IF(PPHO(IMU,5) < ETMAX) continue
+	//		IMAX = IMU
+	//		ETMAX = PPHO(IMU,5)
+	//	}
 
-		KPHO(IMAX,5) = 0 //used
-		DO II from 1 to 5 {
-			KDUM(IDU,II) = KPHO(IMAX,II)
-			PDUM(IDU,II) = PPHO(IMAX,II)
-		}
-	}
+	//	KPHO(IMAX,5) = 0 //used
+	//	DO II from 1 to 5 {
+	//		KDUM(IDU,II) = KPHO(IMAX,II)
+	//		PDUM(IDU,II) = PPHO(IMAX,II)
+	//	}
+	//}
 
-	DO I from 1 to NPHO {
-		DO II from 1 to 5 {
-			KPHO(I,II) = KDUM(I,II)
-			PPHO(I,II) = PDUM(I,II)
-		}
-		KPHO(I,1) = I
-		KPHO(I,5) = 1
-	}
+	//DO I from 1 to NPHO {
+	//	DO II from 1 to 5 {
+	//		KPHO(I,II) = KDUM(I,II)
+	//		PPHO(I,II) = PDUM(I,II)
+	//	}
+	//	KPHO(I,1) = I
+	//	KPHO(I,5) = 1
+	//}
 	
 	// check with partons
-	Int32_t IPHO = 0;
-	Int32_t IPHISO = 0;
+	Int32_t IPHO = 0, IPHISO = 0;
 	for (int i=0; i<=NSTOP; ++i) {
-		if (abs(parts[i].typeID) == 22) {
-			PT = parts[i].pT(); 
-			ETA = parts[i].getEta();
-			PHI = parts[i].getPhi();
-			ENER = 0.0;
-			ISOL = true;
+		const Particle& part = parts[i];
+		
+		if (part.type == PT_PHOTON) {
+			Real64_t PT = part.pT(); 
+			Real64_t ETA = part.getEta();
+			Real64_t PHI = part.getPhi();
+			Real64_t ENER = 0.0;
+			Bool_t ISOL = true;
 			
 			for (int j=0; j<=NSTOP; ++j) {
 				if (abs(parts[j].typeID) <= 21 && i != j && 
-					abs(parts[j].typeID) != 12 && 
+					abs(parts[j].typeID) != 12 &&  // zastap enumami 
 					abs(parts[j].typeID) != 14 && 
 					abs(parts[j].typeID) != 16) 
 				{
-					JPT = parts[j].pT(); 
-					JETA = parts[j].getEta();
-					JPHI = parts[j].getPhi();
+					Real64_t JPT = parts[j].pT(); 
+					Real64_t JETA = parts[j].getEta();
+					Real64_t JPHI = parts[j].getPhi();
 					
 					DDR = sqrt(
-						pow(ETA-JETA, 2) + 
-						pow(JPHI-PHI, 2)
+						pow(ETA - JETA, 2) + 
+						pow(JPHI - PHI, 2)
 					);
 					
-					if (abs(JPHI-PHI) > PI)
+					if (abs(JPHI - PHI) > PI)
 						DDR = sqrt(
-							pow(ETA-JETA, 2) + 
-							pow(abs(JPHI-PHI)-2*PI, 2)
+							pow(ETA - JETA, 2) + 
+							pow(abs(JPHI - PHI) - 2*PI, 2)
 						);
 
 					if (DDR < RISOLJ && JPT > ETCLU) 
