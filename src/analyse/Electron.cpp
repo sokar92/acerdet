@@ -9,7 +9,7 @@ Electron::Electron( const Configuration& config ) :
 
 	PTLMIN	( config.Electron.MinMomenta ),
 	ETAMAX	( config.Electron.MaxEta ),
-	RJE	( config.Electron.MinJetsRlj ),
+	RJE		( config.Electron.MinJetsRlj ),
 	RISOLJ	( config.Electron.MinIsolRlj ),
 	RDEP	( config.Electron.ConeR ),
 	EDMAX	( config.Electron.MaxEnergy ),
@@ -50,45 +50,56 @@ void Electron::printInfo() const {
 }
 
 void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
+	/*
+	// new event to compute
 	IEVENT++;
-/*	
-	const vector<Particle>& parts;
-	
+
+	// reference to particles container
+	const vector<Particle>& parts = irecord.particles();
+
+	// znajdz poczatek danych
 	Int32_t NSTOP = 0, NSTART = 1;
 	for (int i=0; i<parts.size(); ++i) {
-		if (parts[i].statusID != 21) {
+		if (parts[i].stateID != 21) {
 			NSTOP = i-1;
 			NSTART = i;
 			break;
 		}
 	}
-	
+
 	// look for isolated electrons, sort clusters common
 	for (int i=NSTART; i<parts.size(); ++i) {
-		if (!parts[i].isStable()) 
+		const Particle& part = parts[i];
+	
+		if (!part.isStable()) 
 			continue;
 			
 		// analyse electrons
-		if (abs(parts[i].typeID) == 11) {
-			ISOL = true;
+		if (part.type == PT_ELECTRON) {
+			Bool_t ISOL = true;
 			LCLU = 0;
-			PT = parts[i].pT();
-        	ETA = parts[i].getEta();
-        	PHI = parts[i].getPhi();
+			
+			PT = part.pT();
+        	ETA = part.getEta();
+        	PHI = part.getPhi();
    
 			// apply smearing
         	PTCRU = PT;
 			if (KEYSME) {
-				ENE = parts[i].e();
+				ENE = part.e();
 				if (ENE <= 0.0) 
 					continue;
 
-				SIGPH = RESELE(ENE,PT,ETA,PHI);
-				PXELE = P(I,1) * (1.0 + SIGPH);
-				PYELE = P(I,2) * (1.0 + SIGPH);
-				PZELE = P(I,3) * (1.0 + SIGPH);
-				EEELE = P(I,4) * (1.0 + SIGPH);
-				PT = sqrt(PXELE*PXELE + PYELE*PYELE);
+				// SIGPH = RESELE(ENE,PT,ETA,PHI);
+				// PXELE = P(I,1) * (1.0 + SIGPH);
+				// PYELE = P(I,2) * (1.0 + SIGPH);
+				// PZELE = P(I,3) * (1.0 + SIGPH);
+				// EEELE = P(I,4) * (1.0 + SIGPH);
+				// PT = sqrt(PXELE*PXELE + PYELE*PYELE);
+				
+				Particle pEle = part;
+				pEle.momentum *= (1.0 + SIGPH);
+				PT = pEle.pT();
 			}
         
 			if (PT < PTLMIN)
@@ -99,41 +110,41 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 				
 			// mark eletron-cluster
 			DR = 100.0;
-			for (int j=0; j<orecord.vCluster.size(); ++j) {
+			for (int j=0; j<orecord.Clusters.size(); ++j) {
 				DDR = sqrt(
-					pow(ETA - orecord.vCluster[j].P[2], 2) +
-					pow(PHI - orecord.vCluster[j].P[3], 2)
+					pow(ETA - orecord.Clusters[j].eta_rec, 2) +
+					pow(PHI - orecord.Clusters[j].phi_rec, 2)
 				);
 				
-				if (abs(PHI - orecord.vCluster[j].P[3]) > PI)
+				if (abs(PHI - orecord.Clusters[j].phi_rec) > PI)
 					DDR = sqrt( 
-						pow(ETA - orecord.vCluster[j].P[2], 2) + 
-						pow(abs(PHI - orecord.vCluster[j].P[3]) - 2*PI), 2)
+						pow(ETA - orecord.Clusters[j].eta_rec, 2) + 
+						pow(abs(PHI - orecord.Clusters[j].phi_rec) - 2*PI), 2)
 					);
 					
-				if (DDR < DR) 
+				if (DDR < DR) {
 					LCLU = j;
-					
-				DR = MIN(DDR,DR);
+					DR = DDR;
+				}
 			}
 
 			if (DR > RJE) 
 				LCLU = -1;
 
 			// check if electron isolated from clusters
-			for (int j=0; j<orecord.vCluster.size(); ++j) {
+			for (int j=0; j<orecord.Clusters.size(); ++j) {
 				if (j == LCLU) {
 					DDR = 100.0;
 				} else {
 					DDR = sqrt(
-						pow(ETA - orecord.vCluster[j].P[2], 2) + 
-						pow(PHI - orecord.vCluster[j].P[3], 2)
+						pow(ETA - orecord.Clusters[j].eta_rec, 2) + 
+						pow(PHI - orecord.Clusters[j].phi_rec, 2)
 					);
 					
-					if (abs(PHI - orecord.vCluster[j].P[3]) > PI)
+					if (abs(PHI - orecord.Clusters[j].phi_rec) > PI)
 						DDR = sqrt(
-							pow(ETA - orecord.vCluster[j].P[2], 2) + 
-							pow(abs(PHI - orecord.vCluster.P[3]) - 2*PI, 2)
+							pow(ETA - orecord.Clusters[j].eta_rec, 2) + 
+							pow(abs(PHI - orecord.Clusters[j].phi_rec) - 2*PI, 2)
 						);
 				}
 
@@ -143,20 +154,20 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 			
 			// check on energy deposition of cells EDEP in cone RDEP
 			EDEP = 0.0;
-			for (int j=0; j<orecord.vCell.size(); ++j) {
+			for (int j=0; j<orecord.Cells.size(); ++j) {
 				DDR = sqrt(
-					pow(ETA - orecord.vCell[j].P[0], 2) + 
-					pow(PHI - orecord.vCell[j].P[1], 2)
+					pow(ETA - orecord.Cells[j].eta, 2) + 
+					pow(PHI - orecord.Cells[j].phi, 2)
 				);
 				
-				if (abs(PHI - orecord.vCell[j].P[1]) > PI)
+				if (abs(PHI - orecord.Cells[j].phi) > PI)
 					DDR = sqrt(
-						pow(ETA - orecord.vCell[j].P[0], 2) + 
-						pow(abs(PHI - orecord.vCell[j].P[1]) - 2*PI, 2)
+						pow(ETA - orecord.Cells[j].eta, 2) + 
+						pow(abs(PHI - orecord.Cells[j].phi) - 2*PI, 2)
 					);
 					
 				if (DDR < RDEP) 
-					EDEP += orecord.vCell[j].P[4];
+					EDEP += orecord.Cells[j].pT;
 			}
 
 			if (EDEP - PTCRU > EDMAX) 
@@ -165,17 +176,9 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 			// fill /ISOELE/ with isolated electron 
 			// remove ele-cluster from /CLUSTER/
 			if (ISOL) {
-				 usun stowarzyszony cluster z listy clustrow
-				if (LCLU != -1) {
-					DO II from LCLU to NCLU-1 {
-						DO III from 1 to 5 {
-							KCLU(II,III) = KCLU(II+1,III) 
-                   			PCLU(II,III) = PCLU(II+1,III)
-                 		}
-					}
-					NCLU = NCLU-1
-				}
-				
+				// usun stowarzyszony cluster z listy clustrow
+				if (LCLU >= 0)
+					orecord.Cluster.erase(orecord.Cluster.begin() + LCLU);
 
 				KELE(NELE,1) = NELE
 				KELE(NELE,2) = K(I,2)			// typ elktronu
@@ -195,63 +198,60 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 	// CALL HF1(IDENT+11, REAL(NELE), 1.0)
 
 	// arrange electrons in falling E_T sequence
-	DO IDU from 1 to NELE {
-		ETMAX = 0
-		DO IMU from 1 to NELE {
-			IF(KELE(IMU,5) == 0) continue
-			IF(PELE(IMU,5) < ETMAX) continue
-			IMAX = IMU
-			ETMAX = PELE(IMU,5)
-		}
+	//DO IDU from 1 to NELE {
+	//	ETMAX = 0
+	//	DO IMU from 1 to NELE {
+	//		IF(KELE(IMU,5) == 0) continu
+	//		IF(PELE(IMU,5) < ETMAX) continue
+	//		IMAX = IMU
+	//		ETMAX = PELE(IMU,5)
+	//	}
 
-		KELE(IMAX,5) = 0
-		DO II from 1 to 5 {
-			KDUM(IDU,II) = KELE(IMAX,II)
-			PDUM(IDU,II) = PELE(IMAX,II)
-		}
-	}
+	//	KELE(IMAX,5) = 0
+	//	DO II from 1 to 5 {
+	//		KDUM(IDU,II) = KELE(IMAX,II)
+	//		PDUM(IDU,II) = PELE(IMAX,II)
+	//	}
+	//}
 
-	DO I from 1 to NELE {
-		DO II from 1 to 5 {				// skopiuj dum -> ele
-			KELE(I,II) = KDUM(I,II)
-			PELE(I,II) = PDUM(I,II)
-		}
-		KELE(I,1) = I					// numer elektrona
-		KELE(I,5) = 1					// stan(1) = przetworzony?
-	}
+	//DO I from 1 to NELE {
+	//	DO II from 1 to 5 {				// skopiuj dum -> ele
+	//		KELE(I,II) = KDUM(I,II)
+	//		PELE(I,II) = PDUM(I,II)
+	//	}
+	//	KELE(I,1) = I					// numer elektrona
+	//	KELE(I,5) = 1					// stan(1) = przetworzony?
+	//}
 
-
-// dla czastek z histori
-	Int32_t IELE = 0;
-	Int32_t IELEISO = 0;
-
+	Int32_t IELE = 0, IELEISO = 0;
 	for (int i=0; i<=NSTOP; ++i) {
-		if (abs (parts[i].typeID) == 11) {
-			PT = parts[i].pT(); 
-			ETA = parts[i].getEta(); 
-			PHI = parts[i].getPhi();
+		const Particle& part = parts[i];
+		
+		if (part.type == PT_ELECTRON) {
+			PT = part.pT(); 
+			ETA = part.getEta(); 
+			PHI = part.getPhi();
 			ENER = 0.0;
 			ISOL = true;
 
 			for (int j=0; j<=NSTOP; ++j) {
 				if (abs(parts[j].typeID) <= 21 && i != j && 
-					abs(parts[j].partID) != 12 && 
+					abs(parts[j].partID) != 12 &&  // TODO zamien to na typy enumowe -> zwieksz czytelnosc 
 					abs(parts[j].partID) != 14 && 
 					abs(parts[j].partID) != 16) 
 				{
-					// przelicz dane dla II czastki - standard per particle
 					JPT = parts[j].pT(); 
 					JETA = parts[j].getEta(); 
 					JPHI = parts[j].getPhi();
 					DDR = sqrt(
-						pow(ETA-JETA, 2) + 
-						pow(JPHI-PHI, 2)
+						pow(ETA - JETA, 2) + 
+						pow(JPHI - PHI, 2)
 					);
 
-					if (abs(JPHI-PHI) > PI)
+					if (abs(JPHI - PHI) > PI)
 						DDR = sqrt(
-							pow(ETA-JETA, 2) + 
-							pow(abs(JPHI-PHI)-2*PI), 2)
+							pow(ETA - JETA, 2) + 
+							pow(abs(JPHI - PHI) - 2*PI), 2)
 						);
 
 					if (DDR < RISOLJ && JPT > ETCLU) 
