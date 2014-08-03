@@ -262,10 +262,10 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 			pow(PHIREC - PJET(IJET,4), 2)
 		);
 
-		CALL HF1(IDENT+11,ETAREC-PJET(IJET,3),1.0)
-		CALL HF1(IDENT+12,PHIREC-PJET(IJET,4),1.0)
-		CALL HF1(IDENT+13,DETR,1.0)
-		CALL HF1(IDENT+14,PJET(IJET,5)/PTREC,1.0)
+		histo_delta_phi.insert(ETAREC - orecord.Jets[i].eta_rec);
+		histo_delta_eta.insert(PHIREC - orecord.Jets[i].phi_rec);
+		histo_delta_barycenter.insert(DETR);
+		histo_pT_bySum.insert(orecord.Jets[i].pT / PTREC);
 	}
 
 	for (int i=0; i<orecord.Jets.size(); ++i) {
