@@ -87,6 +87,81 @@ Real64_t Particle::foldPhi() const {
 }
 
 /*
+ * parametrizes smearing for calorymetric energy deposition
+ */
+ double reshad (
+	double ene, 
+	double eta, 
+	double caloth, 
+	double pt, 
+	double rcone) 
+{
+	double aa, bb, sigma;
+
+	do {
+		rannor(aa, bb);
+		if (abs(eta) < caloth) sigma = aa * 0.5 / sqrt(ene);
+		else sigma = aa / sqrt(ene);
+	} while (1.0 + sigma <= 0.0);
+	return sigma;
+}
+
+/*
+ * parametrizes photon  resolution 
+ */
+/*
+double respho (
+	double ene,
+	double pt,
+	double eta,
+	double phi)
+{
+	double aa, bb, sigma;
+	do {
+		rannor(aa, bb); 
+		sigma = aa * 0.1 / sqrt(ene); 
+	} while(1.0 + sigma <= 0.0);
+	return sigma;
+}
+*/
+
+/*
+ * parametrizes electron  resolution
+ */
+/*
+double resele (
+	double ene,
+	double pt,
+	double eta,
+	double phi)
+{
+	double aa, bb, sigma;
+	do {
+		rannor(aa, bb);
+		sigma = aa * 0.12 / sqrt(ene);
+	} while (1.0 + sigma <= 0.0);
+	return sigma;
+}
+*/
+
+/*
+ * parametrizes muon resolution
+ */
+/* double resmuo (
+	double pt,
+	double eta,
+	double phi)
+{
+	double aa, bb, sigma = 0.0;
+	do {
+		rannor(aa, bb);
+		sigma = 0.0005 * pt * aa;
+	} while (1.0 + sigma <= 0.0);
+	return sigma;
+}
+*/
+
+/*
  * Private functions
  */
 
