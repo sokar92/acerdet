@@ -3,3 +3,4 @@
 *.so
 *.so.*
 /src/AcerDET
+/src/include

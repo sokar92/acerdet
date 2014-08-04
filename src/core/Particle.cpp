@@ -89,7 +89,8 @@ Real64_t Particle::foldPhi() const {
 /*
  * parametrizes smearing for calorymetric energy deposition
  */
- double reshad (
+/*
+double reshad (
 	double ene, 
 	double eta, 
 	double caloth, 
@@ -105,6 +106,7 @@ Real64_t Particle::foldPhi() const {
 	} while (1.0 + sigma <= 0.0);
 	return sigma;
 }
+*/
 
 /*
  * parametrizes photon  resolution 

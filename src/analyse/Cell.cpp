@@ -62,14 +62,13 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	
 	// reference to particle container
 	const vector<Particle>& parts = irecord.particles();
-	Int32_t N = parts.size();
 	
 	// temporary cells container
 	vector<CellData> tempCells;
 	
 	// Loop over all particles.
 	// Find cell that was hit by given particle.
-	for (int i=0;i<N;++i) {
+	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
 		
 		if (!part.isStable())
@@ -107,12 +106,13 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			IETA = 1 + 2 * static_cast<Int32_t>( (ETA + ETACEL) / 2.0 / ETACEL * NBETA / 2.0 );
 			IPHI = 1 + 2 * static_cast<Int32_t>( (PHI + PI) / 2.0 / PI * NBPHI / 2.0 );
 		}
-		Int32_t IEPTH = NBPHI * IETA + IPHI;
+		
+		Int32_t cellID = NBPHI * IETA + IPHI;
 		
 		// Add to cell already hit
 		Bool_t found = false;
 		for (int j=0; j<tempCells.size(); ++j) {
-			if (IEPTH == tempCells[j].iepth) {
+			if (cellID == tempCells[j].cellID) {
 				tempCells[j].hits++;		// new part hits this cell
 				tempCells[j].pT += PT;		// summing pT of part hits 
 				found = true;
@@ -123,7 +123,7 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 		// Or book new cell
 		if (!found) {
 			CellData newCell;
-			newCell.iepth = IEPTH;			// not used ID?
+			newCell.iepth = cellID;			// not used ID
 			newCell.hits = 1;				// only single hit for now
 			newCell.state = 2;				// type?
 			newCell.pT = PT;				// pT from single hit
