@@ -21,8 +21,8 @@ class DbDummy {
 public:
 	void store( const io::OutputRecord& rec ) const {
 		printf ("DB: storing ...\n");
-		printf ("\tcells: %d\n", (int)rec.cells.size());
-		printf ("\tclusters: %d\n", (int)rec.clusters.size());
+		printf ("\tcells: %d\n", (int)rec.Cells.size());
+		printf ("\tclusters: %d\n", (int)rec.Clusters.size());
 		printf ("\n");
 	}
 };

@@ -33,15 +33,17 @@ namespace AcerDet {
 		*/
 		enum ParticleType {
 			PT_UNKNOWN = 0,
-			PT_JET,
-			PT_BJET,
-			PT_CJET,
-			PT_CELL,
-			PT_CLUSTER,
-			PT_MUON,
-			PT_ELECTRON,
-			PT_PHOTON,
-			PT_TAU
+			PT_JET,				//
+			PT_BJET,			// 5
+			PT_CJET,			// 4
+			PT_CELL,			//
+			PT_CLUSTER,			//
+			PT_MUON,			// 13
+			PT_ELECTRON,		// 11
+			PT_PHOTON,			// 22 (gamma)
+			PT_TAU,				// 15
+			PT_NEUTRINO_ELE,	// 12
+			PT_NEUTRINO_MUO		// 14		
 		};
 		
 		/*
@@ -58,9 +60,7 @@ namespace AcerDet {
 			Vector4f momentum;
 			Vector4f production;
 
-			//Real64_t phi, theta; //angles
-			
-			Int32_t id,mother;
+			Int32_t id, mother;
 			pair<Int32_t,Int32_t> daughters;
 
 			/*

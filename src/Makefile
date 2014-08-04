@@ -40,7 +40,7 @@ OBJS= $(shell find . -regex '.*\.o')
 # ---------------------------
 
 all: prepare compile export_lib export_include
-local: prepare compile rename_include
+local: prepare compile export_local
 
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -111,12 +111,13 @@ export_lib:
 export_include:
 	rm -rf $(PATH_INCLUDE)
 	cp -f *.h -t $(HEADERS_PATH)
-	cp $(HEADERS_PATH) $(INCLUDE_FOLDER)
+	cp -r $(HEADERS_PATH) $(INCLUDE_FOLDER)
 	mv $(HEADERS_PATH) $(PATH_INCLUDE)
 
-rename_include:
+export_local:
 	cp -f *.h -t $(HEADERS_PATH)
 	mv $(HEADERS_PATH) $(INCLUDE_FOLDER)
+	ln -sf $(LIB_FULL_NAME) $(LIB_NAME)
 
 # -------------------
 # -- Clean objects --

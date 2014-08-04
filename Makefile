@@ -12,7 +12,7 @@ local: $(DEMO)
 	$(CC) $(CFLAGS) -c $< -o $@ -I$(PYTHIALOCATION)include -I$(HEPMCLOCATION)include
 
 %.exe : %.o
-	$(CC) $< -o $@ -Isrc -Lsrc -lAcerDET $(PYTHIALIBS) $(HEPMCLIBS) -Wl,-rpath,$(PYTHIALOCATION)lib -Wl,-rpath,$(HEPMCLOCATION)lib
+	$(CC) $< -o $@ -I./src -L./src -lAcerDET $(PYTHIALIBS) $(HEPMCLIBS) -Wl,-rpath,$(PYTHIALOCATION)lib -Wl,-rpath,$(HEPMCLOCATION)lib
 
 clean:
 	rm -f *~ *.o *.exe

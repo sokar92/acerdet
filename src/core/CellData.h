@@ -32,9 +32,6 @@ namespace AcerDet {
 			Real64_t eta, phi, pT;
 			
 			CellData();
-			CellData(const CellData&);
-			
-			CellData& operator = (const CellData&);
 			
 			static void sortBy_pT(vector<CellData>&);
 		

@@ -123,7 +123,7 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 		// Or book new cell
 		if (!found) {
 			CellData newCell;
-			newCell.iepth = cellID;			// not used ID
+			newCell.cellID = cellID;			// not used ID
 			newCell.hits = 1;				// only single hit for now
 			newCell.state = 2;				// type?
 			newCell.pT = PT;				// pT from single hit
@@ -144,12 +144,12 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	for (int j=0; j<tempCells.size(); ++j) {
 		// enough pT to create new cell
 		if (tempCells[j].pT > ETTHR) {
-			orecord.cells.push_back(tempCells[j]);
+			orecord.Cells.push_back(tempCells[j]);
 		}
 	}
 
 	// call histogram
-	histo.insert( orecord.cells.size() );
+	histo.insert( orecord.Cells.size() );
 }
 
 void Cell::printResults() const {

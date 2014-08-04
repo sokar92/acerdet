@@ -11,21 +11,21 @@ namespace AcerDet {
 		
 		class OutputRecord {
 		public:			
-			vector<CellData> cells;
-			vector<ClusterData> clusters;
+			vector<CellData> Cells;
+			vector<ClusterData> Clusters;
 			
-			vector<Particle> muons;
-			vector<Particle> isolatedMuons;
+			vector<Particle> Muons;
+			vector<Particle> IsolatedMuons;
 			
-			vector<Particle> electrons;
-			vector<Particle> isolatedElectrons;
+			vector<Particle> Electrons;
+			vector<Particle> IsolatedElectrons;
 			
-			vector<Particle> photons;
-			vector<Particle> isolatedPhotons;
+			vector<Particle> Photons;
+			vector<Particle> IsolatedPhotons;
 			
-			vector<Particle> jets;
-			vector<Particle> Bjets;
-			vector<Particle> Cjets;
+			vector<Particle> Jets;
+			vector<Particle> BJets;
+			vector<Particle> CJets;
 		
 			OutputRecord();
 			

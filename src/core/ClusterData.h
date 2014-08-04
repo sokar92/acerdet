@@ -14,7 +14,7 @@ namespace AcerDet {
 			 * K
 			 * 0 -
 			 * 1 -
-			 * 2 - IEPTH
+			 * 2 - cellID
 			 * 3 - hits
 			 * 4 - state
 			 */
@@ -28,13 +28,10 @@ namespace AcerDet {
 			 * 4 - eT
 			 */
 			
-			Int32_t iepth, hits, state;
+			Int32_t cellID, hits, state;
 			Real64_t eta, phi, eta_rec, phi_rec, pT;
 			
 			ClusterData();
-			ClusterData(const ClusterData&);
-			
-			ClusterData& operator = (const ClusterData&);
 			
 			static void sortBy_pT(vector<ClusterData>&);
 			
