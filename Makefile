@@ -6,11 +6,13 @@ PYTHIALIBS= -L$(PYTHIALOCATION)lib -lpythia8 -llhapdfdummy -lpythia8tohepmc
 
 all: $(DEMO)
 
+local: $(DEMO)
+
 %.o : %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@ -I$(PYTHIALOCATION)include -I$(HEPMCLOCATION)include
 
 %.exe : %.o
-	$(CC) $< -o $@ -lAcerDET $(PYTHIALIBS) $(HEPMCLIBS) -Wl,-rpath,$(PYTHIALOCATION)lib -Wl,-rpath,$(HEPMCLOCATION)lib
+	$(CC) $< -o $@ -Isrc -Lsrc -lAcerDET $(PYTHIALIBS) $(HEPMCLIBS) -Wl,-rpath,$(PYTHIALOCATION)lib -Wl,-rpath,$(HEPMCLOCATION)lib
 
 clean:
 	rm -f *~ *.o *.exe

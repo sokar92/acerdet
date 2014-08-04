@@ -6,7 +6,8 @@
 	source path.inc
 
 4. Build demo
-	make
+	(when compiled globaly) make
+	(when compiled localy) make local
 
 5. Run demo
-	./demo.exe
+	./demo.exe conf/ee.conf 100

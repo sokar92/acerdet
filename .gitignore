@@ -2,3 +2,4 @@
 *.exe
 *.so
 *.so.*
+/src/AcerDET

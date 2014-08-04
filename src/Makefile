@@ -16,8 +16,11 @@ LIB_NAME= lib$(LIB)
 LIB_MAJOR_NAME= $(LIB_NAME)$(LIB_MAJOR_VERSION)
 LIB_FULL_NAME= $(LIB_MAJOR_NAME)$(LIB_MINOR_VERSION)
 
+INCLUDE_FOLDER= AcerDET
+HEADERS_PATH= ./include
+
 PATH_LIB= /usr/lib
-PATH_INCLUDE= /usr/include/AcerDET
+PATH_INCLUDE= /usr/include/$(INCLUDE_FOLDER)
 
 SUBTARGETS= module_core \
 	module_configuration \
@@ -37,7 +40,7 @@ OBJS= $(shell find . -regex '.*\.o')
 # ---------------------------
 
 all: prepare compile export_lib export_include
-
+local: prepare compile rename_include
 
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -91,8 +94,9 @@ module_analyse:
 # -----------------
 
 prepare:
-	rm -rf ./include
-	mkdir include
+	rm -rf $(HEADERS_PATH)
+	mkdir $(HEADERS_PATH)
+	rm -rf $(INCLUDE_FOLDER)
 
 # --------------------------
 # -- Export to global use --
@@ -104,11 +108,15 @@ export_lib:
 	ln -sf $(PATH_LIB)/$(LIB_FULL_NAME) $(PATH_LIB)/$(LIB_NAME)
 	ldconfig
 
-HEADERS_PATH= ./include
 export_include:
 	rm -rf $(PATH_INCLUDE)
 	cp -f *.h -t $(HEADERS_PATH)
-	mv ./include  $(PATH_INCLUDE)
+	cp $(HEADERS_PATH) $(INCLUDE_FOLDER)
+	mv $(HEADERS_PATH) $(PATH_INCLUDE)
+
+rename_include:
+	cp -f *.h -t $(HEADERS_PATH)
+	mv $(HEADERS_PATH) $(INCLUDE_FOLDER)
 
 # -------------------
 # -- Clean objects --
