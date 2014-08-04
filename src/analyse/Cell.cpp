@@ -81,9 +81,8 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 		PZ = part.pZ();
 		if (PT * PT <= PTLRAT * PZ * PZ)
 			continue;
-			
-		Int32_t KC = part.getKfcomp();
-		if (KC == 0 || KC == 12 || KC == 13 || KC == 14 || KC == 16 || KC == KFINVS)
+
+		if (part.type == PT_UNKNOWN || part.isNeutrino() || part.type == PT_MUON || part.type == KFINVS)
 			continue;
 
 		if (KEYFLD && part.getKuchge() != 0) {
