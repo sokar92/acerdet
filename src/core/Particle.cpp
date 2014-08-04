@@ -55,6 +55,13 @@ Int32_t Particle::getKuchge() const {
 }
 
 /*
+ * Type Check
+ */
+Bool_t Particle::isNeutrino() const {
+	return type == PT_NEUTRINO_ELE || type == PT_NEUTRINO_MUO || type == PT_NEUTRINO_TAU;
+}
+
+/*
  * Useful
  */
 Real64_t Particle::pT() const {

@@ -43,7 +43,8 @@ namespace AcerDet {
 			PT_PHOTON,			// 22 (gamma)
 			PT_TAU,				// 15
 			PT_NEUTRINO_ELE,	// 12
-			PT_NEUTRINO_MUO		// 14		
+			PT_NEUTRINO_MUO,	// 14
+			PT_NEUTRINO_TAU		// 16
 		};
 		
 		/*
@@ -105,6 +106,11 @@ namespace AcerDet {
 			Int32_t getKfcomp() const;
 			
 			Int32_t getKuchge() const;
+			
+			/*
+			 * Type Check
+			 */
+			Bool_t isNeutrino() const;
 
 			/*
 			* Print basic informations about particle
