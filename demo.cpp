@@ -9,6 +9,7 @@ using std::endl;
 using namespace HepMC;
 
 #include <AcerDET/AcerDET.h>
+#include <AcerDET/core/Functions.h>
 using namespace AcerDet;
 using namespace AcerDet::conf;
 using namespace AcerDet::core;
@@ -61,9 +62,24 @@ int main( int argc, char **argv ) {
 	const std::string configFileName = "acerdet.dat";
 	Configuration configuration = Configuration::fromFile( configFileName );
 	AcerDET acerDet( configuration );
-	acerDet.printInfo();
+//	acerDet.printInfo();
 
+	printf ("kfcomp test\n");
+	for (int i=0;i<20000;++i)
+		AcerDet::core::kfcomp(i);
 
+	printf ("kuchge test\n");
+	for (int i=0;i<20000;++i)
+		AcerDet::core::kuchge(i);
+
+	printf ("kuchge literal test\n");
+	for (int i=-20;i<=20;++i)
+		printf ("%d -> %d\n", i, AcerDet::core::kuchge(i));
+
+	printf ("kfcomp literal test\n");
+	for (int i=-20;i<=20;++i)
+		printf ("%d -> %d\n", i, AcerDet::core::kfcomp(i));
+/*
 	Histogram histo("testing", 2.0, 12.5, 10);
 	histo.insert(2.0);
 	histo.insert(2.1);
@@ -103,6 +119,6 @@ int main( int argc, char **argv ) {
 	}
 
 	acerDet.printResults();
-
+*/
 	return 0;
 }
