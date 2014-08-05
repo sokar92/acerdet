@@ -6,6 +6,9 @@
 #include "Typedefs.h"
 #include "Consts.h"
 
+#include <algorithm>
+using namespace std;
+
 namespace AcerDet {
 	namespace core {
 		
