@@ -8,17 +8,6 @@ Vector4f vec4(const HepMC::FourVector& v) {
 }
 
 ParticleType InputReader::getParticleType(int code) {
-	/*int code = abs(hepmc_code);
-	PDGcode pdg = (PDGcode)code;
-
-	switch(pdg) {
-	case QUARK_C: return PT_CJET;
-	case QUARK_B: return PT_BJET;
-	case LEPT_ELECTRON: return PT_ELECTRON;
-	case LEPT_MUON: return PT_MUON;
-	case LEPT_TAU: return PT_TAU;
-	default: return PT_UNKNOWN;
-	}*/
 	if (code == -4 || code == 4) return PT_CJET;
 	if (code == -5 || code == 5) return PT_BJET;
 	if (code == -11 || code == 11) return PT_ELECTRON;

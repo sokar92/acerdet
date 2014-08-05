@@ -9,27 +9,6 @@ using namespace HepMC;
 
 namespace AcerDet {
 	namespace io {
-		
-		/*
-		 * Set of codes describing particles
-		 * Montecarlo particle numbering scheme
-		 * from page http://pdg.lbl.gov/2007/reviews/montecarlorpp.pdf
-		 */
-		enum PDGcode {
-			QUARK_D = 1,
-			QUARK_U = 2,
-			QUARK_S = 3,
-			QUARK_C = 4,
-			QUARK_B = 5,
-			QUARK_T = 6,
-			QUARK_Bp = 7,
-			QUARK_Tp = 8,
-
-			LEPT_ELECTRON = 11,
-			LEPT_MUON = 13,
-			LEPT_TAU = 15
-		};
-
 		/*
 		 * Static converter between HepMC record and AcerDET InputRecord.
 		 */
