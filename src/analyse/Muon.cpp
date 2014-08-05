@@ -129,19 +129,21 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			// check on energy deposition of cells EDEP in cone RDEP
 			Real64_t EDEP = 0.0;
 			for (int j=0; j<orecord.cells.size(); ++j) {
+				const CellData& cell = orecord.Cells[j];
+				
 				DDR = sqrt(
-					pow(ETA - orecord.cells[j].eta, 2.0) +
-					pow(PHI - orecord.cells[j].phi, 2.0)
+					pow(ETA - cell.eta, 2.0) +
+					pow(PHI - cell.phi, 2.0)
 				);
 				
-				if (abs(PHI - orecord.cells[j].phi) > PI)
+				if (abs(PHI - cell.phi) > PI)
 					DDR = sqrt( 
-						pow(ETA - orecord.cells[j].eta, 2) + 
-						pow(abs(PHI - orecord.cells[j].phi) - 2*PI, 2) 
+						pow(ETA - cell.eta, 2) + 
+						pow(abs(PHI - cell.phi) - 2*PI, 2) 
 					);
 				
 				if (DDR < RDEP) 
-					EDEP += orecord.cells[j].pT;		
+					EDEP += cell.pT;		
 			}
 			
 			if (EDEP > EDMAX) 
@@ -196,10 +198,7 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			Bool_t ISOL = true;
 			
 			for (int j=0; j<=NSTOP; ++j) {
-				if (abs(parts[j].typeID) <= 21 && i != j && 
-					abs(parts[j].typeID) != 12 && // do enuma
-					abs(parts[j].typeID) != 14 && 
-					abs(parts[j].typeID) != 16) 
+				if (abs(parts[j].typeID) <= 21 && i != j && !parts[j].isNeutrino()) 
 				{
 					Real64_t JPT = parts[j].pT(); 
 					Real64_t JETA = parts[j].getEta(); 

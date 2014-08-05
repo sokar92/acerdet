@@ -117,15 +117,17 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 			// mark photon-cluster
 			Real64_t DR = 100.0;
 			for (int j=0; j<orecord.Clusters.size(); ++j) {
+				const ClusterData& cluster = orecord.Clusters[j];
+				
 				DDR = sqrt(
-					pow(ETA - orecord.Clusters[j].eta_rec, 2) +
-					pow(PHI - orecord.Clusters[j].phi_rec, 2)
+					pow(ETA - cluster.eta_rec, 2) +
+					pow(PHI - cluster.phi_rec, 2)
 				);
 				
-				if (abs(PHI - orecord.Clusters[j]) > PI)
+				if (abs(PHI - cluster.phi_rec) > PI)
 					DDR = sqrt(
-						pow(ETA - orecord.Clusters[j].eta_rec, 2) + 
-						pow(abs(PHI - orecord.Clusters[j].phi_rec) - 2*PI, 2)
+						pow(ETA - cluster.eta_rec, 2) + 
+						pow(abs(PHI - cluster.phi_rec) - 2*PI, 2)
 					);
 					
 				if (DDR < DR) {
@@ -142,15 +144,17 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 				if (j == LCLU) {
 					DDR = 100.0;
 				} else {
+					const ClusterData& cluster = orecord.Clusters[j];
+					
 					DDR = sqrt(
-						pow(ETA - orecord.Clusters[j].eta_rec, 2) + 
-						pow(PHI - orecord.Clusters[j].phi_rec, 2)
+						pow(ETA - cluster.eta_rec, 2) + 
+						pow(PHI - cluster.phi_rec, 2)
 					);
 					
-					if (abs(PHI - orecord.Clusters[j].phi_rec) > PI)
+					if (abs(PHI - cluster.phi_rec) > PI)
 						DDR = sqrt(
-							pow(ETA - orecord.Clusters[j].eta_rec, 2) + 
-							pow(abs(PHI - orecord.Clusters[j].phi_rec) - 2*PI, 2)
+							pow(ETA - cluster.eta_rec, 2) + 
+							pow(abs(PHI - cluster.phi_rec) - 2*PI, 2)
 						);
 				}
 
@@ -161,19 +165,21 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 			// check on energy deposition of cells EDEP in cone RDEP
 			Real64_t EDEP = 0.0;
 			for (int j=0; j<orecord.Cells.size(); ++j) {
+				const CellData& cell = orecord.Cells[j];
+				
 				DDR = sqrt(
-					pow(ETA - orecord.Cells[j].eta, 2) + 
-					pow(PHI - orecord.Cells[j].phi, 2)
+					pow(ETA - cell.eta, 2) + 
+					pow(PHI - cell.phi, 2)
 				);
 				
-				if (abs(PHI - orecord.Cells[j].phi) > PI)
+				if (abs(PHI - cell.phi) > PI)
 					DDR = sqrt(
-						pow(ETA - orecord.Cells[j].eta, 2) + 
-						pow(abs(PHI - orecord.Cells[j].phi) - 2*PI, 2)
+						pow(ETA - cell.eta, 2) + 
+						pow(abs(PHI - cell.phi) - 2*PI, 2)
 					);
 					
 				if (DDR < RDEP) 
-					EDEP += orecord.Cells[j].pT;
+					EDEP += cell.pT;
 			}
 
 			if (EDEP - PT > EDMAX) 
@@ -183,7 +189,7 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 			if (ISOL) {
 				// remove pho-cluster from /CLUSTER/
 				if (LCLU >= 0) 
-					orecord.Jets.erase(orecord.Jets.begin() + LCLU);
+					orecord.Clusters.erase(orecord.Clusters.begin() + LCLU);
 
 				// TODO
 				KPHO(NPHO,1) = NPHO;
@@ -204,30 +210,7 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 	// CALL HF1(IDENT+11,REAL(NPHO),1.0)
 
 	// arrange photons in falling E_T sequence
-	//IDU from 1 to NPHO {
-	//	ETMAX = 0
-	//	DO IMU from 1 to NPHO {
-	//		IF(KPHO(IMU,5) == 0) continue
-	//		IF(PPHO(IMU,5) < ETMAX) continue
-	//		IMAX = IMU
-	//		ETMAX = PPHO(IMU,5)
-	//	}
-
-	//	KPHO(IMAX,5) = 0 //used
-	//	DO II from 1 to 5 {
-	//		KDUM(IDU,II) = KPHO(IMAX,II)
-	//		PDUM(IDU,II) = PPHO(IMAX,II)
-	//	}
-	//}
-
-	//DO I from 1 to NPHO {
-	//	DO II from 1 to 5 {
-	//		KPHO(I,II) = KDUM(I,II)
-	//		PPHO(I,II) = PDUM(I,II)
-	//	}
-	//	KPHO(I,1) = I
-	//	KPHO(I,5) = 1
-	//}
+	// sort KPHO, PPHO
 	
 	// check with partons
 	Int32_t IPHO = 0, IPHISO = 0;
@@ -242,10 +225,7 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 			Bool_t ISOL = true;
 			
 			for (int j=0; j<=NSTOP; ++j) {
-				if (abs(parts[j].typeID) <= 21 && i != j && 
-					abs(parts[j].typeID) != 12 &&  // zastap enumami 
-					abs(parts[j].typeID) != 14 && 
-					abs(parts[j].typeID) != 16) 
+				if (abs(parts[j].typeID) <= 21 && i != j && !parts[j].isNeutrino()) 
 				{
 					Real64_t JPT = parts[j].pT(); 
 					Real64_t JETA = parts[j].getEta();

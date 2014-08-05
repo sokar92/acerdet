@@ -84,7 +84,7 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 
 		if (part.type == PT_UNKNOWN || part.isNeutrino() || part.type == PT_MUON || part.type == KFINVS)
 			continue;
-
+/* TODO */
 		if (KEYFLD && part.getKuchge() != 0) {
 			if (part.pT() < PTMIN)
 				continue;
@@ -122,7 +122,7 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 		// Or book new cell
 		if (!found) {
 			CellData newCell;
-			newCell.cellID = cellID;			// not used ID
+			newCell.cellID = cellID;		// not used ID
 			newCell.hits = 1;				// only single hit for now
 			newCell.state = 2;				// type?
 			newCell.pT = PT;				// pT from single hit

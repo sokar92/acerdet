@@ -50,7 +50,7 @@ void Electron::printInfo() const {
 }
 
 void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
-	/*
+/*
 	// new event to compute
 	IEVENT++;
 
@@ -111,15 +111,17 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 			// mark eletron-cluster
 			DR = 100.0;
 			for (int j=0; j<orecord.Clusters.size(); ++j) {
+				const ClusterData& cluster = orecord.Clusters[j];
+				
 				DDR = sqrt(
-					pow(ETA - orecord.Clusters[j].eta_rec, 2) +
-					pow(PHI - orecord.Clusters[j].phi_rec, 2)
+					pow(ETA - cluster.eta_rec, 2) +
+					pow(PHI - cluster.phi_rec, 2)
 				);
 				
-				if (abs(PHI - orecord.Clusters[j].phi_rec) > PI)
+				if (abs(PHI - cluster.phi_rec) > PI)
 					DDR = sqrt( 
-						pow(ETA - orecord.Clusters[j].eta_rec, 2) + 
-						pow(abs(PHI - orecord.Clusters[j].phi_rec) - 2*PI), 2)
+						pow(ETA - cluster.eta_rec, 2) + 
+						pow(abs(PHI - cluster.phi_rec) - 2*PI), 2)
 					);
 					
 				if (DDR < DR) {
@@ -136,15 +138,17 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 				if (j == LCLU) {
 					DDR = 100.0;
 				} else {
+					const ClusterData& cluster = orecord.Clusters[j];
+					
 					DDR = sqrt(
-						pow(ETA - orecord.Clusters[j].eta_rec, 2) + 
-						pow(PHI - orecord.Clusters[j].phi_rec, 2)
+						pow(ETA - cluster.eta_rec, 2) + 
+						pow(PHI - cluster.phi_rec, 2)
 					);
 					
-					if (abs(PHI - orecord.Clusters[j].phi_rec) > PI)
+					if (abs(PHI - cluster.phi_rec) > PI)
 						DDR = sqrt(
-							pow(ETA - orecord.Clusters[j].eta_rec, 2) + 
-							pow(abs(PHI - orecord.Clusters[j].phi_rec) - 2*PI, 2)
+							pow(ETA - cluster.eta_rec, 2) + 
+							pow(abs(PHI - cluster.phi_rec) - 2*PI, 2)
 						);
 				}
 
@@ -155,19 +159,21 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 			// check on energy deposition of cells EDEP in cone RDEP
 			EDEP = 0.0;
 			for (int j=0; j<orecord.Cells.size(); ++j) {
+				const CellData& cell = orecord.Cells[j];
+				
 				DDR = sqrt(
-					pow(ETA - orecord.Cells[j].eta, 2) + 
-					pow(PHI - orecord.Cells[j].phi, 2)
+					pow(ETA - cell.eta, 2) + 
+					pow(PHI - cell.phi, 2)
 				);
 				
-				if (abs(PHI - orecord.Cells[j].phi) > PI)
+				if (abs(PHI - cell.phi) > PI)
 					DDR = sqrt(
-						pow(ETA - orecord.Cells[j].eta, 2) + 
-						pow(abs(PHI - orecord.Cells[j].phi) - 2*PI, 2)
+						pow(ETA - cell.eta, 2) + 
+						pow(abs(PHI - cell.phi) - 2*PI, 2)
 					);
 					
 				if (DDR < RDEP) 
-					EDEP += orecord.Cells[j].pT;
+					EDEP += cell.pT;
 			}
 
 			if (EDEP - PTCRU > EDMAX) 
@@ -181,7 +187,7 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 					orecord.Cluster.erase(orecord.Cluster.begin() + LCLU);
 
 				KELE(NELE,1) = NELE
-				KELE(NELE,2) = K(I,2)			// typ elktronu
+				KELE(NELE,2) = K(I,2)			// typ elektronu
 				KELE(NELE,3) = I
 				KELE(NELE,4) = K(K(I,3),2)		// typ matki (w drzewku)
 				KELE(NELE,5) = 1
@@ -198,32 +204,10 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 	// CALL HF1(IDENT+11, REAL(NELE), 1.0)
 
 	// arrange electrons in falling E_T sequence
-	//DO IDU from 1 to NELE {
-	//	ETMAX = 0
-	//	DO IMU from 1 to NELE {
-	//		IF(KELE(IMU,5) == 0) continu
-	//		IF(PELE(IMU,5) < ETMAX) continue
-	//		IMAX = IMU
-	//		ETMAX = PELE(IMU,5)
-	//	}
-
-	//	KELE(IMAX,5) = 0
-	//	DO II from 1 to 5 {
-	//		KDUM(IDU,II) = KELE(IMAX,II)
-	//		PDUM(IDU,II) = PELE(IMAX,II)
-	//	}
-	//}
-
-	//DO I from 1 to NELE {
-	//	DO II from 1 to 5 {				// skopiuj dum -> ele
-	//		KELE(I,II) = KDUM(I,II)
-	//		PELE(I,II) = PDUM(I,II)
-	//	}
-	//	KELE(I,1) = I					// numer elektrona
-	//	KELE(I,5) = 1					// stan(1) = przetworzony?
-	//}
+	// sor KELE i PELE
 
 	Int32_t IELE = 0, IELEISO = 0;
+	Real64_t PT, ETA, PHI, ENER, JPT, JETA, JPHI, DDR;
 	for (int i=0; i<=NSTOP; ++i) {
 		const Particle& part = parts[i];
 		
@@ -232,14 +216,10 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 			ETA = part.getEta(); 
 			PHI = part.getPhi();
 			ENER = 0.0;
-			ISOL = true;
+			Bool_t ISOL = true;
 
 			for (int j=0; j<=NSTOP; ++j) {
-				if (abs(parts[j].typeID) <= 21 && i != j && 
-					abs(parts[j].partID) != 12 &&  // TODO zamien to na typy enumowe -> zwieksz czytelnosc 
-					abs(parts[j].partID) != 14 && 
-					abs(parts[j].partID) != 16) 
-				{
+				if (abs(parts[j].typeID) <= 21 && i != j && !parts[j].isNeutrino()) {
 					JPT = parts[j].pT(); 
 					JETA = parts[j].getEta(); 
 					JPHI = parts[j].getPhi();

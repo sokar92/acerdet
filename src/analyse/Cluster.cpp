@@ -109,7 +109,7 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 			PHIC = cell.phi; 
 
 			if (DPHIA > PI) 
-				PHIC = PHIC + sign(2.0 * PI, PHI);
+				PHIC += sign(2.0 * PI, PHI);
 
 			if (abs(ETA) < CALOTH && pow((cell.eta - ETA), 2.0) + pow((PHIC-PHI), 2.0) > pow(RCONE, 2.0)) continue;
 			if (abs(ETA) > CALOTH && pow((cell.eta - ETA), 2.0) + pow((PHIC-PHI), 2.0) > pow(RCONE, 2.0)) continue;
@@ -178,8 +178,9 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 				continue;
  
 			if (part.type == PT_UNKNOWN || part.isNeutrino() || part.type == PT_MUON || part.type == KFINVS)
-			continue;
+				continue;
 
+			/* TODO */
 			if (KEYFLD && part.getKuchge() != 0) {
 				if (PT < PTMIN)
 					continue;
@@ -196,7 +197,7 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 			DPHIA = abs(cluster.phi - PHI);
 
 			if (DPHIA > PI) 
-				DPHIA = DPHIA - 2 * PI;
+				DPHIA -= 2 * PI;
 
 			if (abs(cluster.eta) < CALOTH && pow(cluster.eta - ETA, 2) + pow(DPHIA,2) > pow(RCONE,2)) continue;
 			if (abs(cluster.eta) > CALOTH && pow(cluster.eta - ETA, 2) + pow(DPHIA,2) > pow(RCONE,2)) continue;
