@@ -37,6 +37,39 @@ ParticleState InputReader::getParticleStatus(int hepmc_status) {
 	*/
 }
 
+Int32_t extractMother(HepMC::GenVertex* ptr) {
+	if (ptr == NULL)
+		return -1;
+	
+	const HepMC::GenParticle* p = *(ptr->particles_in_const_begin());
+	if (p == NULL)
+		return -1;
+	return p->barcode();
+}
+
+Int32_t extractDaughter1(HepMC::GenVertex* ptr) {
+	if (ptr == NULL)
+		return -1;
+	
+	const HepMC::GenParticle* p = *(ptr->particles_out_const_begin());
+	if (p == NULL)
+		return -1;
+	return p->barcode();
+}
+
+Int32_t extractDaughter2(HepMC::GenVertex* ptr) {
+	if (ptr == NULL)
+		return -1;
+	
+	if (*(ptr->particles_out_const_begin()) == NULL)
+		return -1;
+	
+	Int32_t code = -1;
+	for (vector<HepMC::GenParticle*>::const_iterator i = ptr->particles_out_const_begin(); i != ptr->particles_out_const_end(); i++)
+		code = (*i)->barcode();
+	return code;
+}
+
 InputRecord InputReader::computeEvent( const GenEvent& event ) {
 	vector<Particle> parts;
 	
@@ -47,9 +80,11 @@ InputRecord InputReader::computeEvent( const GenEvent& event ) {
 		
 		// particle tree hierarchy
 		part.id = gpart->barcode();
-		part.mother = -1;
-		part.daughters = make_pair(-1,-1);
-		
+		HepMC::GenVertex* prod = gpart->production_vertex();
+		part.mother = extractMother(prod);
+		part.daughters = make_pair(extractDaughter1(prod), extractDaughter2(prod));
+		printf ("id: %d m: %d d: %d %d\n", part.id, part.mother, part.daughters.first, part.daughters.second);
+
 		// state (named & id)
 		part.state = getParticleStatus(gpart->status());
 		part.stateID = gpart->status();
@@ -62,7 +97,6 @@ InputRecord InputReader::computeEvent( const GenEvent& event ) {
 		part.momentum = vec4(gpart->momentum());
 		
 		// production vertex (optional) as Vector4
-		HepMC::GenVertex* prod = gpart->production_vertex();
 		if (prod != NULL) {
 			part.production = vec4(prod->position());
 		}

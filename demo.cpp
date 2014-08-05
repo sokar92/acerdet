@@ -21,10 +21,10 @@ using namespace AcerDet::io;
 class DbDummy {
 public:
 	void store( const io::OutputRecord& rec ) const {
-		printf ("DB: storing ...\n");
-		printf ("\tcells: %d\n", (int)rec.Cells.size());
-		printf ("\tclusters: %d\n", (int)rec.Clusters.size());
-		printf ("\n");
+//		printf ("DB: storing ...\n");
+//		printf ("\tcells: %d\n", (int)rec.Cells.size());
+//		printf ("\tclusters: %d\n", (int)rec.Clusters.size());
+//		printf ("\n");
 	}
 };
 
@@ -64,41 +64,24 @@ int main( int argc, char **argv ) {
 	AcerDET acerDet( configuration );
 //	acerDet.printInfo();
 
-	printf ("kfcomp test\n");
-	for (int i=0;i<20000;++i)
-		AcerDet::core::kfcomp(i);
-
-	printf ("kuchge test\n");
-	for (int i=0;i<20000;++i)
-		AcerDet::core::kuchge(i);
-
-	printf ("kuchge literal test\n");
-	for (int i=-20;i<=20;++i)
-		printf ("%d -> %d\n", i, AcerDet::core::kuchge(i));
-
-	printf ("kfcomp literal test\n");
-	for (int i=-20;i<=20;++i)
-		printf ("%d -> %d\n", i, AcerDet::core::kfcomp(i));
-/*
-	Histogram histo("testing", 2.0, 12.5, 10);
-	histo.insert(2.0);
-	histo.insert(2.1);
-	histo.insert(5.0);
-	histo.insert(4.8);
-	histo.insert(9.0);
-	histo.insert(12.4);
-	histo.insert(12.5);
-	histo.insert(-2.5);
-	histo.insert(12.5001);
-	histo.print( false );
+//	Histogram histo("testing", 2.0, 12.5, 10);
+//	histo.insert(2.0);
+//	histo.insert(2.1);
+//	histo.insert(5.0);
+//	histo.insert(4.8);
+//	histo.insert(9.0);
+//	histo.insert(12.4);
+//	histo.insert(12.5);
+//	histo.insert(-2.5);
+//	histo.insert(12.5001);
+//	histo.print( false );
 	
-	printf (" proper -> %d\n", histo.storedProperlyCount());
-	printf (" all -> %d\n", histo.storedCount());
+//	printf (" proper -> %d\n", histo.storedProperlyCount());
+//	printf (" all -> %d\n", histo.storedCount());
 	
 	DbDummy db;
 	OutputRecord oRec;
 	
-	events_limit = 2;
 	for( int iEvent = 0; iEvent < events_limit; ++iEvent ) {
 		printf("Event %d\n", iEvent);
 		
@@ -119,6 +102,6 @@ int main( int argc, char **argv ) {
 	}
 
 	acerDet.printResults();
-*/
+
 	return 0;
 }
