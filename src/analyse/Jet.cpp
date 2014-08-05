@@ -50,30 +50,41 @@ void Jet::printInfo() const {
 }
 
 void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
+	// variables
+	Real64_t PT, PZ, ETA, PHI, THETA, DR, DDR, DETR, PTCLU, ETACLU; 
+	Real64_t PHICLU, EECLU, SIGMA, DPHIA, DETRMIN, PTREC, PTLRAT, CHRG;
+
+	// new event to compute
 	IEVENT++;
-/*	
+	
+	// reference to particles container
+	const vector<Particle>& parts = irecord.particles();
+	
 	// smear clusters energy
 	if (KEYSME) {      
 		for (int i=0; i<orecord.Clusters.size(); ++i) {
-			EECLU = orecord.Clusters[i].pT * cosh(orecord.Clusters[i].eta_rec); // Po co tu liczyc jak zaraz jest nadpisane?
-			SIGMA = RESHAD(EECLU, orecord.Clusters[i].eta_rec, CALOTH, orecord.Clusters[i].pT, RCONE);
+			ClusterData& cluster = orecord.Clusters[i];
 			
-			Real64_t coef = orecord.Clusters[i].pT * (1.0 + SIGMA);
+			EECLU = cluster.pT * cosh(cluster.eta_rec); // Po co tu liczyc jak zaraz jest nadpisane?
+			//SIGMA = RESHAD(EECLU, cluster.eta_rec, CALOTH, cluster.pT, RCONE);
 			
-			//PXCLU = coef * cos (orecord.Clusters[i].phi_rec);
-			//PYCLU = coef * sin (orecord.Clusters[i].phi_rec);
-			//PZCLU = coef * sinh(orecord.Clusters[i].eta_rec);
-			//EECLU = coef * cosh(orecord.Clusters[i].eta_rec);
+			//Real64_t coef = cluster.pT * (1.0 + SIGMA);
+			Real64_t coef = 1.0;
+			
+			//PXCLU = coef * cos (cluster.phi_rec);
+			//PYCLU = coef * sin (cluster.phi_rec);
+			//PZCLU = coef * sinh(cluster.eta_rec);
+			//EECLU = coef * cosh(cluster.eta_rec);
 	
 			Particle pClu;
-			pClu.momentum = Vector4(
-				cos (orecord.Clusters[i].phi_rec),
-				sin (orecord.Clusters[i].phi_rec),
-				sinh(orecord.Clusters[i].eta_rec),
-				cosh(orecord.Clusters[i].eta_rec)
+			pClu.momentum = Vector4f(
+				cos (cluster.phi_rec),
+				sin (cluster.phi_rec),
+				sinh(cluster.eta_rec),
+				cosh(cluster.eta_rec)
 			);
 			
-			pClu *= coef;
+			pClu.momentum *= coef;
 
 			THETA = pClu.getTheta();
 			//if (abs(PZCLU / EECLU) < 1) {
@@ -92,30 +103,34 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 			//PCLU(I,5) = PTCLU
 			//PCLU(I,3) = ETACLU
 			//PCLU(I,4) = PHICLU
-			orecord.Clusters[i].eta_rec = ETACLU;
-			orecord.Clusters[i].phi_rec = PHICLU;
-			orecord.Clusters[i].pT = PTCLU;
+			cluster.eta_rec = ETACLU;
+			cluster.phi_rec = PHICLU;
+			cluster.pT = PTCLU;
 		}
 	}
 	
 	// add nonisolated muons to jets
-	for (int i=0; i<NMUOX; ++i) {
-		ETA = PMUOX(I,3)
-		PHI = PMUOX(I,4)
-		PT = PMUOX(I,5)
+	for (int i=0; i<orecord.NonisolatedMuons.size(); ++i) {
+		const PartData& muon = orecord.NonisolatedMuons[i];
+		
+		ETA = muon.eta;
+		PHI = muon.phi;
+		PT = muon.pT;
 
 		DR = 100.0;
-		MUCLU = -1;
+		Int32_t MUCLU = -1;
 		for (int j=0; j<orecord.Clusters.size(); ++j) {
+			const ClusterData& cluster = orecord.Clusters[j];
+			
 			DDR = sqrt(
-				pow(ETA - orecord.Clusters[j].eta_rec, 2) +
-				pow(PHI - orecord.Clusters[j].phi_rec, 2)
+				pow(ETA - cluster.eta_rec, 2) +
+				pow(PHI - cluster.phi_rec, 2)
 			);
 			
-			if (abs(PHI - orecord.Clusters[j].phi_rec) > PI)
+			if (abs(PHI - cluster.phi_rec) > PI)
 				DDR = sqrt(
-					pow(ETA - orecord.Clusters[j].eta_rec, 2) + 
-					pow(abs(PHI - orecord.Clusters[j].phi_rec)-2*PI, 2)
+					pow(ETA - cluster.eta_rec, 2) + 
+					pow(abs(PHI - cluster.phi_rec)-2*PI, 2)
 				);
 
 			if (DDR < DR) {
@@ -143,7 +158,7 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 				);
 				Vector4f Vec = Vector4f(cos(PHI), sin(PHI), sinh(ETA), cosh(ETA));
 				Particle pClu;
-				pClu.momentum = muVec * orecord.Clusters[MUCLU].pT + PT * Vec;
+				pClu.momentum = muVec * orecord.Clusters[MUCLU].pT + Vec * PT;
 				
 				//PTCLU = SQRT(PXCLU**2+PYCLU**2)
 				//ETACLU = SIGN(LOG((SQRT(PTCLU**2+PZCLU**2)+ABS(PZCLU))/PTCLU),PZCLU) 
@@ -152,66 +167,43 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 				ETACLU = pClu.getEta();
 				PHICLU = pClu.getPhi();
 
-				PCLU(MUCLU,3) = ETACLU;
-				PCLU(MUCLU,4) = PHICLU;
-				PCLU(MUCLU,5) = PTCLU;
+				orecord.Clusters[MUCLU].eta_rec = ETACLU;
+				orecord.Clusters[MUCLU].phi_rec = PHICLU;
+				orecord.Clusters[MUCLU].pT = PTCLU;
 
-				KMUOX(I,5) = 0;
+				// KMUOX(I,5) = 0; ? ze niby co ?
 			}
 		}
 	}
 	
 	// store accepted jets in \JETALL\ common and flagg in common /CLUSTER/
 	for (int i=0; i<orecord.Clusters.size(); ++i) {
-		if (orecord.Clusters[i].pT > ETJET && 
-			abs(orecord.Clusters[i].eta_rec) < ETAJET) 
-		{
-			// przenies Cluster -> Jet
-			//NJET = NJET + 1
-			//DO II from 1 to 5 {          
-			//	KJET(NJET,II) = KCLU(I,II) 
-			//	PJET(NJET,II) = PCLU(I,II)
-			//}
+		const ClusterData& cluster = orecord.Clusters[i];
+		if (cluster.pT > ETJET && abs(cluster.eta_rec) < ETAJET) {
+			JetData newJet;
+			newJet.eta = cluster.eta;
+			newJet.phi = cluster.phi;
+			newJet.eta_rec = cluster.eta_rec;
+			newJet.phi_rec = cluster.phi_rec;
+			newJet.pT = cluster.pT;
+			
+			orecord.Jets.push_back( newJet );
+			// TODO move K
 
 			//KJET(NJET,1) = NJET
-			//KCLU(I,5) = 0
+			//KCLU(I,5) = 0   // disable converted Cluster
 		}
 	}
 	
 	// histogram NJET
-	CALL HF1(IDENT+1,REAL(NJET),1.0)
+	histo_bJets.insert( orecord.Jets.size() );
 
 	// arrange jets in falling E_T sequence
-	
-	//DO IDU from 1 to NJET {
-	//	ETMAX = 0
-	//	DO IMU from 1 to NJET {
-	//		IF(KJET(IMU,5) == 0) continue
-	//		IF(PJET(IMU,5) < ETMAX) continue
-	//		IMAX = IMU
-	//		ETMAX = PJET(IMU,5)
-	//	}
-
-	//	KJET(IMAX,5) = 0
-	//	DO II from 1 to 5 {
-	//		KDUM(IDU,II) = KJET(IMAX,II)
-	//		PDUM(IDU,II) = PJET(IMAX,II)
-	//	}
-	//}
-
-	//DO I from 1 to NJET {
-	//	DO II from 1 to 5 {
-	//		KJET(I,II) = KDUM(I,II)
-	//		PJET(I,II) = PDUM(I,II)
-	//	}
-	//	KJET(I,1) = I
-	//	KJET(I,5) = 1
-	//}
-	
-	JetData.sortBy_pT(orecord.Jets);
+	JetData::sortBy_pT( orecord.Jets );
 
 	// reconstruct baricenter of particles
 	for (int i=0; i<orecord.Jets.size(); ++i) {
+		const JetData& jet = orecord.Jets[i];
 		Real64_t ETAREC = 0, PTREC = 0, PHIREC = 0;
 
 		for (int j=0; j<parts.size(); ++j) {
@@ -220,12 +212,13 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 			if (!part.isStable()) 
 				continue;
 			
-			Real64_t PT = part.pT(), PZ = part.pZ();
+			PT = part.pT();
+			PZ = part.pZ();
 			if(PT * PT <= PTLRAT * PZ * PZ) 
 				continue; 
 
 			if (part.type == PT_UNKNOWN || part.isNeutrino() || part.type == PT_MUON || part.type == KFINVS)
-			continue;
+				continue;
 
 			Real64_t DETPHI = 0.0;
 			if (KEYFLD && part.getKuchge() != 0) {
@@ -241,13 +234,13 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 			ETA = part.getEta();
 			PHI = part.getPhi();
 			PHI = PHI + DETPHI;
-			DPHIA = abs(PJET(IJET,2) - PHI); // TODO 
+			DPHIA = abs(jet.phi - PHI); 
 
 			if (DPHIA > PI) 
 				DPHIA = DPHIA - 2*PI;
 
-			if (abs(PJET(IJET,1)) < CALOTH && pow(PJET(IJET,1) - ETA, 2 + pow(DPHIA, 2) > pow(RCONE, 2)) continue;
-			if (abs(PJET(IJET,1)) > CALOTH && pow(PJET(IJET,1) - ETA, 2 + pow(DPHIA, 2) > pow(RCONE, 2)) continue;
+			if (abs(jet.eta) < CALOTH && pow(jet.eta - ETA, 2) + pow(DPHIA, 2) > pow(RCONE, 2)) continue;
+			if (abs(jet.eta) > CALOTH && pow(jet.eta - ETA, 2) + pow(DPHIA, 2) > pow(RCONE, 2)) continue;
 
 			PTREC = PTREC + PT;
 			ETAREC = ETAREC + ETA * PT;
@@ -257,17 +250,19 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 		ETAREC /= PTREC;
 		PHIREC /= PTREC;
 		DETR = sqrt(
-			pow(ETAREC - PJET(IJET,3), 2) +
-			pow(PHIREC - PJET(IJET,4), 2)
+			pow(ETAREC - jet.eta_rec, 2) +
+			pow(PHIREC - jet.phi_rec, 2)
 		);
 
-		histo_delta_phi.insert(ETAREC - orecord.Jets[i].eta_rec);
-		histo_delta_eta.insert(PHIREC - orecord.Jets[i].phi_rec);
+		histo_delta_phi.insert(ETAREC - jet.eta_rec);
+		histo_delta_eta.insert(PHIREC - jet.phi_rec);
 		histo_delta_barycenter.insert(DETR);
-		histo_pT_bySum.insert(orecord.Jets[i].pT / PTREC);
+		histo_pT_bySum.insert(jet.pT / PTREC);
 	}
 
 	for (int i=0; i<orecord.Jets.size(); ++i) {
+		const JetData& jet = orecord.Jets[i];
+		
 		PTREC = 0;
 		DETRMIN = RCONE;
 
@@ -281,12 +276,12 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 			ETA = part.getEta();
 			PHI = part.getPhi();
 
-			DPHIA = abs(PJET(IJET,4) - PHI); 
+			DPHIA = abs(jet.phi_rec - PHI); 
 			if (DPHIA > PI) 
 				DPHIA -= 2*PI;
 
 			DETR = sqrt(
-				pow(ETA - PJET(IJET,3), 2) +
+				pow(ETA - jet.eta_rec, 2) +
 				pow(DPHIA, 2)
 			);
 							
@@ -298,10 +293,9 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 
 		if (PTREC != 0) {
 			histo_delta_parton.insert(DETRMIN);
-			histo_pT_byPart.insert(PJET(IJET,5) / PTREC);
+			histo_pT_byPart.insert(jet.pT / PTREC);
 		}
 	}
-*/
 }
 
 void Jet::printResults() const {

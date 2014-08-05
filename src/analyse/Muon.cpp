@@ -181,7 +181,7 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			
 			// fill /NOISOMUO/ with non-isolated muon
 			} else {
-				orecord.IsolatedMuons.push_back(newParton);
+				orecord.NonisolatedMuons.push_back(newParton);
 			//	NMUOX = NMUOX + 1
 			//	KMUOX(NMUOX,1) = NMUOX
 			//	KMUOX(NMUOX,2) = K(I,2)
@@ -200,7 +200,7 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	
 	// call histograms
 	histo_isol.insert( orecord.Muons.size() );
-	histo_nonisol.insert( orecord.IsolatedMuons.size() );
+	histo_nonisol.insert( orecord.NonisolatedMuons.size() );
 	
 	// cross-check with partons
 	Int32_t IMUO = 0, IMUOISO = 0;

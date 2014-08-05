@@ -9,6 +9,10 @@ void OutputRecord::clear() {
 	vector<ClusterData>().swap(Clusters);
 	
 	vector<PartData>().swap(Muons);
+	vector<PartData>().swap(NonisolatedMuons);
+	
 	vector<PartData>().swap(Electrons);
 	vector<PartData>().swap(Photons);
+	
+	vector<JetData>().swap(Jets);
 }
