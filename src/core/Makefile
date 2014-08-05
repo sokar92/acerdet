@@ -5,6 +5,7 @@ OBJECTS= Histogram.o \
 	Functions.o \
 	CellData.o \
 	ClusterData.o \
+	JetData.o \
 	PartData.o \
 	Particle.o 
 
