@@ -46,7 +46,7 @@ void Mis::printInfo() const {
 }
 
 void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
-/*
+	
     // new event to compute
 	IEVENT++;
 
@@ -66,117 +66,121 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	//sum up reconstructed momenta
 	Real64_t PXREC = 0.0, PYREC = 0.0;
 	Real64_t PXSUM = 0.0, PYSUM = 0.0;
+	Real64_t PXXCALO = 0.0, PYYCALO = 0.0;
 	Real64_t SUMET = 0.0;
 	
 	// add jets
 	for (int i=0; i<orecord.Jets.size(); ++i) {
-		PXREC += PJET(I,5) * COS(PJET(I,4));
-		PYREC += PJET(I,5) * SIN(PJET(I,4));
-		PXXCALO += PJET(I,5) * COS(PJET(I,4));
-		PYYCALO += PJET(I,5) * SIN(PJET(I,4));
-		SUMET += PJET(I,5);
+		const JetData jet = orecord.Jets[i];
+		PXREC	+= jet.pT * cos( jet.phi_rec );
+		PYREC	+= jet.pT * sin( jet.phi_rec );
+		PXXCALO	+= jet.pT * cos( jet.phi_rec );
+		PYYCALO	+= jet.pT * sin( jet.phi_rec );
+		SUMET	+= jet.pT;
 	}
 	
 	// add non-used clusters
 	for (int i=0; i<orecord.Clusters.size(); ++i) {
-		if (KCLU(I,5) != 0) {
-			PXREC += PCLU(I,5) * COS(PCLU(I,4));
-			PYREC += PCLU(I,5) * SIN(PCLU(I,4));
-			PXXCALO += PCLU(I,5) * COS(PCLU(I,4));
-			PYYCALO += PCLU(I,5) * SIN(PCLU(I,4));
-			SUMET += PCLU(I,5);
-		}
+		const ClusterData& cluster = orecord.Clusters[i];
+		// if (KCLU(I,5) != 0) { TODO remove unused from vector before
+			PXREC	+= cluster.pT * cos( cluster.phi_rec );
+			PYREC	+= cluster.pT * sin( cluster.phi_rec );
+			PXXCALO	+= cluster.pT * cos( cluster.phi_rec );
+			PYYCALO	+= cluster.pT * sin( cluster.phi_rec );
+			SUMET	+= cluster.pT;
+		// }
 	}
 	
 	// add isolated muons
-	for (int i=0; i<NMUO; ++i) {
-		PXREC += PMUO(I,5) * COS(PMUO(I,4));
-		PYREC += PMUO(I,5) * SIN(PMUO(I,4));
+	for (int i=0; i<orecord.Muons.size(); ++i) {
+		const PartData& muon = orecord.Muons[i];
+		PXREC += muon.pT * cos( muon.phi ); //_rec );
+		PYREC += muon.pT * sin( muon.phi ); //_rec );
 	}
 	
 	// add non-isolated muons not added to clusters
-	for (int i=0; i<NMUOX; ++i) {
+	for (int i=0; i<orecord.NonisolatedMuons.size(); ++i) {
+		const PartData& muon = orecord.NonisolatedMuons[i];
+		/* TODO mark used before
 		if (KMUOX(I,5) != 0) {
-			PXREC += PMUOX(I,5) * COS(PMUOX(I,4));
-			PYREC += PMUOX(I,5) * SIN(PMUOX(I,4));
+			PXREC += muon.pT * cos( muon.phi ); //_rec );
+			PYREC += muon.pT * sin( muon.phi ); //_rec );
 		} else {
-			SUMET -= PMUOX(I,5);
-		}
+			SUMET -= muon.pT;
+		}*/
 	}
 	
 	// add isolated electrons
-	for (int i=0; i<NELE; ++i) {
-		PXREC += PELE(I,5) * COS(PELE(I,4));
-		PYREC += PELE(I,5) * SIN(PELE(I,4));
-		PXXCALO += PELE(I,5) * COS(PELE(I,4));
-		PYYCALO += PELE(I,5) * SIN(PELE(I,4));
-		SUMET += PELE(I,5);
+	for (int i=0; i<orecord.Electrons.size(); ++i) {
+		const PartData& ele = orecord.Electrons[i];
+		PXREC	+= ele.pT * cos( ele.phi ); //_rec );
+		PYREC	+= ele.pT * sin( ele.phi ); //_rec );
+		PXXCALO	+= ele.pT * cos( ele.phi ); //_rec );
+		PYYCALO	+= ele.pT * sin( ele.phi ); //_rec );
+		SUMET	+= ele.pT;
 	}
 	
 	// add isolated photons
-	for (int i=0; i<NPHO; ++i) {
-		PXREC += PPHO(I,5) * COS(PPHO(I,4));
-		PYREC += PPHO(I,5) * SIN(PPHO(I,4));
-		PXXCALO += PPHO(I,5) * COS(PPHO(I,4));
-		PYYCALO += PPHO(I,5) * SIN(PPHO(I,4));
-		SUMET += PPHO(I,5);
+	for (int i=0; i<orecord.Photons.size(); ++i) {
+		const PartData& pho = orecord.Photons[i];
+		PXREC	+= pho.pT * cos( pho.phi ); //_rec );
+		PYREC	+= pho.pT * sin( pho.phi ); //_rec );
+		PXXCALO	+= pho.pT * cos( pho.phi ); //_rec );
+		PYYCALO	+= pho.pT * sin( pho.phi ); //_rec );
+		SUMET	+= pho.pT;
     }
     
+    // store pT in histo
     Real64_t ETREC = sqrt( pow(PXREC, 2) + pow(PYREC, 2) );
-    // CALL HF1(IDENT+11,ETREC,1.0)
+    histo_reconstructed_pT.insert( ETREC );
     
     // smear cells energy not used for reconstruction
     // remove cells below threshold
     // add momenta in cells not used for reconstruction
     for (int i=0; i<orecord.Cells.size(); ++i) {
 		const CellData& cell = orecord.Cells[i];
-		
+		/* TODO
 		if (cell.state != 0) {
 			if (KEYSME) {
-				PEI = PCELL(I,5) * COSH(PCELL(I,1));
-				SIGSME = RESHAD(PEI,PCELL(I,1),CALOTH,PCELL(I,5), 0.0);
+				PEI = cell.pT * cosh( cell.eta );
+				SIGSME = RESHAD(PEI, cell.eta, CALOTH, cell.pT, 0.0);
 				
-				PSME = PEI * (1.0 + SIGSME) / COSH(PCELL(I,1));
+				PSME = PEI * (1.0 + SIGSME) / cosh( cell.eta );
 				if (PSME < ETCELL) 
 					PSME = 0.0;
 					
-				PXSUM += PSME * COS(PCELL(I,2));
-				PYSUM += PSME * SIN(PCELL(I,2));
-				PXXCALO += PSME * COS(PCELL(I,2));
-				PYYCALO += PSME * SIN(PCELL(I,2));
-				SUMET += PSME;
+				PXSUM	+= PSME * cos( cell.phi );
+				PYSUM	+= PSME * sin( cell.phi );
+				PXXCALO	+= PSME * cos( cell.phi );
+				PYYCALO	+= PSME * sin( cell.phi );
+				SUMET	+= PSME;
 			}
-		}
+		}*/
 	}
 	
 	PXSUM += PXREC;
 	PYSUM += PYREC;
 	
-	ETSUM = sqrt( pow(PXSUM, 2) + pow(PYSUM, 2) );
-	//CALL HF1(IDENT+12,ETSUM,1.0)
+	Real64_t ETSUM = sqrt( pow(PXSUM, 2) + pow(PYSUM, 2) );
+	histo_reconstructed_pT_cells.insert( ETSUM );
 	
-	PXXMISS = -PXSUM;
-	PYYMISS = -PYSUM; // ? po co
-	PTMISS = sqrt( pow(PXXMISS, 2) + pow(PYYMISS, 2) );
-	// CALL HF1(IDENT+13,PTMISS,1.0)
+	Real64_t PXXMISS = -PXSUM;
+	Real64_t PYYMISS = -PYSUM; // ? po co
+	Real64_t PTMISS = sqrt( pow(PXXMISS, 2) + pow(PYYMISS, 2) );
+	histo_pTmiss.insert( PTMISS );
 	
 	// sum up momenta  of neutrinos 
-	PXXNUES = 0.0;
-	PYYNUES = 0.0;
+	Real64_t PXXNUES = 0.0;
+	Real64_t PYYNUES = 0.0;
 	for (int i=NSTART; i<parts.size(); ++i) {   
-		if (abs(parts[i].typeID) == 12 || 
-			abs(parts[i].typeID) == 14 ||
-			abs(parts[i].typeID) == 16 ||
-			abs(parts[i].typeID) == KFINVS)
-		{
+		if (parts[i].isNeutrino() || abs(parts[i].typeID) == KFINVS) {
 			PXXNUES += parts[i].pX();
 			PYYNUES += parts[i].pY();
 		}
 	}
 	
-	PTNUES = sqrt( pow(PXXNUES, 2) + pow(PYYNUES, 2) );
-	// CALL HF1(IDENT+21,PTNUES,1.0)
-*/
+	Real64_t PTNUES = sqrt( pow(PXXNUES, 2) + pow(PYYNUES, 2) );
+	histo_pTnu.insert( PTNUES );
 }
 
 void Mis::printResults() const {
