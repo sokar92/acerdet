@@ -224,9 +224,8 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 			if(PT * PT <= PTLRAT * PZ * PZ) 
 				continue; 
 
-			Int32_t KC = part.getKfcomp(); 
-			if (KC == 0 || KC == 12 || KC == 14 || KC == 16 || KC == 13 || KC == KFINVS) 
-				continue;
+			if (part.type == PT_UNKNOWN || part.isNeutrino() || part.type == PT_MUON || part.type == KFINVS)
+			continue;
 
 			Real64_t DETPHI = 0.0;
 			if (KEYFLD && part.getKuchge() != 0) {

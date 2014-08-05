@@ -8,13 +8,15 @@ HEPMCLIBS= -L$(HEPMCLOCATION)lib -lHepMC
 # -------------------------------
 # -- Library paths and modules --
 # -------------------------------
-LIB= AcerDET.so
+LIB= AcerDET
 LIB_MAJOR_VERSION= .2
 LIB_MINOR_VERSION= .0
 
-LIB_NAME= lib$(LIB)
-LIB_MAJOR_NAME= $(LIB_NAME)$(LIB_MAJOR_VERSION)
-LIB_FULL_NAME= $(LIB_MAJOR_NAME)$(LIB_MINOR_VERSION)
+SHARED_LIB_NAME= lib$(LIB).so
+SHARED_LIB_MAJOR_NAME= $(SHARED_LIB_NAME)$(LIB_MAJOR_VERSION)
+SHARED_LIB_FULL_NAME= $(SHARED_LIB_MAJOR_NAME)$(LIB_MINOR_VERSION)
+
+STATIC_LIB_FULL_NAME= $(LIB).a
 
 INCLUDE_FOLDER= AcerDET
 HEADERS_PATH= ./include
@@ -39,8 +41,8 @@ OBJS= $(shell find . -regex '.*\.o')
 # -- Instalation procedure --
 # ---------------------------
 
-all: prepare compile export_lib export_include
-local: prepare compile export_local
+all: prepare compile_shared export_lib export_include
+local: prepare compile_static export_local
 
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -51,14 +53,22 @@ local: prepare compile export_local
 # -- Compile whole project --
 # ---------------------------
 
-compile: $(SUBTARGETS) $(OBJECTS) $(LIB_FULL_NAME)
+compile_shared: $(SUBTARGETS) $(OBJECTS) $(SHARED_LIB_FULL_NAME)
+compile_static: $(SUBTARGETS) $(OBJECTS) $(STATIC_LIB_FULL_NAME)
 
 # ---------------------------
 # -- Create Shared Library --
-# -- ------------------------
+# ---------------------------
 
-$(LIB_FULL_NAME): $(OBJS)
+$(SHARED_LIB_FULL_NAME): $(OBJS)
 	$(CC) -shared $(OBJS) -o $@
+
+# ---------------------------
+# -- Create Static Library --
+# ---------------------------
+
+$(STATIC_LIB_FULL_NAME): $(OBJS)
+	ar cq $@ $(OBJS)
 
 # --------------------------
 # -- Compile global files --
@@ -103,9 +113,9 @@ prepare:
 # --------------------------
 
 export_lib:
-	cp $(LIB_FULL_NAME) $(PATH_LIB)/$(LIB_FULL_NAME)
-	ln -sf $(PATH_LIB)/$(LIB_FULL_NAME) $(PATH_LIB)/$(LIB_MAJOR_NAME)
-	ln -sf $(PATH_LIB)/$(LIB_FULL_NAME) $(PATH_LIB)/$(LIB_NAME)
+	cp $(SHARED_LIB_FULL_NAME) $(PATH_LIB)/$(SHARED_LIB_FULL_NAME)
+	ln -sf $(PATH_LIB)/$(SHARED_LIB_FULL_NAME) $(PATH_LIB)/$(SHARED_LIB_MAJOR_NAME)
+	ln -sf $(PATH_LIB)/$(SHARED_LIB_FULL_NAME) $(PATH_LIB)/$(SHARED_LIB_NAME)
 	ldconfig
 
 export_include:
@@ -117,27 +127,11 @@ export_include:
 export_local:
 	cp -f *.h -t $(HEADERS_PATH)
 	mv $(HEADERS_PATH) $(INCLUDE_FOLDER)
-	ln -sf $(LIB_FULL_NAME) $(LIB_NAME)
 
 # -------------------
 # -- Clean objects --
 # -------------------
 
 clean:
-	find . -regex '.*\.\(~\|o\|so\)' | xargs rm -rf
+	find . -regex '.*\.\(~\a|\|o\|so\)' | xargs rm -rf
 	find . -regex '.*\.so\..*' | xargs rm -rf
-
-
-
-# ---------------------------------------------------------------------------------------------------------------------------------------------------
-# TESTING
-# ---------------------------------------------------------------------------------------------------------------------------------------------------
-
-test: prepare compile core_tests
-
-
-# CORE
-core_tests: core_test_histogram
-
-core_test_histogram:
-	la
