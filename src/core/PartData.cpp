@@ -5,6 +5,12 @@ using namespace AcerDet::core;
 using namespace std;
 
 PartData::PartData() :
+	num (0),
+	particleID (-1),
+	motherState (0),
+	state (0),
+	eta (0.0),
+	phi (0.0),
 	pT (0.0)
 {}
 

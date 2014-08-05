@@ -50,7 +50,10 @@ void Electron::printInfo() const {
 }
 
 void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
-/*
+
+	// variables
+	Real64_t PT, ETA, PHI, ENER, JPT, JETA, JPHI, DR, DDR, PTCRU, ENE, EDEP;
+
 	// new event to compute
 	IEVENT++;
 
@@ -58,7 +61,7 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 	const vector<Particle>& parts = irecord.particles();
 
 	// znajdz poczatek danych
-	Int32_t NSTOP = 0, NSTART = 1;
+	Int32_t NSTOP = -1, NSTART = 0;
 	for (int i=0; i<parts.size(); ++i) {
 		if (parts[i].stateID != 21) {
 			NSTOP = i-1;
@@ -76,8 +79,9 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 			
 		// analyse electrons
 		if (part.type == PT_ELECTRON) {
+
 			Bool_t ISOL = true;
-			LCLU = 0;
+			Int32_t LCLU = -1;
 			
 			PT = part.pT();
         	ETA = part.getEta();
@@ -97,9 +101,9 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 				// EEELE = P(I,4) * (1.0 + SIGPH);
 				// PT = sqrt(PXELE*PXELE + PYELE*PYELE);
 				
-				Particle pEle = part;
-				pEle.momentum *= (1.0 + SIGPH);
-				PT = pEle.pT();
+				//Particle pEle = part;
+				//pEle.momentum *= (1.0 + SIGPH);
+				//PT = pEle.pT();
 			}
         
 			if (PT < PTLMIN)
@@ -121,7 +125,7 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 				if (abs(PHI - cluster.phi_rec) > PI)
 					DDR = sqrt( 
 						pow(ETA - cluster.eta_rec, 2) + 
-						pow(abs(PHI - cluster.phi_rec) - 2*PI), 2)
+						pow(abs(PHI - cluster.phi_rec) - 2*PI, 2)
 					);
 					
 				if (DDR < DR) {
@@ -180,34 +184,43 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 				ISOL = false;
 				
 			// fill /ISOELE/ with isolated electron 
-			// remove ele-cluster from /CLUSTER/
 			if (ISOL) {
-				// usun stowarzyszony cluster z listy clustrow
+				// remove ele-cluster from /CLUSTER/
 				if (LCLU >= 0)
-					orecord.Cluster.erase(orecord.Cluster.begin() + LCLU);
+					orecord.Clusters.erase(orecord.Clusters.begin() + LCLU);
 
-				KELE(NELE,1) = NELE
-				KELE(NELE,2) = K(I,2)			// typ elektronu
-				KELE(NELE,3) = I
-				KELE(NELE,4) = K(K(I,3),2)		// typ matki (w drzewku)
-				KELE(NELE,5) = 1
+				PartData newParton;
+				newParton.state = part.stateID;
+				newParton.particleID = i;
+				newParton.motherState = parts[part.mother].stateID;
+				newParton.eta = ETA;
+				newParton.phi = PHI;
+				newParton.pT = PT;
+				
+				orecord.Electrons.push_back( newParton );
+				
+				// KELE(NELE,1) = NELE
+				// KELE(NELE,2) = K(I,2)			// typ elektronu
+				// KELE(NELE,3) = I
+				// KELE(NELE,4) = K(K(I,3),2)		// typ matki (w drzewku)
+				// KELE(NELE,5) = 1
 
-				PELE(NELE,1) = ETA
-				PELE(NELE,2) = PHI
-           		PELE(NELE,3) = ETA
-           		PELE(NELE,4) = PHI
-           		PELE(NELE,5) = PT
+				// PELE(NELE,1) = ETA
+				// PELE(NELE,2) = PHI
+           		// PELE(NELE,3) = ETA
+           		// PELE(NELE,4) = PHI
+           		// PELE(NELE,5) = PT
 			}
 		}
 	}
 
-	// CALL HF1(IDENT+11, REAL(NELE), 1.0)
+	// store count in histogram
+	histo_isol.insert( orecord.Electrons.size() );
 
 	// arrange electrons in falling E_T sequence
-	// sor KELE i PELE
+	PartData::sortBy_pT( orecord.Electrons );
 
 	Int32_t IELE = 0, IELEISO = 0;
-	Real64_t PT, ETA, PHI, ENER, JPT, JETA, JPHI, DDR;
 	for (int i=0; i<=NSTOP; ++i) {
 		const Particle& part = parts[i];
 		
@@ -231,7 +244,7 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 					if (abs(JPHI - PHI) > PI)
 						DDR = sqrt(
 							pow(ETA - JETA, 2) + 
-							pow(abs(JPHI - PHI) - 2*PI), 2)
+							pow(abs(JPHI - PHI) - 2*PI, 2)
 						);
 
 					if (DDR < RISOLJ && JPT > ETCLU) 
@@ -253,9 +266,9 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 		}
 	}
 	
-	// CALL HF1(IDENT+21, REAL(IELE), 1.0)
-	// CALL HF1(IDENT+31, REAL(IELEISO), 1.0)
-*/
+	// store in histos
+	histo_hard.insert( IELE );
+	histo_sum.insert( IELEISO );
 }
 
 void Electron::printResults() const {

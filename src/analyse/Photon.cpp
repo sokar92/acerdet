@@ -50,7 +50,10 @@ void Photon::printInfo() const {
 }
 
 void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
-/*	
+
+	// variables
+	Real64_t PT, ETA, PHI, ENER, JPT, JETA, JPHI, DDR, PTCRU, ENE, EDEP;
+		
 	// new event to compute
 	IEVENT++;
 
@@ -58,7 +61,7 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 	const vector<Particle>& parts = irecord.particles();
 
 	// znajdz poczatek danych
-	Int32_t NSTOP = 0, NSTART = 1;
+	Int32_t NSTOP = -1, NSTART = 0;
 	for (int i=0; i<parts.size(); ++i) {
 		if (parts[i].stateID != 21) {
 			NSTOP = i-1;
@@ -74,12 +77,12 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 		if (!part.isStable()) 
 			continue;
 		
-		if (parts.pT() == 0) 
+		if (part.pT() == 0) 
 			continue;
 			
 		// analyse photons
 		if (part.type == PT_PHOTON) {
-			Boolt_t ISOL = true;
+			Bool_t ISOL = true;
 			Int32_t LCLU = -1;
 			
 			PT = part.pT();
@@ -101,11 +104,11 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 				// PT = sqrt(pxpho*pxpho + pypho*pypho);
 				// ENE = eepho;
 				
-				Particle pPho = part;
-				pPho.momentum *= (1.0 + SIGPH);
+				//Particle pPho = part;
+				//pPho.momentum *= (1.0 + SIGPH);
 				
-				PT = pPho.pT();
-				ENE = pPho.e();
+				//PT = pPho.pT();
+				//ENE = pPho.e();
 			}
 
 			if (PT < PTLMIN) 
@@ -191,26 +194,36 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 				if (LCLU >= 0) 
 					orecord.Clusters.erase(orecord.Clusters.begin() + LCLU);
 
-				// TODO
-				KPHO(NPHO,1) = NPHO;
-				KPHO(NPHO,2) = K(I,2);
-				KPHO(NPHO,3) = I;
-				KPHO(NPHO,4) = K(K(I,3),2);
-				KPHO(NPHO,5) = 1;
+				PartData newParton;
+				newParton.state = part.stateID;
+				newParton.particleID = i;
+				newParton.motherState = parts[part.mother].stateID;
+				newParton.eta = ETA;
+				newParton.phi = PHI;
+				newParton.pT = PT;
+				
+				orecord.Electrons.push_back( newParton );
+				
+				// KPHO(NPHO,1) = NPHO;
+				// KPHO(NPHO,2) = K(I,2);
+				// KPHO(NPHO,3) = I;
+				// KPHO(NPHO,4) = K(K(I,3),2);
+				// KPHO(NPHO,5) = 1;
            		
-				PPHO(NPHO,1) = ETA;
-				PPHO(NPHO,2) = PHI;
-				PPHO(NPHO,3) = ETA;
-				PPHO(NPHO,4) = PHI;
-				PPHO(NPHO,5) = PT;
+				// PPHO(NPHO,1) = ETA;
+				// PPHO(NPHO,2) = PHI;
+				// PPHO(NPHO,3) = ETA;
+				// PPHO(NPHO,4) = PHI;
+				// PPHO(NPHO,5) = PT;
 			}
 		}
 	}
 
-	// CALL HF1(IDENT+11,REAL(NPHO),1.0)
+	// store count in histogram
+	histo_isol.insert( orecord.Photons.size() );
 
 	// arrange photons in falling E_T sequence
-	// sort KPHO, PPHO
+	PartData::sortBy_pT( orecord.Photons );
 	
 	// check with partons
 	Int32_t IPHO = 0, IPHISO = 0;
@@ -218,18 +231,18 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 		const Particle& part = parts[i];
 		
 		if (part.type == PT_PHOTON) {
-			Real64_t PT = part.pT(); 
-			Real64_t ETA = part.getEta();
-			Real64_t PHI = part.getPhi();
-			Real64_t ENER = 0.0;
+			PT = part.pT(); 
+			ETA = part.getEta();
+			PHI = part.getPhi();
+			ENER = 0.0;
 			Bool_t ISOL = true;
 			
 			for (int j=0; j<=NSTOP; ++j) {
 				if (abs(parts[j].typeID) <= 21 && i != j && !parts[j].isNeutrino()) 
 				{
-					Real64_t JPT = parts[j].pT(); 
-					Real64_t JETA = parts[j].getEta();
-					Real64_t JPHI = parts[j].getPhi();
+					JPT = parts[j].pT(); 
+					JETA = parts[j].getEta();
+					JPHI = parts[j].getPhi();
 					
 					DDR = sqrt(
 						pow(ETA - JETA, 2) + 
@@ -261,9 +274,10 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 		}
 	}
 
-	// CALL HF1(IDENT+21, REAL(IPHO), 1.0)
-	// CALL HF1(IDENT+31, REAL(IPHISO), 1.0)
-*/
+	// call histograms
+	histo_hard.insert( IPHO );
+	histo_sum.insert( IPHISO );
+
 }
 
 void Photon::printResults() const {

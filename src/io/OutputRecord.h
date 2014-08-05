@@ -4,6 +4,7 @@
 #include "../core/Particle.h"
 #include "../core/CellData.h"
 #include "../core/ClusterData.h"
+#include "../core/PartData.h"
 using namespace AcerDet::core;
 
 namespace AcerDet {
@@ -14,14 +15,14 @@ namespace AcerDet {
 			vector<CellData> Cells;
 			vector<ClusterData> Clusters;
 			
-			vector<Particle> Muons;
-			vector<Particle> IsolatedMuons;
+			vector<PartData> Muons;
+			vector<PartData> IsolatedMuons;
 			
-			vector<Particle> Electrons;
-			vector<Particle> IsolatedElectrons;
+			vector<PartData> Electrons;
+			vector<PartData> IsolatedElectrons;
 			
-			vector<Particle> Photons;
-			vector<Particle> IsolatedPhotons;
+			vector<PartData> Photons;
+			vector<PartData> IsolatedPhotons;
 			
 			vector<Particle> Jets;
 			vector<Particle> BJets;

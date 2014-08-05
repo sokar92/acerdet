@@ -12,23 +12,24 @@ namespace AcerDet {
 		public:
 			/*
 			 * K
-			 * 0 -
-			 * 1 -
-			 * 2 - 
-			 * 3 - 
+			 * 0 - num
+			 * 1 - state
+			 * 2 - particleID
+			 * 3 - motherState
 			 * 4 - 
 			 */
 			
 			/*
 			 * P
-			 * 0 - 
-			 * 1 - 
-			 * 2 - 
-			 * 3 -  
+			 * 0 - eta
+			 * 1 - phi
+			 * 2 - eta
+			 * 3 - phi
 			 * 4 - pT
 			 */
 			
-			Real64_t pT;
+			Int32_t num, particleID, motherState, state;
+			Real64_t eta, phi, pT;
 			
 			PartData();
 			
