@@ -7,8 +7,8 @@ Vector4f vec4(const HepMC::FourVector& v) {
 	return Vector4f(v.x(), v.y(), v.z(), v.e());
 }
 
-ParticleType InputReader::getParticleType(int hepmc_code) {
-	int code = abs(hepmc_code);
+ParticleType InputReader::getParticleType(int code) {
+	/*int code = abs(hepmc_code);
 	PDGcode pdg = (PDGcode)code;
 
 	switch(pdg) {
@@ -18,23 +18,26 @@ ParticleType InputReader::getParticleType(int hepmc_code) {
 	case LEPT_MUON: return PT_MUON;
 	case LEPT_TAU: return PT_TAU;
 	default: return PT_UNKNOWN;
-	}
+	}*/
+	if (code == -4 || code == 4) return PT_CJET;
+	if (code == -5 || code == 5) return PT_BJET;
+	if (code == -11 || code == 11) return PT_ELECTRON;
+	if (code == -12 || code == 12) return PT_NEUTRINO_ELE;
+	if (code == -13 || code == 13) return PT_MUON;
+	if (code == -14 || code == 14) return PT_NEUTRINO_MUO;
+	if (code == -15 || code == 15) return PT_TAU;
+	if (code == -16 || code == 16) return PT_NEUTRINO_TAU;
+	if (code == -22 || code == 22) return PT_PHOTON;
+	
+	return PT_UNKNOWN;
 }
 
-ParticleState InputReader::getParticleStatus(int hepmc_status) {
-	switch(hepmc_status) {
-	case 1: return PS_FINAL;
-	case 2: return PS_DECAYED;
-	case 3: return PS_HISTORY;
-	case 4: return PS_BEAM;
-	}
+ParticleState InputReader::getParticleStatus(HepMC::GenParticle* gpart) {
+	if (gpart->is_beam()) return PS_BEAM; 			  // status_code == 4
+	else if (gpart->is_undecayed()) return PS_FINAL;  // status_code == 1 -> final state
+	else if (gpart->has_decayed()) return PS_DECAYED; // status_code == 2 -> before hadronization
+	else if (gpart->status() == 3) return PS_HISTORY; // documentation line -> history
 	return PS_NULL;
-	/*
-	if (gpart->is_beam()) part.state = PS_BEAM; 			// status_code == 4
-	else if (gpart->is_undecayed()) part.state = PS_FINAL;  // status_code == 1 -> final state
-	else if (gpart->has_decayed()) part.state = PS_DECAYED; // status_code == 2 -> before hadronization
-	else if (gpart->status() == 3) part.state = PS_HISTORY; // documentation line -> history
-	*/
 }
 
 Int32_t extractMother(HepMC::GenVertex* ptr) {
@@ -86,7 +89,7 @@ InputRecord InputReader::computeEvent( const GenEvent& event ) {
 		printf ("id: %d m: %d d: %d %d\n", part.id, part.mother, part.daughters.first, part.daughters.second);
 
 		// state (named & id)
-		part.state = getParticleStatus(gpart->status());
+		part.state = getParticleStatus(gpart);
 		part.stateID = gpart->status();
 		
 		// type (named & id)
@@ -101,12 +104,8 @@ InputRecord InputReader::computeEvent( const GenEvent& event ) {
 			part.production = vec4(prod->position());
 		}
 		
-		// angles
-		//part.phi = gpart->polarization().phi();
-		//part.theta = gpart->polarization().theta();
-		
 		parts.push_back(part);
-		// cout << part; // to delete in release!
+		cout << part; // to delete in release!
 	}
 	
 	return InputRecord(parts);

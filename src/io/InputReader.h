@@ -42,7 +42,7 @@ namespace AcerDet {
 
 			/*
 			 */
-			static ParticleState getParticleStatus(int hepmc_status);
+			static ParticleState getParticleStatus(GenParticle*);
 
 		public:
 			static InputRecord computeEvent(const GenEvent&);

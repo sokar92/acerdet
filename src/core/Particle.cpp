@@ -185,6 +185,9 @@ string Particle::getTypeName() const {
 	case PT_ELECTRON: return string("Electron");
 	case PT_PHOTON: return string("Photon");
 	case PT_TAU: return string("Tau");
+	case PT_NEUTRINO_ELE: return string("Neutrino_ele");
+	case PT_NEUTRINO_MUO: return string("Neutrino_muo");
+	case PT_NEUTRINO_TAU: return string("Neutrino_tau");
 	default: return string("Unknown");
 	}
 }
