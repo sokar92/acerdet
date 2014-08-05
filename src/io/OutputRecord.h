@@ -16,13 +16,8 @@ namespace AcerDet {
 			vector<ClusterData> Clusters;
 			
 			vector<PartData> Muons;
-			vector<PartData> IsolatedMuons;
-			
 			vector<PartData> Electrons;
-			vector<PartData> IsolatedElectrons;
-			
 			vector<PartData> Photons;
-			vector<PartData> IsolatedPhotons;
 			
 			vector<Particle> Jets;
 			vector<Particle> BJets;
