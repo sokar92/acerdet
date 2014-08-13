@@ -1,3 +1,13 @@
+# ---------------------
+# -- Root histograms --
+# ---------------------
+.SUFFIXES:  .o .c .cxx .f .l  .s  .sh  .h  .a
+LIBDIR= $(shell root-config --libdir)
+INCDIR= $(shell root-config --incdir)
+#  Root  libraries for linker
+RLIB=   -L$(LIBDIR) -lCore -lCint -lHist -lGraf -lGraf3d -lGpad -lTree -lRint \
+	-lPostscript -lMatrix -lPhysics -lm -ldl -lpthread -rdynamic
+
 # -----------------------
 # -- compilation flags --
 # -----------------------
@@ -12,17 +22,11 @@ LIB= AcerDET
 LIB_MAJOR_VERSION= .2
 LIB_MINOR_VERSION= .0
 
-SHARED_LIB_NAME= lib$(LIB).so
-SHARED_LIB_MAJOR_NAME= $(SHARED_LIB_NAME)$(LIB_MAJOR_VERSION)
-SHARED_LIB_FULL_NAME= $(SHARED_LIB_MAJOR_NAME)$(LIB_MINOR_VERSION)
+LIB_NAME= lib$(LIB).so
+LIB_MAJOR_NAME= $(LIB_NAME)$(LIB_MAJOR_VERSION)
+LIB_FULL_NAME= $(LIB_MAJOR_NAME)$(LIB_MINOR_VERSION)
 
-STATIC_LIB_FULL_NAME= $(LIB).a
-
-INCLUDE_FOLDER= AcerDET
 HEADERS_PATH= ./include
-
-PATH_LIB= /usr/lib
-PATH_INCLUDE= /usr/include/$(INCLUDE_FOLDER)
 
 SUBTARGETS= module_core \
 	module_configuration \
@@ -41,9 +45,7 @@ OBJS= $(shell find . -regex '.*\.o')
 # -- Instalation procedure --
 # ---------------------------
 
-all: prepare compile_shared export_lib export_include
-local: prepare compile_static export_local
-
+all: prepare compile copy_headers link_lib
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------------
 # COMPILATION
@@ -53,22 +55,14 @@ local: prepare compile_static export_local
 # -- Compile whole project --
 # ---------------------------
 
-compile_shared: $(SUBTARGETS) $(OBJECTS) $(SHARED_LIB_FULL_NAME)
-compile_static: $(SUBTARGETS) $(OBJECTS) $(STATIC_LIB_FULL_NAME)
+compile: $(SUBTARGETS) $(OBJECTS) $(LIB_FULL_NAME)
 
 # ---------------------------
 # -- Create Shared Library --
 # ---------------------------
 
-$(SHARED_LIB_FULL_NAME): $(OBJS)
+$(LIB_FULL_NAME): $(OBJS)
 	$(CC) -shared $(OBJS) -o $@
-
-# ---------------------------
-# -- Create Static Library --
-# ---------------------------
-
-$(STATIC_LIB_FULL_NAME): $(OBJS)
-	ar cq $@ $(OBJS)
 
 # --------------------------
 # -- Compile global files --
@@ -93,40 +87,20 @@ module_io:
 module_analyse:
 	$(MAKE) -C ./analyse
 
-
-
 # ---------------------------------------------------------------------------------------------------------------------------------------------------
 # LIBRARY INSTALATION AND FILES MANAGEMENT
 # ---------------------------------------------------------------------------------------------------------------------------------------------------
 
-# -----------------
-# -- Preparation --
-# -----------------
-
 prepare:
 	rm -rf $(HEADERS_PATH)
 	mkdir $(HEADERS_PATH)
-	rm -rf $(INCLUDE_FOLDER)
 
-# --------------------------
-# -- Export to global use --
-# --------------------------
+link_lib:
+	ln -sf $(LIB_FULL_NAME) $(LIB_MAJOR_NAME)
+	ln -sf $(LIB_FULL_NAME) $(LIB_NAME)
 
-export_lib:
-	cp $(SHARED_LIB_FULL_NAME) $(PATH_LIB)/$(SHARED_LIB_FULL_NAME)
-	ln -sf $(PATH_LIB)/$(SHARED_LIB_FULL_NAME) $(PATH_LIB)/$(SHARED_LIB_MAJOR_NAME)
-	ln -sf $(PATH_LIB)/$(SHARED_LIB_FULL_NAME) $(PATH_LIB)/$(SHARED_LIB_NAME)
-	ldconfig
-
-export_include:
-	rm -rf $(PATH_INCLUDE)
+copy_headers:
 	cp -f *.h -t $(HEADERS_PATH)
-	cp -r $(HEADERS_PATH) $(INCLUDE_FOLDER)
-	mv $(HEADERS_PATH) $(PATH_INCLUDE)
-
-export_local:
-	cp -f *.h -t $(HEADERS_PATH)
-	mv $(HEADERS_PATH) $(INCLUDE_FOLDER)
 
 # -------------------
 # -- Clean objects --
@@ -135,3 +109,4 @@ export_local:
 clean:
 	find . -regex '.*\.\(~\a|\|o\|so\)' | xargs rm -rf
 	find . -regex '.*\.so\..*' | xargs rm -rf
+	rm -rf $(HEADERS_PATH)
