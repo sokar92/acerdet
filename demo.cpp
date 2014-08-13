@@ -8,8 +8,8 @@ using std::cout;
 using std::endl;
 using namespace HepMC;
 
-#include <AcerDET/AcerDET.h>
-#include <AcerDET/core/Functions.h>
+#include "src/include/AcerDET.h"
+#include "src/include/core/Functions.h"
 using namespace AcerDet;
 using namespace AcerDet::conf;
 using namespace AcerDet::core;
@@ -55,6 +55,20 @@ int main( int argc, char **argv ) {
 
     pythia.readFile(argv[1]);
     pythia.init();
+    
+    // charge test!!
+    //{
+	//	Pythia8::Particle pPart;
+	//	AcerDet::core::Particle aPart;
+		
+	//	for (int i=0; i<4000; i++) {
+	//		pPart.id(i);
+	//		aPart.typeID = i;
+	//		double pRes = pPart.charge();
+	//		int aRes = aPart.getKuchge();
+	//		printf ("[%d] Pythia= %f AcerDet= %d\n", i, pRes, aRes);
+	//	}
+	//}
     
     //
     // Initialize AcerDET
