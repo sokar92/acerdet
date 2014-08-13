@@ -1,0 +1,4 @@
+To install Root histograms:
+-> Install Root
+-> run source <root_path>/bin/thisroot.sh
+-> make
