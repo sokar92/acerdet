@@ -3,7 +3,7 @@
 
 using namespace AcerDet::analyse;
 
-Mis::Mis( const Configuration& config ) :
+Mis::Mis( const Configuration& config, IHistogramManager& histoManager ) :
 	PTMUMIN	( config.Muon.MinMomenta ),
 	ETAMAX	( config.Muon.MaxEta ),
 	ETCELL	( config.Tau.MinpT ),
@@ -13,12 +13,12 @@ Mis::Mis( const Configuration& config ) :
 	KEYSME	( config.Flag.Smearing ),
 	KFINVS	( config.Flag.SusyParticle ),
 
-	IEVENT	( 0 ),
+	IEVENT	( 0 )//,
 
-	histo_reconstructed_pT			("Mis: reconstructed p_T", 0.0, 200.0, 50),
-	histo_reconstructed_pT_cells	("Mis: reconstructed p_T + cells", 0.0, 200.0, 50),
-	histo_pTmiss					("Mis: pTmiss", 0.0, 200.0, 50),
-	histo_pTnu						("Mis: pT nu", 0.0, 200.0, 50)
+	//histo_reconstructed_pT			("Mis: reconstructed p_T", 0.0, 200.0, 50),
+	//histo_reconstructed_pT_cells	("Mis: reconstructed p_T + cells", 0.0, 200.0, 50),
+	//histo_pTmiss					("Mis: pTmiss", 0.0, 200.0, 50),
+	//histo_pTnu						("Mis: pT nu", 0.0, 200.0, 50)
 {}
 
 Mis::~Mis() {}
@@ -132,7 +132,7 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
     
     // store pT in histo
     Real64_t ETREC = sqrt( pow(PXREC, 2) + pow(PYREC, 2) );
-    histo_reconstructed_pT.insert( ETREC );
+    //histo_reconstructed_pT.insert( ETREC );
     
     // smear cells energy not used for reconstruction
     // remove cells below threshold
@@ -162,12 +162,12 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	PYSUM += PYREC;
 	
 	Real64_t ETSUM = sqrt( pow(PXSUM, 2) + pow(PYSUM, 2) );
-	histo_reconstructed_pT_cells.insert( ETSUM );
+	//histo_reconstructed_pT_cells.insert( ETSUM );
 	
 	Real64_t PXXMISS = -PXSUM;
 	Real64_t PYYMISS = -PYSUM; // ? po co
 	Real64_t PTMISS = sqrt( pow(PXXMISS, 2) + pow(PYYMISS, 2) );
-	histo_pTmiss.insert( PTMISS );
+	//histo_pTmiss.insert( PTMISS );
 	
 	// sum up momenta  of neutrinos 
 	Real64_t PXXNUES = 0.0;
@@ -180,7 +180,7 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	}
 	
 	Real64_t PTNUES = sqrt( pow(PXXNUES, 2) + pow(PYYNUES, 2) );
-	histo_pTnu.insert( PTNUES );
+	//histo_pTnu.insert( PTNUES );
 }
 
 void Mis::printResults() const {
@@ -194,8 +194,8 @@ void Mis::printResults() const {
 	printf ("***********************************\n");
 	
 	printf (" Analysed records: %d\n", IEVENT);
-	histo_reconstructed_pT			.print( true );
-	histo_reconstructed_pT_cells	.print( true );
-	histo_pTmiss					.print( true );
-	histo_pTnu						.print( true );
+	//histo_reconstructed_pT			.print( true );
+	//histo_reconstructed_pT_cells	.print( true );
+	//histo_pTmiss					.print( true );
+	//histo_pTnu						.print( true );
 }

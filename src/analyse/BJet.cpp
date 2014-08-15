@@ -3,7 +3,7 @@
 
 using namespace AcerDet::analyse;
 
-BJet::BJet( const Configuration& config ) :
+BJet::BJet( const Configuration& config, IHistogramManager& histoManager ) :
 	ETJET	( config.Jet.MinEnergy ),
 	RCONE	( config.Cluster.ConeR ),
 
@@ -14,12 +14,12 @@ BJet::BJet( const Configuration& config ) :
 	KEYHID	( config.Flag.HistogramId ),
 	KEYBCL	( config.Flag.BCJetsLabeling ),
 
-	IEVENT	( 0 ),
+	IEVENT	( 0 )//,
 	
-	histo_bJets		("BJet: b-jets multiplicity", 0.0, 10.0, 10),
-	histo_bQuarks	("BJet: b-quarks HARD multiplicity", 0.0, 10.0, 10),
-	histo_delta		("BJet: delta r bjet-bquark", 0.0, 0.5, 50),
-	histo_pT		("BJet: pTbjet / pTbquark", 0.0, 2.0, 50)
+	//histo_bJets		("BJet: b-jets multiplicity", 0.0, 10.0, 10),
+	//histo_bQuarks	("BJet: b-quarks HARD multiplicity", 0.0, 10.0, 10),
+	//histo_delta		("BJet: delta r bjet-bquark", 0.0, 0.5, 50),
+	//histo_pT		("BJet: pTbjet / pTbquark", 0.0, 2.0, 50)
 {}
 
 BJet::~BJet() {}
@@ -224,9 +224,9 @@ void BJet::printResults() const {
 		printf ("***********************************\n");
 	
 		printf (" Analysed records: %d\n", IEVENT);
-		histo_bJets		.print( true );
-		histo_bQuarks	.print( true );
-		histo_delta		.print( true );
-		histo_pT		.print( true );
+		//histo_bJets		.print( true );
+		//histo_bQuarks	.print( true );
+		//histo_delta		.print( true );
+		//histo_pT		.print( true );
 	}
 }

@@ -3,7 +3,7 @@
 
 using namespace AcerDet::analyse;
 
-Photon::Photon( const Configuration& config ) :
+Photon::Photon( const Configuration& config, IHistogramManager& histoManager ) :
 	ETCLU	( config.Cluster.MinEt ),
 	RCONE	( config.Cluster.ConeR ),
 
@@ -17,11 +17,11 @@ Photon::Photon( const Configuration& config ) :
 	KEYHID	( config.Flag.HistogramId ),
 	KEYSME	( config.Flag.Smearing ),
 
-	IEVENT	( 0 ),
+	IEVENT	( 0 )//,
 	
-	histo_isol	("Photon: multiplicity isolated", 0.0, 10.0, 10),
-	histo_hard	("Photon: multiplicity hard", 0.0, 10.0, 10),
-	histo_sum	("Photon: multipliciyt isol+hard", 0.0, 10.0, 10)
+	//histo_isol	("Photon: multiplicity isolated", 0.0, 10.0, 10),
+	//histo_hard	("Photon: multiplicity hard", 0.0, 10.0, 10),
+	//histo_sum	("Photon: multipliciyt isol+hard", 0.0, 10.0, 10)
 {}
 
 Photon::~Photon() {}
@@ -220,7 +220,7 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 	}
 
 	// store count in histogram
-	histo_isol.insert( orecord.Photons.size() );
+	//histo_isol.insert( orecord.Photons.size() );
 
 	// arrange photons in falling E_T sequence
 	PartData::sortBy_pT( orecord.Photons );
@@ -275,8 +275,8 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 	}
 
 	// call histograms
-	histo_hard.insert( IPHO );
-	histo_sum.insert( IPHISO );
+	//histo_hard.insert( IPHO );
+	//histo_sum.insert( IPHISO );
 
 }
 
@@ -291,7 +291,7 @@ void Photon::printResults() const {
 	printf ("*************************************\n");
 	
 	printf (" Analysed records: %d\n", IEVENT);
-	histo_isol	.print( true );
-	histo_hard	.print( true );
-	histo_sum	.print( true );
+	//histo_isol	.print( true );
+	//histo_hard	.print( true );
+	//histo_sum	.print( true );
 }

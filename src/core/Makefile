@@ -1,8 +1,7 @@
 CC= g++
 CFLAGS= -g3 -O2 -fPIC -Wall
 
-OBJECTS= Histogram.o \
-	Functions.o \
+OBJECTS= Functions.o \
 	CellData.o \
 	ClusterData.o \
 	JetData.o \

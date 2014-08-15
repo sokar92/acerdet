@@ -6,7 +6,7 @@
 #include "../conf/Configuration.h"
 using namespace AcerDet::conf;
 
-#include "../core/Histogram.h"
+#include "../core/IHistogramManager.h"
 #include "../io/InputRecord.h"
 #include "../io/OutputRecord.h"
 
@@ -31,9 +31,9 @@ namespace AcerDet {
 			
 			Int32_t IEVENT;
 			
-			core::Histogram histo;
+			//core::Histogram histo;
 		public:
-			Cell( const Configuration& );
+			Cell( const Configuration&, IHistogramManager& );
 			~Cell();
 			
 			/*

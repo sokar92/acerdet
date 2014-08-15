@@ -6,7 +6,7 @@
 #include "../conf/Configuration.h"
 using namespace AcerDet::conf;
 
-#include "../core/Histogram.h"
+#include "../core/IHistogramManager.h"
 #include "../io/InputRecord.h"
 #include "../io/OutputRecord.h"
 
@@ -29,11 +29,11 @@ namespace AcerDet {
 
 			Int32_t IEVENT;
 			
-			core::Histogram histo_isol;
-			core::Histogram histo_hard;
-			core::Histogram histo_sum;
+			//core::Histogram histo_isol;
+			//core::Histogram histo_hard;
+			//core::Histogram histo_sum;
 		public:
-			Electron( const Configuration& );
+			Electron( const Configuration&, IHistogramManager& );
 			~Electron();
 			
 			void printInfo() const;

@@ -6,7 +6,7 @@
 using namespace AcerDet::analyse;
 using namespace AcerDet::io;
 
-Cell::Cell( const Configuration& config ) :
+Cell::Cell( const Configuration& config, IHistogramManager& histoManager ) :
 	ETACEL	( config.Cell.RapidityCoverage ),
 	PTMIN	( config.Cell.MinpT ),
 	ETTHR	( config.Cell.MinEt ),
@@ -18,9 +18,9 @@ Cell::Cell( const Configuration& config ) :
 	KEYFLD	( config.Flag.BField ),
 	KFINVS	( config.Flag.SusyParticle ),
 
-	IEVENT	( 0 ),
+	IEVENT	( 0 )//,
 	
-	histo ("Cell: multiplicity", 0.0, 500.0, 50)
+	//histo ("Cell: multiplicity", 0.0, 500.0, 50)
 {}
 
 Cell::~Cell() {}
@@ -148,7 +148,7 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	}
 
 	// call histogram
-	histo.insert( orecord.Cells.size() );
+	//histo.insert( orecord.Cells.size() );
 }
 
 void Cell::printResults() const {
@@ -162,5 +162,5 @@ void Cell::printResults() const {
 	printf ("***********************************\n");
 	
 	printf (" Analysed records: %d\n", IEVENT);
-	histo.print( true );
+	//histo.print( true );
 }

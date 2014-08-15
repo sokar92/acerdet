@@ -6,7 +6,7 @@
 #include "../conf/Configuration.h"
 using namespace AcerDet::conf;
 
-#include "../core/Histogram.h"
+#include "../core/IHistogramManager.h"
 #include "../io/InputRecord.h"
 #include "../io/OutputRecord.h"
 
@@ -26,12 +26,12 @@ namespace AcerDet {
 
 			Int32_t IEVENT;
 			
-			core::Histogram histo_bJets; //IDENT + 11
-			core::Histogram histo_bQuarks; //IDENT + 21
-			core::Histogram histo_delta; //IDENT + 23
-			core::Histogram histo_pT; //IDENT + 24
+			//core::Histogram histo_bJets; //IDENT + 11
+			//core::Histogram histo_bQuarks; //IDENT + 21
+			//core::Histogram histo_delta; //IDENT + 23
+			//core::Histogram histo_pT; //IDENT + 24
 		public:
-			BJet( const Configuration& );
+			BJet( const Configuration&, IHistogramManager& );
 			~BJet();
 			
 			void printInfo() const;

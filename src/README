@@ -4,21 +4,8 @@ Instalation
 
 2. set up local variables
 	source path.inc
+	source ../../root/bin/thisroot.sh (or equivalent, dependent when you have insatlled ROOT package)
 
-3a) Superuser instalation
-. enter super user mode
-	su
-
-. if there are some problems
-	man su
-	apt-get install su
-
-. build and install shared library in /usr/local/lib
+3. build library
+	make clean (optional)
 	make
-
-. leave super user mode
-	exit
-
-3b) local instalation
-. build library
-	make local

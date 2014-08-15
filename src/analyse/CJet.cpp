@@ -3,7 +3,7 @@
 
 using namespace AcerDet::analyse;
 
-CJet::CJet( const Configuration& config ) :
+CJet::CJet( const Configuration& config, IHistogramManager& histoManager ) :
 	ETJET	( config.Jet.MinEnergy ),
 	RCONE	( config.Cluster.ConeR ),
 
@@ -14,12 +14,12 @@ CJet::CJet( const Configuration& config ) :
 	KEYHID	( config.Flag.HistogramId ),
 	KEYBCL	( config.Flag.BCJetsLabeling ),
 
-	IEVENT	( 0 ),
+	IEVENT	( 0 )//,
 	
-	histo_cJets		("CJet: c-jets multiplicity", 0.0, 10.0, 10),
-	histo_cQuarks	("CJet: c-quarks HARD multiplicity", 0.0, 10.0, 10),
-	histo_delta		("CJet: delta r cjet-cquark", 0.0, 0.5, 50),
-	histo_pT		("CJet: pTcjet / pTcquark", 0.0, 2.0, 50)
+	//histo_cJets		("CJet: c-jets multiplicity", 0.0, 10.0, 10),
+	//histo_cQuarks	("CJet: c-quarks HARD multiplicity", 0.0, 10.0, 10),
+	//histo_delta		("CJet: delta r cjet-cquark", 0.0, 0.5, 50),
+	//histo_pT		("CJet: pTcjet / pTcquark", 0.0, 2.0, 50)
 {}
 
 CJet::~CJet() {}
@@ -229,9 +229,9 @@ void CJet::printResults() const {
 		printf ("***********************************\n");
 	
 		printf (" Analysed records: %d\n", IEVENT);
-		histo_cJets		.print( true ); // IDENT + 11
-		histo_cQuarks	.print( true ); // IDENT + 21
-		histo_delta		.print( true ); // IDENT + 23
-		histo_pT		.print( true ); // IDENT + 24
+		//histo_cJets		.print( true ); // IDENT + 11
+		//histo_cQuarks	.print( true ); // IDENT + 21
+		//histo_delta		.print( true ); // IDENT + 23
+		//histo_pT		.print( true ); // IDENT + 24
 	}
 }

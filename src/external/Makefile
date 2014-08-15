@@ -1,14 +1,16 @@
 CC= g++
 CFLAGS= -g3 -O2 -fPIC -Wall
 
-OBJECTS= HepMC_InputConverter.o
+OBJECTS= HepMC_InputConverter.o \
+	Pythia8_ParticleDataProviderFactory.o \
+	Root_HistogramManager.o
 
 all: prepare $(OBJECTS) export_headers
 
 %.o : %.cpp
-	$(CC) $(CFLAGS) -c $< -o $@ -I../$(HEPMCLOCATION)include
+	$(CC) $(CFLAGS) -c $< -o $@ -I../$(HEPMCLOCATION)include -I$(ROOTSYS)/include
 
-INPUT_HEADERS_PATH= ../include/io
+INPUT_HEADERS_PATH= ../include/external
 
 prepare:
 	mkdir $(INPUT_HEADERS_PATH)

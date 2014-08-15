@@ -10,7 +10,7 @@
 // --  Include AcerDET 2.0 core components --
 // ------------------------------------------
 #include "core/IParticleDataProviderFactory.h"
-#include "core/Histogram.h"
+#include "core/IHistogramManager.h"
 
 // -------------------------------------------
 // --  Include AcerDET 2.0 input components --
@@ -38,6 +38,7 @@
 // -----------------------------------
 #include "external/HepMC_InputConverter.h"
 #include "external/Pythia8_ParticleDataProviderFactory.h"
+#include "external/Root_HistogramManager.h"
 
 namespace AcerDet {
 
@@ -55,7 +56,10 @@ namespace AcerDet {
 		analyse::Photon			analyse_Photon;
 		analyse::Tau			analyse_Tau;
 	public:
-		AcerDET( const conf::Configuration&, const core::IParticleDataProviderFactory& );
+		AcerDET(
+			const conf::Configuration&,
+			core::IParticleDataProviderFactory&,
+			core::IHistogramManager& );
 		~AcerDET();
 		
 		void printInfo() const;

@@ -6,7 +6,7 @@
 #include "../conf/Configuration.h"
 using namespace AcerDet::conf;
 
-#include "../core/Histogram.h"
+#include "../core/IHistogramManager.h"
 #include "../io/InputRecord.h"
 #include "../io/OutputRecord.h"
 
@@ -28,12 +28,8 @@ namespace AcerDet {
 			Bool_t KEYSME;
 
 			Int32_t IEVENT;
-			
-			core::Histogram histo_isol;
-			core::Histogram histo_hard;
-			core::Histogram histo_sum;
 		public:
-			Photon( const Configuration& );
+			Photon( const Configuration&, IHistogramManager& );
 			~Photon();
 
 			void printInfo() const;

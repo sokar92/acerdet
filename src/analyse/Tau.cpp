@@ -3,7 +3,7 @@
 
 using namespace AcerDet::analyse;
 
-Tau::Tau( const Configuration& config ) :
+Tau::Tau( const Configuration& config, IHistogramManager& histoManager ) :
 	ETJET	( config.Jet.MinEnergy ),
 
 	PTTAU	( config.Tau.MinpT ),
@@ -14,10 +14,10 @@ Tau::Tau( const Configuration& config ) :
 	KEYHID	( config.Flag.HistogramId ),
 	KEYTAU	( config.Flag.TauJetsLabeling ),
 
-	IEVENT	( 0 ),
+	IEVENT	( 0 )//,
 	
-	histo_jets	("Tau: jets-multiplicity", 0.0, 10.0, 10),
-	histo_taus	("Tau: multiplicity", 0.0, 10.0, 10)
+	//histo_jets	("Tau: jets-multiplicity", 0.0, 10.0, 10),
+	//histo_taus	("Tau: multiplicity", 0.0, 10.0, 10)
 {}
 
 Tau::~Tau() {}
@@ -161,6 +161,6 @@ void Tau::printResults() const {
 	printf ("**********************************\n");
 	
 	printf (" Analysed records: %d\n", IEVENT);
-	histo_jets.print( true );
-	histo_taus.print( true );
+	//histo_jets.print( true );
+	//histo_taus.print( true );
 }

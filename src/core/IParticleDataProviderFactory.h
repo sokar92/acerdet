@@ -3,6 +3,8 @@
 
 #include "ParticleDataProvider.h"
 
+#pragma once
+
 namespace AcerDet {
 	namespace core {
 		

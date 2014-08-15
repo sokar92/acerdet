@@ -3,7 +3,7 @@
 
 using namespace AcerDet::analyse;
 
-Muon::Muon( const Configuration& config ) :
+Muon::Muon( const Configuration& config, IHistogramManager& histoManager ) :
 	ETCLU	( config.Cluster.MinEt ),
 	RCONE	( config.Cluster.ConeR ),
 
@@ -17,12 +17,12 @@ Muon::Muon( const Configuration& config ) :
 	KEYHID	( config.Flag.HistogramId ),
 	KEYSME	( config.Flag.Smearing ),
 
-	IEVENT	( 0 ),
+	IEVENT	( 0 )//,
 	
-	histo_nonisol	("Muon: non-isolated", 0.0, 10.0, 10),
-	histo_isol		("Muon: isolated", 0.0, 10.0, 10),
-	histo_hard		("Muon: hard", 0.0, 10.0, 10),
-	histo_sum		("Muon: hard+isol", 0.0, 10.0, 10)
+	//histo_nonisol	("Muon: non-isolated", 0.0, 10.0, 10),
+	//histo_isol		("Muon: isolated", 0.0, 10.0, 10),
+	//histo_hard		("Muon: hard", 0.0, 10.0, 10),
+	//histo_sum		("Muon: hard+isol", 0.0, 10.0, 10)
 {}
 
 Muon::~Muon() {}
@@ -199,8 +199,8 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	}
 	
 	// call histograms
-	histo_isol.insert( orecord.Muons.size() );
-	histo_nonisol.insert( orecord.NonisolatedMuons.size() );
+	//histo_isol.insert( orecord.Muons.size() );
+	//histo_nonisol.insert( orecord.NonisolatedMuons.size() );
 	
 	// cross-check with partons
 	Int32_t IMUO = 0, IMUOISO = 0;
@@ -251,8 +251,8 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 		}
 	}
 
-	histo_hard.insert( IMUO );
-	histo_sum.insert( IMUOISO );
+	//histo_hard.insert( IMUO );
+	//histo_sum.insert( IMUOISO );
 }
 
 void Muon::printResults() const {
@@ -266,8 +266,8 @@ void Muon::printResults() const {
 	printf ("***********************************\n");
 	
 	printf (" Analysed records: %d\n", IEVENT);
-	histo_nonisol	.print( true );
-	histo_isol		.print( true );
-	histo_hard		.print( true );
-	histo_sum		.print( true );
+	//histo_nonisol	.print( true );
+	//histo_isol		.print( true );
+	//histo_hard		.print( true );
+	//histo_sum		.print( true );
 }

@@ -6,7 +6,7 @@
 #include "../conf/Configuration.h"
 using namespace AcerDet::conf;
 
-#include "../core/Histogram.h"
+#include "../core/IHistogramManager.h"
 #include "../io/InputRecord.h"
 #include "../io/OutputRecord.h"
 
@@ -29,12 +29,12 @@ namespace AcerDet {
 
 			Int32_t IEVENT;
 			
-			core::Histogram histo_nonisol; //10
-			core::Histogram histo_isol; //11
-			core::Histogram histo_hard; //21
-			core::Histogram histo_sum; //31
+			//core::Histogram histo_nonisol; //10
+			//core::Histogram histo_isol; //11
+			//core::Histogram histo_hard; //21
+			//core::Histogram histo_sum; //31
 		public:
-			Muon( const Configuration& );
+			Muon( const Configuration&, IHistogramManager& );
 			~Muon();
 			
 			void printInfo() const;

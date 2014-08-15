@@ -5,7 +5,7 @@
 using namespace AcerDet::core;
 using namespace AcerDet::analyse;
 
-Cluster::Cluster( const Configuration& config ) :
+Cluster::Cluster( const Configuration& config, IHistogramManager& histoManager ) :
 	ETCLU	( config.Cluster.MinEt ),
 	RCONE	( config.Cluster.ConeR ),
 	ETACLU	( config.Cluster.RapidityCoverage ),
@@ -18,15 +18,15 @@ Cluster::Cluster( const Configuration& config ) :
 	KEYFLD	( config.Flag.BField ),
 	KFINVS	( config.Flag.SusyParticle ),
 
-	IEVENT	( 0 ),
+	IEVENT	( 0 )//,
 	
-	histo_bJets				("Cluster: multiplicity", 0.0, 10.0, 10),
-	histo_delta_phi			("Cluster: delta phi clu-barycentre", -0.5, 0.5, 50),
-	histo_delta_eta			("Cluster: delta eta clu-barycentre", -0.5, 0.5, 50),
-	histo_delta_barycenter	("Cluster: delta r clu-barycentre", 0.0, 0.5, 50),
-	histo_delta_parton		("Cluster: delta r clu-parton", 0.0, 0.5, 50),
-	histo_pT_bySum			("Cluster: pTclu / SumpTParticle", 0.0, 2.0, 50),
-	histo_pT_byPart			("Cluster: pTclu / pTparton", 0.0, 2.0, 50)
+	//histo_bJets				("Cluster: multiplicity", 0.0, 10.0, 10),
+	//histo_delta_phi			("Cluster: delta phi clu-barycentre", -0.5, 0.5, 50),
+	//histo_delta_eta			("Cluster: delta eta clu-barycentre", -0.5, 0.5, 50),
+	//histo_delta_barycenter	("Cluster: delta r clu-barycentre", 0.0, 0.5, 50),
+	//histo_delta_parton		("Cluster: delta r clu-parton", 0.0, 0.5, 50),
+	//histo_pT_bySum			("Cluster: pTclu / SumpTParticle", 0.0, 2.0, 50),
+	//histo_pT_byPart			("Cluster: pTclu / pTparton", 0.0, 2.0, 50)
 {}
 
 Cluster::~Cluster() {}
@@ -155,7 +155,7 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 	orecord.Clusters.insert(orecord.Clusters.end(), tempClusters.begin(), tempClusters.end());
 	
 	// call histogram
-	histo_bJets.insert(tempClusters.size());
+	//histo_bJets.insert(tempClusters.size());
 	
 	// reconstruct baricenter of particles
 	const vector<Particle>& parts = irecord.particles();
@@ -215,10 +215,10 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		);
 		
 		// call histograms
-		histo_delta_eta.insert(ETAREC - cluster.eta_rec); //IDENT + 11
-		histo_delta_phi.insert(PHIREC - cluster.phi_rec); //IDENT + 12
-		histo_delta_barycenter.insert(DETR); // IDENT + 13
-		histo_pT_bySum.insert(cluster.pT / PTREC); // IDENT + 14
+		//histo_delta_eta.insert(ETAREC - cluster.eta_rec); //IDENT + 11
+		//histo_delta_phi.insert(PHIREC - cluster.phi_rec); //IDENT + 12
+		//histo_delta_barycenter.insert(DETR); // IDENT + 13
+		//histo_pT_bySum.insert(cluster.pT / PTREC); // IDENT + 14
 	}
 
 	for (int ICLU=0; ICLU<orecord.Clusters.size(); ICLU++) {
@@ -252,8 +252,8 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 
 		if (PTREC) {
 			// call histograms
-			histo_delta_parton.insert(DETRMIN); // IDENT + 23
-			histo_pT_byPart.insert(cluster.pT / PTREC); // IDENT + 24
+			//histo_delta_parton.insert(DETRMIN); // IDENT + 23
+			//histo_pT_byPart.insert(cluster.pT / PTREC); // IDENT + 24
 		}
 	}
 }
@@ -269,11 +269,11 @@ void Cluster::printResults() const {
 	printf ("**************************************\n");
 	
 	printf (" Analysed records: %d\n", IEVENT);
-	histo_bJets				.print( true ); //IDENT + 1
-	histo_delta_phi			.print( true ); //IDENT + 11
-	histo_delta_eta			.print( true ); //IDENT + 12
-	histo_delta_barycenter	.print( true ); //IDENT + 13
-	histo_delta_parton		.print( true ); //IDENT + 23
-	histo_pT_bySum			.print( true ); //IDENT + 14
-	histo_pT_byPart			.print( true ); //IDENT + 24
+	//histo_bJets				.print( true ); //IDENT + 1
+	//histo_delta_phi			.print( true ); //IDENT + 11
+	//histo_delta_eta			.print( true ); //IDENT + 12
+	//histo_delta_barycenter	.print( true ); //IDENT + 13
+	//histo_delta_parton		.print( true ); //IDENT + 23
+	//histo_pT_bySum			.print( true ); //IDENT + 14
+	//histo_pT_byPart			.print( true ); //IDENT + 24
 }

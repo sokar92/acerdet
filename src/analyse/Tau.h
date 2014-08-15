@@ -6,7 +6,7 @@
 #include "../conf/Configuration.h"
 using namespace AcerDet::conf;
 
-#include "../core/Histogram.h"
+#include "../core/IHistogramManager.h"
 #include "../io/InputRecord.h"
 #include "../io/OutputRecord.h"
 
@@ -25,11 +25,8 @@ namespace AcerDet {
 			Bool_t KEYTAU;
 
 			Int32_t IEVENT;
-			
-			core::Histogram histo_jets;
-			core::Histogram histo_taus;
 		public:
-			Tau( const Configuration& );
+			Tau( const Configuration&, IHistogramManager& );
 			~Tau();
 
 			void printInfo() const;

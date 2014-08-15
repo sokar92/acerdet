@@ -69,7 +69,7 @@ $(LIB_FULL_NAME): $(OBJS)
 # --------------------------
 
 %.o : %.cpp
-	$(CC) $(CFLAGS) -c $< -o $@ -I$(HEPMCLOCATION)include
+	$(CC) $(CFLAGS) -c $< -o $@ -I$(HEPMCLOCATION)include -I$(ROOTSYS)/include
 
 # -------------------------
 # -- Library sub modules --

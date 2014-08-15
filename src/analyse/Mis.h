@@ -6,7 +6,7 @@
 #include "../conf/Configuration.h"
 using namespace AcerDet::conf;
 
-#include "../core/Histogram.h"
+#include "../core/IHistogramManager.h"
 #include "../io/InputRecord.h"
 #include "../io/OutputRecord.h"
 
@@ -26,13 +26,13 @@ namespace AcerDet {
 			
 			Int32_t IEVENT;
 			
-			core::Histogram histo_reconstructed_pT; //11
-			core::Histogram histo_reconstructed_pT_cells; //12
-			core::Histogram histo_pTmiss; //13
-			core::Histogram histo_pTnu;	//21
+			//core::Histogram histo_reconstructed_pT; //11
+			//core::Histogram histo_reconstructed_pT_cells; //12
+			//core::Histogram histo_pTmiss; //13
+			//core::Histogram histo_pTnu;	//21
 		
 		public:
-			Mis( const Configuration& );
+			Mis( const Configuration&, IHistogramManager& );
 			~Mis();
 			
 			void printInfo() const;

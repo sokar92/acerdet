@@ -8,18 +8,19 @@ using namespace AcerDet;
  */
 AcerDET::AcerDET(
 	const conf::Configuration& config,
-	const core::IParticleDataProviderFactory& partFactory ) :
-		analyse_BJet		( config ),
+	core::IParticleDataProviderFactory& partFactory,
+	core::IHistogramManager& histoManager ) :
+		analyse_BJet		( config, histoManager ),
 		analyse_Calibration	( config ),
-		analyse_Cell		( config ),
-		analyse_CJet		( config ),
-		analyse_Cluster		( config ),
-		analyse_Electron	( config ),
-		analyse_Jet			( config ),
-		analyse_Mis			( config ),
-		analyse_Muon		( config ),
-		analyse_Photon		( config ),
-		analyse_Tau			( config )
+		analyse_Cell		( config, histoManager ),
+		analyse_CJet		( config, histoManager ),
+		analyse_Cluster		( config, histoManager ),
+		analyse_Electron	( config, histoManager ),
+		analyse_Jet			( config, histoManager ),
+		analyse_Mis			( config, histoManager ),
+		analyse_Muon		( config, histoManager ),
+		analyse_Photon		( config, histoManager ),
+		analyse_Tau			( config, histoManager )
 {
 }
 

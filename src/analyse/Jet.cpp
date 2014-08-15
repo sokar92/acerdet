@@ -3,7 +3,7 @@
 
 using namespace AcerDet::analyse;
 
-Jet::Jet( const Configuration& config ) :
+Jet::Jet( const Configuration& config, IHistogramManager& histoManager ) :
 	ETJET	( config.Jet.MinEnergy ),
 	ETAJET	( config.Jet.RapidityCoverage ),
 	RCONE	( config.Cluster.ConeR ),
@@ -15,15 +15,15 @@ Jet::Jet( const Configuration& config ) :
 	KEYFLD	( config.Flag.BField ),
 	KFINVS	( config.Flag.SusyParticle ),
 
-	IEVENT	( 0 ),
+	IEVENT	( 0 )//,
 	
-	histo_bJets				("Jet: multiplicity", 0.0, 10.0, 10),
-	histo_delta_phi			("Jet: delta phi jet-barycentre", -0.5, 0.5, 50),
-	histo_delta_eta			("Jet: delta eta jet-barycentre", -0.5, 0.5, 50),
-	histo_delta_barycenter	("Jet: delta r jet-barycentre", 0.0, 0.5, 50),
-	histo_delta_parton		("Jet: delta r jet-parton", 0.0, 0.5, 50),
-	histo_pT_bySum			("Jet: pTjet / SumpTParticle", 0.0, 2.0, 50),
-	histo_pT_byPart			("Jet: pTjet / pTparton", 0.0, 2.0, 50)
+	//histo_bJets				("Jet: multiplicity", 0.0, 10.0, 10),
+	//histo_delta_phi			("Jet: delta phi jet-barycentre", -0.5, 0.5, 50),
+	//histo_delta_eta			("Jet: delta eta jet-barycentre", -0.5, 0.5, 50),
+	//histo_delta_barycenter	("Jet: delta r jet-barycentre", 0.0, 0.5, 50),
+	//histo_delta_parton		("Jet: delta r jet-parton", 0.0, 0.5, 50),
+	//histo_pT_bySum			("Jet: pTjet / SumpTParticle", 0.0, 2.0, 50),
+	//histo_pT_byPart			("Jet: pTjet / pTparton", 0.0, 2.0, 50)
 {}
 
 Jet::~Jet() {}
@@ -196,7 +196,7 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	}
 	
 	// histogram NJET
-	histo_bJets.insert( orecord.Jets.size() );
+	//histo_bJets.insert( orecord.Jets.size() );
 
 	// arrange jets in falling E_T sequence
 	JetData::sortBy_pT( orecord.Jets );
@@ -254,10 +254,10 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 			pow(PHIREC - jet.phi_rec, 2)
 		);
 
-		histo_delta_phi.insert(ETAREC - jet.eta_rec);
-		histo_delta_eta.insert(PHIREC - jet.phi_rec);
-		histo_delta_barycenter.insert(DETR);
-		histo_pT_bySum.insert(jet.pT / PTREC);
+		//histo_delta_phi.insert(ETAREC - jet.eta_rec);
+		//histo_delta_eta.insert(PHIREC - jet.phi_rec);
+		//histo_delta_barycenter.insert(DETR);
+		//histo_pT_bySum.insert(jet.pT / PTREC);
 	}
 
 	for (int i=0; i<orecord.Jets.size(); ++i) {
@@ -292,8 +292,8 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 		}
 
 		if (PTREC != 0) {
-			histo_delta_parton.insert(DETRMIN);
-			histo_pT_byPart.insert(jet.pT / PTREC);
+			//histo_delta_parton.insert(DETRMIN);
+			//histo_pT_byPart.insert(jet.pT / PTREC);
 		}
 	}
 }
@@ -309,11 +309,11 @@ void Jet::printResults() const {
 	printf ("**********************************\n");
 	
 	printf (" Analysed records: %d\n", IEVENT);
-	histo_bJets				.print( true ); //IDENT + 1
-	histo_delta_phi			.print( true ); //IDENT + 11
-	histo_delta_eta			.print( true ); //IDENT + 12
-	histo_delta_barycenter	.print( true ); //IDENT + 13
-	histo_delta_parton		.print( true ); //IDENT + 23
-	histo_pT_bySum			.print( true ); //IDENT + 14
-	histo_pT_byPart			.print( true ); //IDENT + 24
+	//histo_bJets				.print( true ); //IDENT + 1
+	//histo_delta_phi			.print( true ); //IDENT + 11
+	//histo_delta_eta			.print( true ); //IDENT + 12
+	//histo_delta_barycenter	.print( true ); //IDENT + 13
+	//histo_delta_parton		.print( true ); //IDENT + 23
+	//histo_pT_bySum			.print( true ); //IDENT + 14
+	//histo_pT_byPart			.print( true ); //IDENT + 24
 }

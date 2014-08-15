@@ -3,7 +3,7 @@
 
 using namespace AcerDet::analyse;
 
-Electron::Electron( const Configuration& config ) :
+Electron::Electron( const Configuration& config, IHistogramManager& histoManager ) :
 	ETCLU	( config.Cluster.MinEt ),
 	RCONE	( config.Cluster.ConeR ),
 
@@ -17,11 +17,11 @@ Electron::Electron( const Configuration& config ) :
 	KEYHID	( config.Flag.HistogramId ),
 	KEYSME	( config.Flag.Smearing ),
 
-	IEVENT	( 0 ),
+	IEVENT	( 0 )//,
 	
-	histo_isol	("Electron: multiplicity isolated", 0.0, 10.0, 10),
-	histo_hard	("Electron: multiplicity hard", 0.0, 10.0, 10),
-	histo_sum	("Electron: multipliciyt isol+hard", 0.0, 10.0, 10)
+	//histo_isol	("Electron: multiplicity isolated", 0.0, 10.0, 10),
+	//histo_hard	("Electron: multiplicity hard", 0.0, 10.0, 10),
+	//histo_sum	("Electron: multipliciyt isol+hard", 0.0, 10.0, 10)
 {}
 
 Electron::~Electron() {}
@@ -215,7 +215,7 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 	}
 
 	// store count in histogram
-	histo_isol.insert( orecord.Electrons.size() );
+	//histo_isol.insert( orecord.Electrons.size() );
 
 	// arrange electrons in falling E_T sequence
 	PartData::sortBy_pT( orecord.Electrons );
@@ -267,8 +267,8 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 	}
 	
 	// store in histos
-	histo_hard.insert( IELE );
-	histo_sum.insert( IELEISO );
+	//histo_hard.insert( IELE );
+	//histo_sum.insert( IELEISO );
 }
 
 void Electron::printResults() const {
@@ -282,7 +282,7 @@ void Electron::printResults() const {
 	printf ("***************************************\n");
 	
 	printf (" Analysed records: %d\n", IEVENT);
-	histo_isol	.print( true );
-	histo_hard	.print( true );
-	histo_sum	.print( true );
+	//histo_isol	.print( true );
+	//histo_hard	.print( true );
+	//histo_sum	.print( true );
 }

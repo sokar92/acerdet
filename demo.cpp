@@ -62,8 +62,9 @@ int main( int argc, char **argv ) {
 	Configuration configuration = Configuration::fromFile( configFileName );
 	
 	IParticleDataProviderFactory pdpFactory = external::Pythia8_ParticleDataProviderFactory();
+	IHistogramManager histoManager = external::Root_HistogramManager();
 	
-	AcerDET acerDet( configuration, pdpFactory );
+	AcerDET acerDet( configuration, pdpFactory, histoManager );
 //	acerDet.printInfo();
 /*
 	DbDummy db;
