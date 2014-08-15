@@ -13,6 +13,7 @@ namespace AcerDet {
 		 */
 		class IParticleDataProviderFactory {
 		public:
+			virtual ~IParticleDataProviderFactory() {}
 			/**
 			 * Create new ParticleDataProvider.
 			 * Has to be implemented in subclass.

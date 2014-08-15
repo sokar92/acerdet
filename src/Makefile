@@ -1,9 +1,17 @@
+LIBDIR= $(shell root-config --libdir)
+INCDIR= $(shell root-config --incdir)
+#  Root  libraries for linker
+RLIB=   -L$(LIBDIR) -lCore -lCint -lHist -lGraf -lGraf3d -lGpad -lTree -lRint \
+	-lPostscript -lMatrix -lPhysics -lm -ldl -lpthread -rdynamic
 # -----------------------
 # -- compilation flags --
 # -----------------------
 CC= g++
 CFLAGS= -g3 -O2 -fPIC -Wall
 HEPMCLIBS= -L$(HEPMCLOCATION)lib -lHepMC
+ROOTLIBS := $(shell root-config --libs)
+PWD := $(shell pwd)
+HISTOLOCATION= $(PWD)/../libHistoManager
 
 # -------------------------------
 # -- Library paths and modules --
@@ -53,7 +61,7 @@ compile: $(SUBTARGETS) $(OBJECTS) $(LIB_FULL_NAME)
 # ---------------------------
 
 $(LIB_FULL_NAME): $(OBJS)
-	$(CC) -shared $(OBJS) -o $@
+	$(CC) -shared $(HISTOLOCATION)/libLibHistoManager.so $(OBJS) -o $@ $(ROOTLIBS)
 
 # --------------------------
 # -- Compile global files --

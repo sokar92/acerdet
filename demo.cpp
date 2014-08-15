@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstring>
 
 // pythia8 header files
 #include <Pythia8/Pythia.h>
@@ -13,6 +14,10 @@ using namespace AcerDet;
 using namespace AcerDet::conf;
 using namespace AcerDet::core;
 using namespace AcerDet::io;
+
+#include "src/include/external/HepMC_InputConverter.h"
+#include "src/include/external/Pythia8_ParticleDataProviderFactory.h"
+#include "src/include/external/Root_HistogramManager.h"
 
 // ----------------------
 // -- Dummy Database ----
@@ -33,7 +38,7 @@ public:
 void resetRecord( io::OutputRecord& rec ) {
 	rec.clear();
 }
-#include <cstring>
+
 int main( int argc, char **argv ) {
 
 	if( argc < 3 ) {
@@ -60,11 +65,14 @@ int main( int argc, char **argv ) {
     //
 	const std::string configFileName = "acerdet.dat";
 	Configuration configuration = Configuration::fromFile( configFileName );
+	IParticleDataProviderFactory *pdpFactory = new external::Pythia8_ParticleDataProviderFactory();
+	IHistogramManager *histoManager = new external::Root_HistogramManager();
 	
-	IParticleDataProviderFactory pdpFactory = external::Pythia8_ParticleDataProviderFactory();
-	IHistogramManager histoManager = external::Root_HistogramManager();
-	
-	AcerDET acerDet( configuration, pdpFactory, histoManager );
+	AcerDET acerDet(
+		configuration,
+		*pdpFactory,
+		*histoManager 
+	);
 	acerDet.printInfo();
 
 	DbDummy db;
@@ -94,5 +102,7 @@ int main( int argc, char **argv ) {
 
 	acerDet.printResults();
 
+	delete pdpFactory;
+	delete histoManager;
 	return 0;
 }

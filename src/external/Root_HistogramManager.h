@@ -4,8 +4,6 @@
 #include "../core/IHistogramManager.h"
 using namespace AcerDet::core;
 
-#include "../../libHistoManager/HistoManager.h"
-
 namespace AcerDet {
 	namespace external {
 		
@@ -15,13 +13,13 @@ namespace AcerDet {
 			void init();
 			
 			void registerHistogram(
-				const string& name,
+				Int32_t id,
 				const string& title,
 				Int32_t blocks,
 				Real64_t minVal,
 				Real64_t maxVal );
 			
-			void insert( const string& histoName, Real64_t value );
+			void insert( Int32_t id, Real64_t value );
 		};
 
 	}
