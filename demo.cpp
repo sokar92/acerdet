@@ -65,8 +65,8 @@ int main( int argc, char **argv ) {
 	IHistogramManager histoManager = external::Root_HistogramManager();
 	
 	AcerDET acerDet( configuration, pdpFactory, histoManager );
-//	acerDet.printInfo();
-/*
+	acerDet.printInfo();
+
 	DbDummy db;
 	OutputRecord oRec;
 	
@@ -83,13 +83,16 @@ int main( int argc, char **argv ) {
 		GenEvent *hepmc = new GenEvent();
 		toHepMC.fill_next_event( event, hepmc );
 
-		acerDet.analyseRecord( InputReader::computeEvent( *hepmc ), oRec );
+		acerDet.analyseRecord(
+			external::HepMC_InputConverter::convert( *hepmc ),
+			oRec
+		);
 
 		db.store(oRec);
 		delete hepmc;
 	}
 
 	acerDet.printResults();
-*/
+
 	return 0;
 }
