@@ -1,5 +1,5 @@
-#include "InputReader.h"
-using namespace AcerDet::io;
+#include "HepMC_InputConverter.h"
+using namespace AcerDet::external;
 
 #include <cstdio>
 

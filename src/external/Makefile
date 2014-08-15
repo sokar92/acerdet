@@ -1,14 +1,24 @@
 CC= g++
 CFLAGS= -g3 -O2 -fPIC -Wall
 
-OBJECTS= HepMC_InputConverter.o \
-	Pythia8_ParticleDataProviderFactory.o \
-	Root_HistogramManager.o
+HEPMC_CONVERTER= HepMC_InputConverter
+PYTHIA_PROVIDER= Pythia8_ParticleDataProviderFactory
+ROOT_HISTOGRAM= Root_HistogramManager
+
+OBJECTS= $(HEPMC_CONVERTER).o \
+	$(PYTHIA_PROVIDER).o \
+	$(ROOT_HISTOGRAM).o
 
 all: prepare $(OBJECTS) export_headers
 
-%.o : %.cpp
-	$(CC) $(CFLAGS) -c $< -o $@ -I../$(HEPMCLOCATION)include -I$(ROOTSYS)/include
+$(HEPMC_CONVERTER).o : $(HEPMC_CONVERTER).cpp
+	$(CC) $(CFLAGS) -c $< -o $@ -I../$(HEPMCLOCATION)include
+
+$(PYTHIA_PROVIDER).o : $(PYTHIA_PROVIDER).cpp
+	$(CC) $(CFLAGS) -c $< -o $@ -I../$(PYTHIALOCATION)/include
+
+$(ROOT_HISTOGRAM).o : $(ROOT_HISTOGRAM).cpp
+	$(CC) $(CFLAGS) -c $< -o $@ -I$(ROOTSYS)/include
 
 INPUT_HEADERS_PATH= ../include/external
 

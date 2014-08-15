@@ -13,12 +13,12 @@ ParticleDataProvider Pythia8_ParticleDataProviderFactory::create() {
 	pythia.init( 2212, 2212, 14000.0); // must be properly initialized to access particle data
 	
 	for (int j=-PARTS_SCAN; j<=PARTS_SCAN; ++j) {
-		const string& name = pythia.particleData.name(i);
-		Int32_t cht  = pythia.particleData.chargeType(i);
-		Real64_t ch = pythia.particleData.charge(i);
+		const string& name = pythia.particleData.name(j);
+		Int32_t cht  = pythia.particleData.chargeType(j);
+		Real64_t ch = pythia.particleData.charge(j);
 		
 		if (name.size() > 0 && name[0] != ' ')
-			newProvider.insert(j, cht, ch, name); 
+			newProvider.insertInfo(j, cht, ch, name); 
 	}
 	
 	return newProvider;

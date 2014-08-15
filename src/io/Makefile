@@ -7,7 +7,7 @@ OBJECTS= InputRecord.o \
 all: prepare $(OBJECTS) export_headers
 
 %.o : %.cpp
-	$(CC) $(CFLAGS) -c $< -o $@ -I../$(HEPMCLOCATION)include
+	$(CC) $(CFLAGS) -c $< -o $@
 
 INPUT_HEADERS_PATH= ../include/io
 

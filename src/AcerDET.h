@@ -33,13 +33,6 @@
 #include "analyse/Photon.h"
 #include "analyse/Tau.h"
 
-// -----------------------------------
-// -- Include AcerDET 2.0 externals --
-// -----------------------------------
-#include "external/HepMC_InputConverter.h"
-#include "external/Pythia8_ParticleDataProviderFactory.h"
-#include "external/Root_HistogramManager.h"
-
 namespace AcerDet {
 
 	class AcerDET {

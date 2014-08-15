@@ -1,13 +1,3 @@
-# ---------------------
-# -- Root histograms --
-# ---------------------
-.SUFFIXES:  .o .c .cxx .f .l  .s  .sh  .h  .a
-LIBDIR= $(shell root-config --libdir)
-INCDIR= $(shell root-config --incdir)
-#  Root  libraries for linker
-RLIB=   -L$(LIBDIR) -lCore -lCint -lHist -lGraf -lGraf3d -lGpad -lTree -lRint \
-	-lPostscript -lMatrix -lPhysics -lm -ldl -lpthread -rdynamic
-
 # -----------------------
 # -- compilation flags --
 # -----------------------
@@ -31,7 +21,8 @@ HEADERS_PATH= ./include
 SUBTARGETS= module_core \
 	module_configuration \
 	module_io \
-	module_analyse
+	module_analyse \
+	module_external
 
 OBJECTS= AcerDET.o
 
@@ -69,7 +60,7 @@ $(LIB_FULL_NAME): $(OBJS)
 # --------------------------
 
 %.o : %.cpp
-	$(CC) $(CFLAGS) -c $< -o $@ -I$(HEPMCLOCATION)include -I$(ROOTSYS)/include
+	$(CC) $(CFLAGS) -c $< -o $@
 
 # -------------------------
 # -- Library sub modules --
@@ -86,6 +77,9 @@ module_io:
 	
 module_analyse:
 	$(MAKE) -C ./analyse
+
+module_external:
+	$(MAKE) -C ./external
 
 # ---------------------------------------------------------------------------------------------------------------------------------------------------
 # LIBRARY INSTALATION AND FILES MANAGEMENT
