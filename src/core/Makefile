@@ -7,7 +7,8 @@ OBJECTS= Histogram.o \
 	ClusterData.o \
 	JetData.o \
 	PartData.o \
-	Particle.o 
+	Particle.o \
+	ParticleDataProvider.o
 
 all: prepare $(OBJECTS) export_include
 

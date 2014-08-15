@@ -9,7 +9,6 @@ using std::endl;
 using namespace HepMC;
 
 #include "src/include/AcerDET.h"
-#include "src/include/core/Functions.h"
 using namespace AcerDet;
 using namespace AcerDet::conf;
 using namespace AcerDet::core;
@@ -34,7 +33,7 @@ public:
 void resetRecord( io::OutputRecord& rec ) {
 	rec.clear();
 }
-
+#include <cstring>
 int main( int argc, char **argv ) {
 
 	if( argc < 3 ) {
@@ -55,44 +54,18 @@ int main( int argc, char **argv ) {
 
     pythia.readFile(argv[1]);
     pythia.init();
-    
-    // charge test!!
-    //{
-	//	Pythia8::Particle pPart;
-	//	AcerDet::core::Particle aPart;
-		
-	//	for (int i=0; i<4000; i++) {
-	//		pPart.id(i);
-	//		aPart.typeID = i;
-	//		double pRes = pPart.charge();
-	//		int aRes = aPart.getKuchge();
-	//		printf ("[%d] Pythia= %f AcerDet= %d\n", i, pRes, aRes);
-	//	}
-	//}
-    
+
     //
     // Initialize AcerDET
     //
 	const std::string configFileName = "acerdet.dat";
 	Configuration configuration = Configuration::fromFile( configFileName );
-	AcerDET acerDet( configuration );
+	
+	IParticleDataProviderFactory pdpFactory = external::Pythia8_ParticleDataProviderFactory();
+	
+	AcerDET acerDet( configuration, pdpFactory );
 //	acerDet.printInfo();
-
-//	Histogram histo("testing", 2.0, 12.5, 10);
-//	histo.insert(2.0);
-//	histo.insert(2.1);
-//	histo.insert(5.0);
-//	histo.insert(4.8);
-//	histo.insert(9.0);
-//	histo.insert(12.4);
-//	histo.insert(12.5);
-//	histo.insert(-2.5);
-//	histo.insert(12.5001);
-//	histo.print( false );
-	
-//	printf (" proper -> %d\n", histo.storedProperlyCount());
-//	printf (" all -> %d\n", histo.storedCount());
-	
+/*
 	DbDummy db;
 	OutputRecord oRec;
 	
@@ -116,6 +89,6 @@ int main( int argc, char **argv ) {
 	}
 
 	acerDet.printResults();
-
+*/
 	return 0;
 }

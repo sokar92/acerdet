@@ -1,18 +1,19 @@
-#ifndef _AcerDet_IO_InputReader_
-#define _AcerDet_IO_InputReader_
+#ifndef _AcerDet_External_HepMC_InputConverter_
+#define _AcerDet_External_HepMC_InputConverter_
 
 // HepMC event record
 #include <HepMC/GenEvent.h>
 using namespace HepMC;
 
-#include "InputRecord.h"
+#include "../io/InputRecord.h"
+using namespace AcerDet::io;
 
 namespace AcerDet {
-	namespace io {
+	namespace external {
 		/*
 		 * Static converter between HepMC record and AcerDET InputRecord.
 		 */
-		class InputReader {
+		class HepMC_InputConverter {
 		private:
 			/*
 			 * Convert pdg_id code from HepMC to ParticleType
@@ -24,7 +25,7 @@ namespace AcerDet {
 			static ParticleState getParticleStatus(GenParticle*);
 
 		public:
-			static InputRecord computeEvent(const GenEvent&);
+			static InputRecord convert(const GenEvent&);
 		};
 
 	}

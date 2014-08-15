@@ -7,7 +7,7 @@ Vector4f vec4(const HepMC::FourVector& v) {
 	return Vector4f(v.x(), v.y(), v.z(), v.e());
 }
 
-ParticleType InputReader::getParticleType(int code) {
+ParticleType HepMC_InputConverter::getParticleType(int code) {
 	if (code == -4 || code == 4) return PT_CJET;
 	if (code == -5 || code == 5) return PT_BJET;
 	if (code == -11 || code == 11) return PT_ELECTRON;
@@ -21,7 +21,7 @@ ParticleType InputReader::getParticleType(int code) {
 	return PT_UNKNOWN;
 }
 
-ParticleState InputReader::getParticleStatus(HepMC::GenParticle* gpart) {
+ParticleState HepMC_InputConverter::getParticleStatus(HepMC::GenParticle* gpart) {
 	if (gpart->is_beam()) return PS_BEAM; 			  // status_code == 4
 	else if (gpart->is_undecayed()) return PS_FINAL;  // status_code == 1 -> final state
 	else if (gpart->has_decayed()) return PS_DECAYED; // status_code == 2 -> before hadronization
@@ -62,7 +62,7 @@ Int32_t extractDaughter2(HepMC::GenVertex* ptr) {
 	return code;
 }
 
-InputRecord InputReader::computeEvent( const GenEvent& event ) {
+InputRecord HepMC_InputConverter::convert( const GenEvent& event ) {
 	vector<Particle> parts;
 	
 	for( GenEvent::particle_const_iterator iter = event.particles_begin(); iter != event.particles_end(); ++iter ) {

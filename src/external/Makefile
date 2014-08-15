@@ -1,8 +1,7 @@
 CC= g++
 CFLAGS= -g3 -O2 -fPIC -Wall
 
-OBJECTS= InputRecord.o \
-	OutputRecord.o
+OBJECTS= HepMC_InputConverter.o
 
 all: prepare $(OBJECTS) export_headers
 

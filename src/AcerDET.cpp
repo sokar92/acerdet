@@ -6,7 +6,9 @@ using namespace AcerDet;
 /*
  * Construct AcerDET object from given configuration
  */
-AcerDET::AcerDET( const conf::Configuration& config ) : 
+AcerDET::AcerDET(
+	const conf::Configuration& config,
+	const core::IParticleDataProviderFactory& partFactory ) :
 		analyse_BJet		( config ),
 		analyse_Calibration	( config ),
 		analyse_Cell		( config ),
