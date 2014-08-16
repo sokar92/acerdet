@@ -1,12 +1,10 @@
+#include <cstdio>
 #include "Cell.h"
 #include "../core/Typedefs.h"
 #include "../core/Functions.h"
-#include <cstdio>
-
 using namespace AcerDet::analyse;
-using namespace AcerDet::io;
 
-Cell::Cell( const Configuration& config, IHistogramManager& histoManager ) :
+Cell::Cell( const Configuration& config, IHistogramManager *histoMng ) :
 	ETACEL	( config.Cell.RapidityCoverage ),
 	PTMIN	( config.Cell.MinpT ),
 	ETTHR	( config.Cell.MinEt ),
@@ -18,12 +16,16 @@ Cell::Cell( const Configuration& config, IHistogramManager& histoManager ) :
 	KEYFLD	( config.Flag.BField ),
 	KFINVS	( config.Flag.SusyParticle ),
 
-	IEVENT	( 0 )//,
+	IEVENT	( 0 ),
 	
-	//histo ("Cell: multiplicity", 0.0, 500.0, 50)
-{}
+	histoManager(histoMng),
+	histoRegistered( false )
+{
+}
 
-Cell::~Cell() {}
+Cell::~Cell() {
+	histoManager = NULL;
+}
 
 void Cell::printInfo() const {
 	// print out title
@@ -51,6 +53,12 @@ void Cell::printInfo() const {
 }
 
 void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
+
+	if (!histoRegistered) {
+		histoRegistered = true;
+		histoManager
+			->registerHistogram(HISTO_MULTIPLICITY_ID, "Cell: multiplicity", 50, 0.0, 500.0);
+	}
 
 	// new event to compute
 	IEVENT++;
@@ -148,7 +156,8 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	}
 
 	// call histogram
-	//histo.insert( orecord.Cells.size() );
+	histoManager
+		->insert( HISTO_MULTIPLICITY_ID, orecord.Cells.size() );
 }
 
 void Cell::printResults() const {
@@ -162,5 +171,4 @@ void Cell::printResults() const {
 	printf ("***********************************\n");
 	
 	printf (" Analysed records: %d\n", IEVENT);
-	//histo.print( true );
 }

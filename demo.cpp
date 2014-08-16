@@ -65,13 +65,15 @@ int main( int argc, char **argv ) {
     //
 	const std::string configFileName = "acerdet.dat";
 	Configuration configuration = Configuration::fromFile( configFileName );
-	IParticleDataProviderFactory *pdpFactory = new external::Pythia8_ParticleDataProviderFactory();
-	IHistogramManager *histoManager = new external::Root_HistogramManager();
+	IParticleDataProviderFactory *pdpFactory =
+		new external::Pythia8_ParticleDataProviderFactory();
+	IHistogramManager *histoManager =
+		new external::Root_HistogramManager();
 	
 	AcerDET acerDet(
 		configuration,
-		*pdpFactory,
-		*histoManager 
+		pdpFactory,
+		histoManager 
 	);
 	acerDet.printInfo();
 
@@ -101,6 +103,7 @@ int main( int argc, char **argv ) {
 	}
 
 	acerDet.printResults();
+	acerDet.storeHistograms( "myFile.root" );
 
 	delete pdpFactory;
 	delete histoManager;

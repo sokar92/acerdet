@@ -7,13 +7,16 @@
 using namespace AcerDet::conf;
 
 #include "../core/IHistogramManager.h"
+using namespace AcerDet::core;
+
 #include "../io/InputRecord.h"
 #include "../io/OutputRecord.h"
+using namespace AcerDet::io;
 
 namespace AcerDet {
 	namespace analyse {
 
-		/*
+		/**
 		 * Algorithm class for finding cells
 		 */
 		class Cell {
@@ -31,23 +34,27 @@ namespace AcerDet {
 			
 			Int32_t IEVENT;
 			
-			//core::Histogram histo;
+			IHistogramManager *histoManager;
+			Bool_t histoRegistered;
+			// this should be unique ID, please make it unique in each class
+			static const Int32_t HISTO_MULTIPLICITY_ID = 101;
+			
 		public:
-			Cell( const Configuration&, IHistogramManager& );
+			Cell( const Configuration&, IHistogramManager* );
 			~Cell();
 			
-			/*
+			/**
 			 * Print basic informations about class
 			 * and configuration to stdout.
 			 */
 			void printInfo() const;
 			
-			/*
+			/**
 			 * Analyse input record.
 			 */
-			void analyseRecord( const io::InputRecord&, io::OutputRecord& ); 
+			void analyseRecord( const InputRecord&, OutputRecord& ); 
 			
-			/*
+			/**
 			 * Prints statistics to stdout.
 			 */
 			void printResults() const;

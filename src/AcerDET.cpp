@@ -8,19 +8,21 @@ using namespace AcerDet;
  */
 AcerDET::AcerDET(
 	const conf::Configuration& config,
-	core::IParticleDataProviderFactory& partFactory,
-	core::IHistogramManager& histoManager ) :
-		analyse_BJet		( config, histoManager ),
+	core::IParticleDataProviderFactory *partFactory,
+	core::IHistogramManager *histoManager ) :
+		histos( histoManager ),
+		histos_initialized( false ),
+		analyse_BJet		( config, *histoManager ),
 		analyse_Calibration	( config ),
 		analyse_Cell		( config, histoManager ),
-		analyse_CJet		( config, histoManager ),
-		analyse_Cluster		( config, histoManager ),
-		analyse_Electron	( config, histoManager ),
-		analyse_Jet			( config, histoManager ),
-		analyse_Mis			( config, histoManager ),
-		analyse_Muon		( config, histoManager ),
-		analyse_Photon		( config, histoManager ),
-		analyse_Tau			( config, histoManager )
+		analyse_CJet		( config, *histoManager ),
+		analyse_Cluster		( config, *histoManager ),
+		analyse_Electron	( config, *histoManager ),
+		analyse_Jet			( config, *histoManager ),
+		analyse_Mis			( config, *histoManager ),
+		analyse_Muon		( config, *histoManager ),
+		analyse_Photon		( config, *histoManager ),
+		analyse_Tau			( config, *histoManager )
 {
 }
 
@@ -28,12 +30,19 @@ AcerDET::AcerDET(
  * Destructor - not used
  */
 AcerDET::~AcerDET() {
+	histos = NULL;
 }
 
 /*
  * Analyse single InputRecord from event
  */
 void AcerDET::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
+	printf ("AcerDET: analyse\n");
+	if (!histos_initialized) {
+		histos->init();
+		histos_initialized = true;
+	}
+	
 	analyse_Cell		.analyseRecord( irecord, orecord );
 	analyse_Cluster		.analyseRecord( irecord, orecord );
 	analyse_Muon		.analyseRecord( irecord, orecord );
@@ -90,4 +99,8 @@ void AcerDET::printResults() const {
 	analyse_BJet		.printResults();
 	analyse_CJet		.printResults();
 	analyse_Tau			.printResults();
+}
+
+void AcerDET::storeHistograms( const string& file ) {
+	histos->storeHistograms(file);
 }

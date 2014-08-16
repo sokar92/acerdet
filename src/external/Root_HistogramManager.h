@@ -20,6 +20,8 @@ namespace AcerDet {
 				Real64_t maxVal );
 			
 			void insert( Int32_t id, Real64_t value );
+			
+			void storeHistograms( const string& file );
 		};
 
 	}

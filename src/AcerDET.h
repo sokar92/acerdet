@@ -37,6 +37,9 @@ namespace AcerDet {
 
 	class AcerDET {
 	private:
+		core::IHistogramManager	*histos;
+		Bool_t					histos_initialized;
+		
 		analyse::BJet			analyse_BJet;
 		analyse::Calibration	analyse_Calibration;
 		analyse::Cell			analyse_Cell;
@@ -51,8 +54,8 @@ namespace AcerDet {
 	public:
 		AcerDET(
 			const conf::Configuration&,
-			core::IParticleDataProviderFactory&,
-			core::IHistogramManager& );
+			core::IParticleDataProviderFactory*,
+			core::IHistogramManager* );
 		~AcerDET();
 		
 		void printInfo() const;
@@ -60,6 +63,8 @@ namespace AcerDet {
 		void analyseRecord( const io::InputRecord&, io::OutputRecord& );
 		
 		void printResults() const;
+		
+		void storeHistograms( const string& file );
 	};
 
 }
