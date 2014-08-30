@@ -214,6 +214,8 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 			PHI = saturatePi(part.getPhi() + DETPHI);
 			
 			// czy nie rownowazne saturatePi?
+			// ERW: tak to jest rownowazne, ale trzeba przetestowac
+			// ERW: nalezaloby zrobic histogram DPHIA i zaobaczyc jaki ma zakres
 			DPHIA = abs(cluster.phi - PHI);
 
 			if (DPHIA > PI) 
@@ -250,7 +252,11 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		Real64_t PTREC = 0.0, DETR;
 		Real64_t DETRMIN = RCONE;
 
-		// magic
+		// magic: No, here we want to match to cluster only particles outging
+                // magic: from the hard process, like Z->ee, H->gamgam, etc
+		// ERW: here only hard-process outgoing particles, so fixed value "6"
+                // ERW: should be dropped and start from O BUT this condition should
+                // ERW: somehow coded into new flag PT_OutHardProcess
 		for (int i=6; i<parts.size(); i++) { 
 			if (parts[i].stateID != 21 || abs(parts[i].typeID) > 10) // TODO: boolean method for this condition
 				continue;

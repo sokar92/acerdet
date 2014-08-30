@@ -85,15 +85,16 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			
 		Real64_t DETPHI = 0.0;
 		Real64_t ETA, PHI, PT, PZ;
-
+		//ERW: getter jest czasami jako .getX() a czasami jak .x()
+                //ERW: moze warto ujednolicic
 		PT = part.pT();
 		PZ = part.pZ();
 		if (PT * PT <= PTLRAT * PZ * PZ)
 			continue;
-
 		if (part.type == PT_UNKNOWN || part.isNeutrino() || part.type == PT_MUON || part.type == KFINVS)
 			continue;
 /* TODO */
+//ERW: replace with new implementation
 		if (KEYFLD && part.getKuchge() != 0) {
 			if (part.pT() < PTMIN)
 				continue;
