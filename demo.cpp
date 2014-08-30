@@ -9,7 +9,7 @@ using std::cout;
 using std::endl;
 using namespace HepMC;
 
-#include "src/include/AcerDET.h"
+#include "src/AcerDET.h"
 using namespace AcerDet;
 using namespace AcerDet::conf;
 using namespace AcerDet::core;

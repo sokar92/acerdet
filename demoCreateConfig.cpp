@@ -2,7 +2,7 @@
 #include <cstdio>
 using namespace std;
 
-#include "src/include/AcerDET.h"
+#include "src/AcerDET.h"
 using namespace AcerDet;
 using namespace AcerDet::conf;
 
