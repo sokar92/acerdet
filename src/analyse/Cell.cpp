@@ -20,8 +20,7 @@ Cell::Cell( const Configuration& config, IHistogramManager *histoMng ) :
 	
 	histoManager(histoMng),
 	histoRegistered( false )
-{
-}
+{}
 
 Cell::~Cell() {
 	histoManager = NULL;
@@ -54,10 +53,12 @@ void Cell::printInfo() const {
 
 void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
 
+        int idhist = 0 + KEYHID;
+
 	if (!histoRegistered) {
 		histoRegistered = true;
 		histoManager
-			->registerHistogram(HISTO_MULTIPLICITY_ID, "Cell: multiplicity", 50, 0.0, 500.0);
+			->registerHistogram(idhist, "Cell: multiplicity", 50, 0.0, 500.0);
 	}
 
 	// new event to compute
@@ -155,9 +156,9 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 		}
 	}
 
-	// call histogram
+	// fill histogram
 	histoManager
-		->insert( HISTO_MULTIPLICITY_ID, orecord.Cells.size() );
+		->insert(idhist, orecord.Cells.size() );
 }
 
 void Cell::printResults() const {

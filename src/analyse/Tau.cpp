@@ -3,7 +3,7 @@
 
 using namespace AcerDet::analyse;
 
-Tau::Tau( const Configuration& config, IHistogramManager& histoManager ) :
+Tau::Tau( const Configuration& config, IHistogramManager* histoMng ) :
 	ETJET	( config.Jet.MinEnergy ),
 
 	PTTAU	( config.Tau.MinpT ),
@@ -14,10 +14,10 @@ Tau::Tau( const Configuration& config, IHistogramManager& histoManager ) :
 	KEYHID	( config.Flag.HistogramId ),
 	KEYTAU	( config.Flag.TauJetsLabeling ),
 
-	IEVENT	( 0 )//,
+	IEVENT	( 0 ),
 	
-	//histo_jets	("Tau: jets-multiplicity", 0.0, 10.0, 10),
-	//histo_taus	("Tau: multiplicity", 0.0, 10.0, 10)
+	histoManager(histoMng),
+	histoRegistered( false )
 {}
 
 Tau::~Tau() {}
@@ -46,6 +46,23 @@ void Tau::printInfo() const {
 }
 
 void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
+
+
+        int idhist = 900 + KEYHID;
+
+	if (!histoRegistered) {
+		histoRegistered = true;
+		histoManager
+			->registerHistogram(idhist+11, "Tau: tau-jets multiplicity", 10, 0.0, 10.0);
+		histoManager
+			->registerHistogram(idhist+21, "Tau: taus multiplicity", 10, 0.0, 10.0);
+	}
+	
+	//histo_jets	("Tau: jets-multiplicity", 0.0, 10.0, 10),
+	//histo_taus	("Tau: multiplicity", 0.0, 10.0, 10)
+
+
+
 /*
  	// new event to compute
 	IEVENT++;
@@ -144,9 +161,12 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 			}
 		}
 	}
+
+	histoManager
+		->insert(idhist+11,  NJETTAU);
+	histoManager
+		->insert(idhist+21,  NTAU);
 	
-	// CALL HF1(IDENT+11,REAL(NJETTAU),1.0)
-	// CALL HF1(IDENT+21,REAL(NTAU),1.0)
 */
 }
 

@@ -7,8 +7,11 @@
 using namespace AcerDet::conf;
 
 #include "../core/IHistogramManager.h"
+using namespace AcerDet::core;
+
 #include "../io/InputRecord.h"
 #include "../io/OutputRecord.h"
+using namespace AcerDet::io;
 
 namespace AcerDet {
 	namespace analyse {
@@ -25,13 +28,12 @@ namespace AcerDet {
 			Bool_t KEYBCL;
 
 			Int32_t IEVENT;
+
+			IHistogramManager *histoManager;
+			Bool_t histoRegistered;
 			
-			//core::Histogram histo_cJets; //IDENT + 11
-			//core::Histogram histo_cQuarks; //IDENT + 21
-			//core::Histogram histo_delta; //IDENT + 23
-			//core::Histogram histo_pT; //IDENT + 24
 		public:
-			CJet( const Configuration&, IHistogramManager& );
+			CJet( const Configuration&, IHistogramManager* );
 			~CJet();
 
 			void printInfo() const;

@@ -7,8 +7,11 @@
 using namespace AcerDet::conf;
 
 #include "../core/IHistogramManager.h"
+using namespace AcerDet::core;
+
 #include "../io/InputRecord.h"
 #include "../io/OutputRecord.h"
+using namespace AcerDet::io;
 
 namespace AcerDet {
 	namespace analyse {
@@ -26,13 +29,11 @@ namespace AcerDet {
 			
 			Int32_t IEVENT;
 			
-			//core::Histogram histo_reconstructed_pT; //11
-			//core::Histogram histo_reconstructed_pT_cells; //12
-			//core::Histogram histo_pTmiss; //13
-			//core::Histogram histo_pTnu;	//21
+			IHistogramManager *histoManager;
+			Bool_t histoRegistered;
 		
 		public:
-			Mis( const Configuration&, IHistogramManager& );
+			Mis( const Configuration&, IHistogramManager* );
 			~Mis();
 			
 			void printInfo() const;

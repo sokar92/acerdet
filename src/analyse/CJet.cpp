@@ -3,7 +3,7 @@
 
 using namespace AcerDet::analyse;
 
-CJet::CJet( const Configuration& config, IHistogramManager& histoManager ) :
+CJet::CJet( const Configuration& config, IHistogramManager *histoMng ) :
 	ETJET	( config.Jet.MinEnergy ),
 	RCONE	( config.Cluster.ConeR ),
 
@@ -14,12 +14,10 @@ CJet::CJet( const Configuration& config, IHistogramManager& histoManager ) :
 	KEYHID	( config.Flag.HistogramId ),
 	KEYBCL	( config.Flag.BCJetsLabeling ),
 
-	IEVENT	( 0 )//,
-	
-	//histo_cJets		("CJet: c-jets multiplicity", 0.0, 10.0, 10),
-	//histo_cQuarks	("CJet: c-quarks HARD multiplicity", 0.0, 10.0, 10),
-	//histo_delta		("CJet: delta r cjet-cquark", 0.0, 0.5, 50),
-	//histo_pT		("CJet: pTcjet / pTcquark", 0.0, 2.0, 50)
+	IEVENT	( 0 ),
+
+	histoManager(histoMng),
+	histoRegistered( false )
 {}
 
 CJet::~CJet() {}
@@ -47,6 +45,22 @@ void CJet::printInfo() const {
 }
 
 void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
+
+        int idhist = 800 + KEYHID;
+
+	if (!histoRegistered) {
+		histoRegistered = true;
+		histoManager
+			->registerHistogram(idhist+11, "CJet: c-jets multiplicity", 10, 0.0, 10.0);
+		histoManager
+			->registerHistogram(idhist+21, "CJet: c-quarks HARD multiplicity", 10, 0.0, 10.0);
+		histoManager
+			->registerHistogram(idhist+23, "CJet: delta r cjet-cquark", 50, 0.0,  5.0);
+		histoManager
+			->registerHistogram(idhist+24, "CJet: pTcjet/pTcquark", 50, 0.0,  2.0);
+	}
+
+
 	if (!KEYBCL)
 		return;
 	/*
@@ -134,7 +148,8 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	}
 
 	// store count in histogram
-	histo_cJets.insert(NJETC);
+	histoManager
+	   ->insert(idhist+11,NJETC);
 	
 	// check partons
 	Int32_t IQUAC = 0, ICJET = 0;
@@ -174,8 +189,9 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 		}
 	}
 
-	// store quarks-count in histogram
-	histo_cQuarks.insert(IQUAC);
+	// fill histogram
+	histoManager
+		->insert(idhist+21, IQUAC );
 
 	for (int i=0; i<orecord.Jets.size(); ++i) {
 		PTREC = 0;
@@ -210,8 +226,10 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 		}
 
 		if (PTREC) {
-			histo_delta.insert(DETRMIN);
-			histo_pT.insert(PJET(IJET,5) / PTREC);
+	          histoManager
+			->insert(idhist + 23, DETRMIN);
+	          histoManager
+			->insert(idhist + 24,PJET(IJET,5) / PTREC);
 		}
 	}
 	*/

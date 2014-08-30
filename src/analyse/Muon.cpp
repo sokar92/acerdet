@@ -3,7 +3,7 @@
 
 using namespace AcerDet::analyse;
 
-Muon::Muon( const Configuration& config, IHistogramManager& histoManager ) :
+Muon::Muon( const Configuration& config, IHistogramManager* histoMng ) :
 	ETCLU	( config.Cluster.MinEt ),
 	RCONE	( config.Cluster.ConeR ),
 
@@ -17,12 +17,11 @@ Muon::Muon( const Configuration& config, IHistogramManager& histoManager ) :
 	KEYHID	( config.Flag.HistogramId ),
 	KEYSME	( config.Flag.Smearing ),
 
-	IEVENT	( 0 )//,
+	IEVENT	( 0 ),
 	
-	//histo_nonisol	("Muon: non-isolated", 0.0, 10.0, 10),
-	//histo_isol		("Muon: isolated", 0.0, 10.0, 10),
-	//histo_hard		("Muon: hard", 0.0, 10.0, 10),
-	//histo_sum		("Muon: hard+isol", 0.0, 10.0, 10)
+	histoManager(histoMng),
+	histoRegistered( false )
+
 {}
 
 Muon::~Muon() {}
@@ -50,6 +49,22 @@ void Muon::printInfo() const {
 }
 
 void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
+
+
+        int idhist = 200 + KEYHID;
+
+	if (!histoRegistered) {
+		histoRegistered = true;
+		histoManager
+			->registerHistogram(idhist+10, "Muon: muon multiplicity NOISOLATED", 10, 0.0, 10.0);
+		histoManager
+			->registerHistogram(idhist+11, "Muon: muon multiplicity ISOLATED", 10, 0.0, 10.0);
+		histoManager
+			->registerHistogram(idhist+12, "Muon: muon multiplicity HARD", 10, 0.0, 10.0);
+		histoManager
+			->registerHistogram(idhist+13, "Muon: muon multiplicity HARD+isol", 10, 0.0, 10.0);
+	}
+
 
 	// new event to compute
 	IEVENT++;
@@ -199,9 +214,11 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	}
 	
 	// call histograms
-	//histo_isol.insert( orecord.Muons.size() );
-	//histo_nonisol.insert( orecord.NonisolatedMuons.size() );
-	
+	histoManager
+	  ->insert(idhist + 10,orecord.Muons.size() );
+	histoManager
+	  ->insert(idhist + 11,orecord.NonisolatedMuons.size() );
+
 	// cross-check with partons
 	Int32_t IMUO = 0, IMUOISO = 0;
 	for (int i=0; i<=NSTOP; ++i) {
@@ -251,8 +268,12 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 		}
 	}
 
-	//histo_hard.insert( IMUO );
-	//histo_sum.insert( IMUOISO );
+	// fill histogram
+	histoManager
+	    ->insert(idhist + 12,  IMUO );
+	histoManager
+	    ->insert(idhist + 13,  IMUOISO );
+
 }
 
 void Muon::printResults() const {
