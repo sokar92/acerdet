@@ -8,7 +8,7 @@ RLIB=   -L$(LIBDIR) -lCore -lCint -lHist -lGraf -lGraf3d -lGpad -lTree -lRint \
 # -----------------------
 CC= g++
 CFLAGS= -g3 -O2 -fPIC -Wall
-HEPMCLIBS= -L$(HEPMCLOCATION)lib -lHepMC
+HEPMCLIBS= -L$(HEPMCLOCATION)/lib -lHepMC
 ROOTLIBS := $(shell root-config --libs)
 PWD := $(shell pwd)
 HISTOLOCATION= $(PWD)/../libHistoManager
@@ -61,7 +61,7 @@ compile: $(SUBTARGETS) $(OBJECTS) $(LIB_FULL_NAME)
 # ---------------------------
 
 $(LIB_FULL_NAME): $(OBJS)
-	$(CC) -shared $(HISTOLOCATION)/libLibHistoManager.so $(OBJS) -o $@ $(ROOTLIBS)
+	$(CC) -shared -o $@ $(OBJS) $(ROOTLIBS)
 
 # --------------------------
 # -- Compile global files --
