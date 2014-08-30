@@ -9,16 +9,18 @@ OBJECTS= $(HEPMC_CONVERTER).o \
 	$(PYTHIA_PROVIDER).o \
 	$(ROOT_HISTOGRAM).o
 
+ROOTINCDIR := $(shell root-config --incdir)
+
 all: prepare $(OBJECTS) export_headers
 
 $(HEPMC_CONVERTER).o : $(HEPMC_CONVERTER).cpp
-	$(CC) $(CFLAGS) -c $< -o $@ -I../$(HEPMCLOCATION)include
+	$(CC) $(CFLAGS) -c $< -o $@ -I$(HEPMCLOCATION)/include
 
 $(PYTHIA_PROVIDER).o : $(PYTHIA_PROVIDER).cpp
-	$(CC) $(CFLAGS) -c $< -o $@ -I../$(PYTHIALOCATION)/include
+	$(CC) $(CFLAGS) -c $< -o $@ -I$(PYTHIALOCATION)/include
 
 $(ROOT_HISTOGRAM).o : $(ROOT_HISTOGRAM).cpp
-	$(CC) $(CFLAGS) -c $< -o $@ -I$(ROOTSYS)/include
+	$(CC) $(CFLAGS) -c $< -o $@ -I$(ROOTINCDIR)
 
 INPUT_HEADERS_PATH= ../include/external
 
