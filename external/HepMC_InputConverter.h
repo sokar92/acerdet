@@ -5,7 +5,7 @@
 #include <HepMC/GenEvent.h>
 using namespace HepMC;
 
-#include "../io/InputRecord.h"
+#include "../src/io/InputRecord.h"
 using namespace AcerDet::io;
 
 namespace AcerDet {

@@ -1,7 +1,7 @@
 #ifndef _AcerDet_External_Root_HistogramManager_
 #define _AcerDet_External_Root_HistogramManager_
 
-#include "../core/IHistogramManager.h"
+#include "../src/core/IHistogramManager.h"
 using namespace AcerDet::core;
 
 namespace AcerDet {

@@ -1,21 +1,13 @@
-CC= g++
-CFLAGS= -g3 -O2 -fPIC -Wall
+RELATIVE_PATH= ../..
+include $(RELATIVE_PATH)/common.inc
 
 OBJECTS= InputRecord.o \
 	OutputRecord.o
 
-all: prepare $(OBJECTS) export_headers
+all: $(OBJECTS)
 
 %.o : %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
-
-INPUT_HEADERS_PATH= ../include/io
-
-prepare:
-	mkdir $(INPUT_HEADERS_PATH)
-
-export_headers:
-	cp -f *.h -t $(INPUT_HEADERS_PATH)
 
 clean:
 	find . -regex '.*\.\(~\|o\|so\)' | xargs rm -rf

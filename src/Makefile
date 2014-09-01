@@ -1,36 +1,15 @@
-LIBDIR= $(shell root-config --libdir)
-INCDIR= $(shell root-config --incdir)
-#  Root  libraries for linker
-RLIB=   -L$(LIBDIR) -lCore -lCint -lHist -lGraf -lGraf3d -lGpad -lTree -lRint \
-	-lPostscript -lMatrix -lPhysics -lm -ldl -lpthread -rdynamic
-# -----------------------
-# -- compilation flags --
-# -----------------------
-CC= g++
-CFLAGS= -g3 -O2 -fPIC -Wall
-HEPMCLIBS= -L$(HEPMCLOCATION)lib -lHepMC
-ROOTLIBS := $(shell root-config --libs)
-PWD := $(shell pwd)
-HISTOLOCATION= $(PWD)/../libHistoManager
+RELATIVE_PATH= ..
+include $(RELATIVE_PATH)/common.inc
 
 # -------------------------------
 # -- Library paths and modules --
 # -------------------------------
 LIB= AcerDET
-LIB_MAJOR_VERSION= .2
-LIB_MINOR_VERSION= .0
 
-LIB_NAME= lib$(LIB).so
-LIB_MAJOR_NAME= $(LIB_NAME)$(LIB_MAJOR_VERSION)
-LIB_FULL_NAME= $(LIB_MAJOR_NAME)$(LIB_MINOR_VERSION)
-
-HEADERS_PATH= ./include
-
-SUBTARGETS= module_core \
-	module_configuration \
-	module_io \
-	module_analyse \
-	module_external
+SUBTARGETS= compile_core \
+	compile_configuration \
+	compile_io \
+	compile_analyse
 
 OBJECTS= AcerDET.o
 
@@ -41,27 +20,22 @@ OBJECTS= AcerDET.o
 OBJS= $(shell find . -regex '.*\.o')
 
 # ---------------------------
-# -- Instalation procedure --
-# ---------------------------
-
-all: prepare compile copy_headers link_lib
-
-# ---------------------------------------------------------------------------------------------------------------------------------------------------
-# COMPILATION
-# ---------------------------------------------------------------------------------------------------------------------------------------------------
-
-# ---------------------------
 # -- Compile whole project --
 # ---------------------------
 
-compile: $(SUBTARGETS) $(OBJECTS) $(LIB_FULL_NAME)
+all: $(SUBTARGETS) $(OBJECTS) libs
 
 # ---------------------------
 # -- Create Shared Library --
 # ---------------------------
 
-$(LIB_FULL_NAME): $(OBJS)
-	$(CC) -shared $(HISTOLOCATION)/libLibHistoManager.so $(OBJS) -o $@ $(ROOTLIBS)
+lib$(LIB).so: $(OBJS)
+	$(CC) -shared $(OBJS) -o $@
+
+lib$(LIB).a: $(OBJS)
+	ar cr lib$(LIB).a $(OBJS)
+
+libs: lib$(LIB).so lib$(LIB).a
 
 # --------------------------
 # -- Compile global files --
@@ -74,41 +48,36 @@ $(LIB_FULL_NAME): $(OBJS)
 # -- Library sub modules --
 # -------------------------
 
-module_core:
+compile_core:
 	$(MAKE) -C ./core
 
-module_configuration:
+compile_configuration:
 	$(MAKE) -C ./conf
 
-module_io: 
+compile_io: 
 	$(MAKE) -C ./io
 	
-module_analyse:
+compile_analyse:
 	$(MAKE) -C ./analyse
 
-module_external:
-	$(MAKE) -C ./external
 
-# ---------------------------------------------------------------------------------------------------------------------------------------------------
-# LIBRARY INSTALATION AND FILES MANAGEMENT
-# ---------------------------------------------------------------------------------------------------------------------------------------------------
+clean_core:
+	$(MAKE) -C ./core clean
 
-prepare:
-	rm -rf $(HEADERS_PATH)
-	mkdir $(HEADERS_PATH)
+clean_configuration:
+	$(MAKE) -C ./conf clean
 
-link_lib:
-	ln -sf $(LIB_FULL_NAME) $(LIB_MAJOR_NAME)
-	ln -sf $(LIB_FULL_NAME) $(LIB_NAME)
+clean_io: 
+	$(MAKE) -C ./io clean
+	
+clean_analyse:
+	$(MAKE) -C ./analyse clean
 
-copy_headers:
-	cp -f *.h -t $(HEADERS_PATH)
 
 # -------------------
 # -- Clean objects --
 # -------------------
 
-clean:
+clean: clean_core clean_configuration clean_io clean_analyse
 	find . -regex '.*\.\(~\a|\|o\|so\)' | xargs rm -rf
 	find . -regex '.*\.so\..*' | xargs rm -rf
-	rm -rf $(HEADERS_PATH)

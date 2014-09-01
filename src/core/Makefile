@@ -1,5 +1,5 @@
-CC= g++
-CFLAGS= -g3 -O2 -fPIC -Wall
+RELATIVE_PATH= ../..
+include $(RELATIVE_PATH)/common.inc
 
 OBJECTS= Functions.o \
 	CellData.o \
@@ -9,17 +9,10 @@ OBJECTS= Functions.o \
 	Particle.o \
 	ParticleDataProvider.o
 
-all: prepare $(OBJECTS) export_include
+all: $(OBJECTS)
 
 %.o : %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@ -lStd
-
-CORE_HEADERS_PATH= ../include/core
-prepare:
-	mkdir $(CORE_HEADERS_PATH)
-
-export_include: 
-	cp -f *.h -t $(CORE_HEADERS_PATH)
 
 clean:
 	find . -regex '.*\.\(~\|o\|so\)' | xargs rm -rf

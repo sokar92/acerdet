@@ -1,6 +1,5 @@
-CC= g++
-CFLAGS= -g3 -O2 -fPIC -Wall
-HEPMCLIBS= -L$(HEPMCLOCATION)lib -lHepMC
+RELATIVE_PATH= ../..
+include $(RELATIVE_PATH)/common.inc
 
 OBJECTS= BJet.o \
 	Calibration.o \
@@ -14,17 +13,10 @@ OBJECTS= BJet.o \
 	Photon.o \
 	Tau.o
 
-all: prepare $(OBJECTS) export_analyse
+all: $(OBJECTS)
 
 %.o : %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@ -lStd
-
-ANALYSE_HEADERS_PATH= ../include/analyse
-prepare:
-	mkdir $(ANALYSE_HEADERS_PATH)
-
-export_analyse: 
-	cp -f *.h -t $(ANALYSE_HEADERS_PATH)
 
 clean:
 	find . -regex '.*\.\(~\|o\|so\)' | xargs rm -rf

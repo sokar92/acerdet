@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "../core/IParticleDataProviderFactory.h"
+#include "../src/core/IParticleDataProviderFactory.h"
 using namespace AcerDet::core;
 
 namespace AcerDet {

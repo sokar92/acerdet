@@ -9,15 +9,15 @@ using std::cout;
 using std::endl;
 using namespace HepMC;
 
-#include "src/include/AcerDET.h"
+#include "src/AcerDET.h"
 using namespace AcerDet;
 using namespace AcerDet::conf;
 using namespace AcerDet::core;
 using namespace AcerDet::io;
 
-#include "src/include/external/HepMC_InputConverter.h"
-#include "src/include/external/Pythia8_ParticleDataProviderFactory.h"
-#include "src/include/external/Root_HistogramManager.h"
+#include "external/HepMC_InputConverter.h"
+#include "external/Pythia8_ParticleDataProviderFactory.h"
+#include "external/Root_HistogramManager.h"
 
 // ----------------------
 // -- Dummy Database ----
