@@ -3,7 +3,7 @@
 
 using namespace AcerDet::analyse;
 
-Mis::Mis( const Configuration& config, IHistogramManager& histoManager ) :
+Mis::Mis( const Configuration& config, IHistogramManager *histoMng ) :
 	PTMUMIN	( config.Muon.MinMomenta ),
 	ETAMAX	( config.Muon.MaxEta ),
 	ETCELL	( config.Tau.MinpT ),
@@ -13,12 +13,10 @@ Mis::Mis( const Configuration& config, IHistogramManager& histoManager ) :
 	KEYSME	( config.Flag.Smearing ),
 	KFINVS	( config.Flag.SusyParticle ),
 
-	IEVENT	( 0 )//,
-
-	//histo_reconstructed_pT			("Mis: reconstructed p_T", 0.0, 200.0, 50),
-	//histo_reconstructed_pT_cells	("Mis: reconstructed p_T + cells", 0.0, 200.0, 50),
-	//histo_pTmiss					("Mis: pTmiss", 0.0, 200.0, 50),
-	//histo_pTnu						("Mis: pT nu", 0.0, 200.0, 50)
+	IEVENT	( 0 ),
+	
+	histoManager(histoMng),
+	histoRegistered( false )
 {}
 
 Mis::~Mis() {}
@@ -46,7 +44,22 @@ void Mis::printInfo() const {
 }
 
 void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
-	
+
+
+        int idhist = 600 + KEYHID;
+
+	if (!histoRegistered) {
+		histoRegistered = true;
+		histoManager
+			->registerHistogram(idhist+11, "Mis: reconstructed p_T ", 50, 0.0, 200.0);
+		histoManager
+			->registerHistogram(idhist+12, "Mis: reconstructed p_T + cells", 50, 0.0, 200.0);
+		histoManager
+			->registerHistogram(idhist+13, "Mis: reconstructed pTmiss", 50, 0.0, 200.0);
+		histoManager
+			->registerHistogram(idhist+21, "Mis: reconstructed p_T nu", 50, 0.0, 200.0);
+	}
+
     // new event to compute
 	IEVENT++;
 
@@ -132,7 +145,8 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
     
     // store pT in histo
     Real64_t ETREC = sqrt( pow(PXREC, 2) + pow(PYREC, 2) );
-    //histo_reconstructed_pT.insert( ETREC );
+    histoManager
+		->insert(idhist+11, ETREC );
     
     // smear cells energy not used for reconstruction
     // remove cells below threshold
@@ -162,12 +176,14 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	PYSUM += PYREC;
 	
 	Real64_t ETSUM = sqrt( pow(PXSUM, 2) + pow(PYSUM, 2) );
-	//histo_reconstructed_pT_cells.insert( ETSUM );
+	histoManager
+	  ->insert(idhist+12, ETSUM );
 	
 	Real64_t PXXMISS = -PXSUM;
 	Real64_t PYYMISS = -PYSUM; // ? po co
 	Real64_t PTMISS = sqrt( pow(PXXMISS, 2) + pow(PYYMISS, 2) );
-	//histo_pTmiss.insert( PTMISS );
+	histoManager
+	  ->insert(idhist+13, PTMISS );
 	
 	// sum up momenta  of neutrinos 
 	Real64_t PXXNUES = 0.0;
@@ -180,7 +196,9 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	}
 	
 	Real64_t PTNUES = sqrt( pow(PXXNUES, 2) + pow(PYYNUES, 2) );
-	//histo_pTnu.insert( PTNUES );
+	histoManager
+	  ->insert(idhist+21, PTNUES );
+
 }
 
 void Mis::printResults() const {

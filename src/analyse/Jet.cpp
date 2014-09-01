@@ -3,7 +3,7 @@
 
 using namespace AcerDet::analyse;
 
-Jet::Jet( const Configuration& config, IHistogramManager& histoManager ) :
+Jet::Jet( const Configuration& config, IHistogramManager * histoMng ) :
 	ETJET	( config.Jet.MinEnergy ),
 	ETAJET	( config.Jet.RapidityCoverage ),
 	RCONE	( config.Cluster.ConeR ),
@@ -15,15 +15,11 @@ Jet::Jet( const Configuration& config, IHistogramManager& histoManager ) :
 	KEYFLD	( config.Flag.BField ),
 	KFINVS	( config.Flag.SusyParticle ),
 
-	IEVENT	( 0 )//,
+	IEVENT	( 0 ),
 	
-	//histo_bJets				("Jet: multiplicity", 0.0, 10.0, 10),
-	//histo_delta_phi			("Jet: delta phi jet-barycentre", -0.5, 0.5, 50),
-	//histo_delta_eta			("Jet: delta eta jet-barycentre", -0.5, 0.5, 50),
-	//histo_delta_barycenter	("Jet: delta r jet-barycentre", 0.0, 0.5, 50),
-	//histo_delta_parton		("Jet: delta r jet-parton", 0.0, 0.5, 50),
-	//histo_pT_bySum			("Jet: pTjet / SumpTParticle", 0.0, 2.0, 50),
-	//histo_pT_byPart			("Jet: pTjet / pTparton", 0.0, 2.0, 50)
+	histoManager(histoMng),
+	histoRegistered( false )
+	
 {}
 
 Jet::~Jet() {}
@@ -44,12 +40,34 @@ void Jet::printInfo() const {
 	printf ("\t jets definition ....\n");
 	printf (" E_T_jets [GeV] %lf\n", ETJET);
 	printf (" eta coverage jets %lf\n", ETAJET);
-    printf (" smearing %s\n", KEYSME ? "on" : "off");
-    printf (" B-field %s\n", KEYFLD ? "on" : "off");
+	printf (" smearing %s\n", KEYSME ? "on" : "off");
+	printf (" B-field %s\n", KEYFLD ? "on" : "off");
 	printf ("\n");
 }
 
 void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
+
+
+        int idhist = 500 + KEYHID;
+
+	if (!histoRegistered) {
+		histoRegistered = true;
+		histoManager
+		  ->registerHistogram(idhist+1,"Jet: multiplicity", 50, 0.0, 10);
+		histoManager
+		  ->registerHistogram(idhist+11,"Jet: delta phi jet-barycentre", 50, -0.5, 0.5);
+		histoManager
+		  ->registerHistogram(idhist+12,"Jet: delta eta jet-barycentre", 50, -0.5, 0.5);
+		histoManager
+		  ->registerHistogram(idhist+13,"Jet: delta r jet-barycentre",   50, 0.0, 0.5);
+		histoManager
+		  ->registerHistogram(idhist+23,"Jet: delta r jet-parton",       50, 0.0, 0.5);
+		histoManager
+		  ->registerHistogram(idhist+14,"Jet: pTjet/SumpTparticle",      50, 0.0, 2.0);
+		histoManager
+		  ->registerHistogram(idhist+24,"Jet: pTjet/pTparton",           50, 0.0, 2.0);
+	}
+
 	// variables
 	Real64_t PT, PZ, ETA, PHI, THETA, DR, DDR, DETR, PTCLU, ETACLU; 
 	Real64_t PHICLU, EECLU, SIGMA, DPHIA, DETRMIN, PTREC, PTLRAT, CHRG;
@@ -196,7 +214,8 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	}
 	
 	// histogram NJET
-	//histo_bJets.insert( orecord.Jets.size() );
+	histoManager
+  	      ->insert(idhist+1, orecord.Jets.size() );
 
 	// arrange jets in falling E_T sequence
 	JetData::sortBy_pT( orecord.Jets );
@@ -254,10 +273,15 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 			pow(PHIREC - jet.phi_rec, 2)
 		);
 
-		//histo_delta_phi.insert(ETAREC - jet.eta_rec);
-		//histo_delta_eta.insert(PHIREC - jet.phi_rec);
-		//histo_delta_barycenter.insert(DETR);
-		//histo_pT_bySum.insert(jet.pT / PTREC);
+		histoManager
+		  ->insert(idhist+11, ETAREC - jet.eta_rec);
+		histoManager
+		  ->insert(idhist+12, PHIREC - jet.phi_rec);
+		histoManager
+		  ->insert(idhist+13, DETR);
+		histoManager
+		  ->insert(idhist+23, jet.pT / PTREC);
+
 	}
 
 	for (int i=0; i<orecord.Jets.size(); ++i) {
@@ -292,8 +316,10 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 		}
 
 		if (PTREC != 0) {
-			//histo_delta_parton.insert(DETRMIN);
-			//histo_pT_byPart.insert(jet.pT / PTREC);
+		  histoManager
+		     	->insert(idhist+14,DETRMIN);
+		  histoManager
+			->insert(idhist+24,jet.pT / PTREC);
 		}
 	}
 }

@@ -12,17 +12,17 @@ AcerDET::AcerDET(
 	core::IHistogramManager *histoManager ) :
 		histos( histoManager ),
 		histos_initialized( false ),
-		analyse_BJet		( config, *histoManager ),
+		analyse_BJet		( config, histoManager ),
 		analyse_Calibration	( config ),
 		analyse_Cell		( config, histoManager ),
-		analyse_CJet		( config, *histoManager ),
-		analyse_Cluster		( config, *histoManager ),
-		analyse_Electron	( config, *histoManager ),
-		analyse_Jet			( config, *histoManager ),
-		analyse_Mis			( config, *histoManager ),
-		analyse_Muon		( config, *histoManager ),
-		analyse_Photon		( config, *histoManager ),
-		analyse_Tau			( config, *histoManager )
+		analyse_CJet		( config, histoManager ),
+		analyse_Cluster		( config, histoManager ),
+		analyse_Electron	( config, histoManager ),
+		analyse_Jet		( config, histoManager ),
+		analyse_Mis		( config, histoManager ),
+		analyse_Muon		( config, histoManager ),
+		analyse_Photon		( config, histoManager ),
+		analyse_Tau		( config, histoManager )
 {
 }
 

@@ -7,8 +7,11 @@
 using namespace AcerDet::conf;
 
 #include "../core/IHistogramManager.h"
+using namespace AcerDet::core;
+
 #include "../io/InputRecord.h"
 #include "../io/OutputRecord.h"
+using namespace AcerDet::io;
 
 namespace AcerDet {
 	namespace analyse {
@@ -25,8 +28,11 @@ namespace AcerDet {
 			Bool_t KEYTAU;
 
 			Int32_t IEVENT;
+
+			IHistogramManager *histoManager;
+			Bool_t histoRegistered;
 		public:
-			Tau( const Configuration&, IHistogramManager& );
+			Tau( const Configuration&, IHistogramManager* );
 			~Tau();
 
 			void printInfo() const;

@@ -29,15 +29,13 @@ namespace AcerDet {
 			Real64_t DBPHI;
 			
 			Int32_t KEYHID;
-			Bool_t KEYFLD;
+			Bool_t  KEYFLD;
 			Int32_t KFINVS;
 			
 			Int32_t IEVENT;
 			
 			IHistogramManager *histoManager;
 			Bool_t histoRegistered;
-			// this should be unique ID, please make it unique in each class
-			static const Int32_t HISTO_MULTIPLICITY_ID = 101;
 			
 		public:
 			Cell( const Configuration&, IHistogramManager* );

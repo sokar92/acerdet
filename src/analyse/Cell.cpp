@@ -20,8 +20,7 @@ Cell::Cell( const Configuration& config, IHistogramManager *histoMng ) :
 	
 	histoManager(histoMng),
 	histoRegistered( false )
-{
-}
+{}
 
 Cell::~Cell() {
 	histoManager = NULL;
@@ -54,10 +53,12 @@ void Cell::printInfo() const {
 
 void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
 
+        int idhist = 0 + KEYHID;
+
 	if (!histoRegistered) {
 		histoRegistered = true;
 		histoManager
-			->registerHistogram(HISTO_MULTIPLICITY_ID, "Cell: multiplicity", 50, 0.0, 500.0);
+			->registerHistogram(idhist, "Cell: multiplicity", 50, 0.0, 500.0);
 	}
 
 	// new event to compute
@@ -84,15 +85,16 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			
 		Real64_t DETPHI = 0.0;
 		Real64_t ETA, PHI, PT, PZ;
-
+		//ERW: getter jest czasami jako .getX() a czasami jak .x()
+                //ERW: moze warto ujednolicic
 		PT = part.pT();
 		PZ = part.pZ();
 		if (PT * PT <= PTLRAT * PZ * PZ)
 			continue;
-
 		if (part.type == PT_UNKNOWN || part.isNeutrino() || part.type == PT_MUON || part.type == KFINVS)
 			continue;
 /* TODO */
+//ERW: replace with new implementation
 		if (KEYFLD && part.getKuchge() != 0) {
 			if (part.pT() < PTMIN)
 				continue;
@@ -155,9 +157,9 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 		}
 	}
 
-	// call histogram
+	// fill histogram
 	histoManager
-		->insert( HISTO_MULTIPLICITY_ID, orecord.Cells.size() );
+		->insert(idhist, orecord.Cells.size() );
 }
 
 void Cell::printResults() const {

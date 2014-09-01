@@ -3,7 +3,7 @@
 
 using namespace AcerDet::analyse;
 
-Photon::Photon( const Configuration& config, IHistogramManager& histoManager ) :
+Photon::Photon( const Configuration& config, IHistogramManager* histoMng ) :
 	ETCLU	( config.Cluster.MinEt ),
 	RCONE	( config.Cluster.ConeR ),
 
@@ -17,11 +17,11 @@ Photon::Photon( const Configuration& config, IHistogramManager& histoManager ) :
 	KEYHID	( config.Flag.HistogramId ),
 	KEYSME	( config.Flag.Smearing ),
 
-	IEVENT	( 0 )//,
+	IEVENT	( 0 ),
 	
-	//histo_isol	("Photon: multiplicity isolated", 0.0, 10.0, 10),
-	//histo_hard	("Photon: multiplicity hard", 0.0, 10.0, 10),
-	//histo_sum	("Photon: multipliciyt isol+hard", 0.0, 10.0, 10)
+	histoManager(histoMng),
+	histoRegistered( false )
+	
 {}
 
 Photon::~Photon() {}
@@ -50,6 +50,18 @@ void Photon::printInfo() const {
 }
 
 void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
+
+        int idhist = 400 + KEYHID;
+
+	if (!histoRegistered) {
+		histoRegistered = true;
+		histoManager
+			->registerHistogram(idhist+11, "Photon: photon multiplicity ISOLATED", 10, 0.0, 10.0);
+		histoManager
+			->registerHistogram(idhist+21, "Photon: photon multiplicity HARD", 10, 0.0, 10.0);
+		histoManager
+			->registerHistogram(idhist+31, "Photon: photon multiplicity HARD+ISOL", 10, 0.0, 10.0);
+	}
 
 	// variables
 	Real64_t PT, ETA, PHI, ENER, JPT, JETA, JPHI, DDR, PTCRU, ENE, EDEP;
@@ -220,13 +232,14 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 	}
 
 	// store count in histogram
-	//histo_isol.insert( orecord.Photons.size() );
+	histoManager
+		->insert(idhist+11, orecord.Photons.size() );
 
 	// arrange photons in falling E_T sequence
 	PartData::sortBy_pT( orecord.Photons );
 	
 	// check with partons
-	Int32_t IPHO = 0, IPHISO = 0;
+	Int32_t IPHO = 0, IPHOISO = 0;
 	for (int i=0; i<=NSTOP; ++i) {
 		const Particle& part = parts[i];
 		
@@ -270,13 +283,15 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 				IPHO++;
 
 			if (abs(ETA) < ETAMAX && PT > PTLMIN && ISOL)
-				IPHISO++;
+				IPHOISO++;
 		}
 	}
 
-	// call histograms
-	//histo_hard.insert( IPHO );
-	//histo_sum.insert( IPHISO );
+	// fill histograms
+	histoManager
+     	->insert(idhist+21, IPHO );
+	histoManager
+     	->insert(idhist+31, IPHOISO );
 
 }
 

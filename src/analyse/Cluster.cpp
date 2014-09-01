@@ -5,7 +5,7 @@
 using namespace AcerDet::core;
 using namespace AcerDet::analyse;
 
-Cluster::Cluster( const Configuration& config, IHistogramManager& histoManager ) :
+Cluster::Cluster( const Configuration& config, IHistogramManager * histoMng) :
 	ETCLU	( config.Cluster.MinEt ),
 	RCONE	( config.Cluster.ConeR ),
 	ETACLU	( config.Cluster.RapidityCoverage ),
@@ -18,18 +18,17 @@ Cluster::Cluster( const Configuration& config, IHistogramManager& histoManager )
 	KEYFLD	( config.Flag.BField ),
 	KFINVS	( config.Flag.SusyParticle ),
 
-	IEVENT	( 0 )//,
+	IEVENT	( 0 ),
 	
-	//histo_bJets				("Cluster: multiplicity", 0.0, 10.0, 10),
-	//histo_delta_phi			("Cluster: delta phi clu-barycentre", -0.5, 0.5, 50),
-	//histo_delta_eta			("Cluster: delta eta clu-barycentre", -0.5, 0.5, 50),
-	//histo_delta_barycenter	("Cluster: delta r clu-barycentre", 0.0, 0.5, 50),
-	//histo_delta_parton		("Cluster: delta r clu-parton", 0.0, 0.5, 50),
-	//histo_pT_bySum			("Cluster: pTclu / SumpTParticle", 0.0, 2.0, 50),
-	//histo_pT_byPart			("Cluster: pTclu / pTparton", 0.0, 2.0, 50)
+	histoManager(histoMng),
+	histoRegistered( false )
+
+
 {}
 
-Cluster::~Cluster() {}
+Cluster::~Cluster() {
+	histoManager = NULL;
+}
 
 void Cluster::printInfo() const {
 	// print out title
@@ -52,6 +51,26 @@ void Cluster::printInfo() const {
 }
 
 void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
+
+       int idhist = 100 + KEYHID;
+
+	if (!histoRegistered) {
+		histoRegistered = true;
+		histoManager
+			->registerHistogram(idhist+1,  "Cluster: multiplicity", 10, 0.0, 10.0);
+		histoManager
+			->registerHistogram(idhist+11, "Cluster: delta eta clu-barycentre"  , 50, -0.5, 0.5);
+		histoManager
+			->registerHistogram(idhist+12, "Cluster: delta phi clu-barycentre"  , 50, -0.5, 0.5);
+		histoManager
+			->registerHistogram(idhist+13, "Cluster: delta r   clu-barycentre"  , 50,  0.0, 0.5);
+		histoManager
+			->registerHistogram(idhist+23, "Cluster: delta r   clu-parton"      , 50,  0.0, 0.5);
+		histoManager
+			->registerHistogram(idhist+14, "Cluster: pTclu/SumpTparticle"       , 50,  0.0, 2.0);
+		histoManager
+			->registerHistogram(idhist+24, "Cluster: pTclu/SumpTparticle"       , 50,  0.0, 2.0);
+	}
 
 	// new event to compute
 	IEVENT++;
@@ -154,8 +173,9 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 	// store in outputrecord
 	orecord.Clusters.insert(orecord.Clusters.end(), tempClusters.begin(), tempClusters.end());
 	
-	// call histogram
-	//histo_bJets.insert(tempClusters.size());
+	// fill histogram
+	histoManager
+	         ->insert(idhist+1, tempClusters.size());
 	
 	// reconstruct baricenter of particles
 	const vector<Particle>& parts = irecord.particles();
@@ -194,6 +214,8 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 			PHI = saturatePi(part.getPhi() + DETPHI);
 			
 			// czy nie rownowazne saturatePi?
+			// ERW: tak to jest rownowazne, ale trzeba przetestowac
+			// ERW: nalezaloby zrobic histogram DPHIA i zaobaczyc jaki ma zakres
 			DPHIA = abs(cluster.phi - PHI);
 
 			if (DPHIA > PI) 
@@ -214,11 +236,15 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 			pow((PHIREC - cluster.phi_rec), 2) 
 		);
 		
-		// call histograms
-		//histo_delta_eta.insert(ETAREC - cluster.eta_rec); //IDENT + 11
-		//histo_delta_phi.insert(PHIREC - cluster.phi_rec); //IDENT + 12
-		//histo_delta_barycenter.insert(DETR); // IDENT + 13
-		//histo_pT_bySum.insert(cluster.pT / PTREC); // IDENT + 14
+		// fill  histograms
+		histoManager
+		        ->insert(idhist + 11, ETAREC - cluster.eta_rec);
+		histoManager
+		        ->insert(idhist + 12, PHIREC - cluster.phi_rec); 
+		histoManager
+		        ->insert(idhist + 13, DETR); 
+		histoManager
+		        ->insert(idhist + 14, cluster.pT / PTREC);
 	}
 
 	for (int ICLU=0; ICLU<orecord.Clusters.size(); ICLU++) {
@@ -226,7 +252,11 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		Real64_t PTREC = 0.0, DETR;
 		Real64_t DETRMIN = RCONE;
 
-		// magic
+		// magic: No, here we want to match to cluster only particles outging
+                // magic: from the hard process, like Z->ee, H->gamgam, etc
+		// ERW: here only hard-process outgoing particles, so fixed value "6"
+                // ERW: should be dropped and start from O BUT this condition should
+                // ERW: somehow coded into new flag PT_OutHardProcess
 		for (int i=6; i<parts.size(); i++) { 
 			if (parts[i].stateID != 21 || abs(parts[i].typeID) > 10) // TODO: boolean method for this condition
 				continue;
@@ -251,9 +281,11 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		}
 
 		if (PTREC) {
-			// call histograms
-			//histo_delta_parton.insert(DETRMIN); // IDENT + 23
-			//histo_pT_byPart.insert(cluster.pT / PTREC); // IDENT + 24
+		  // fill histograms
+		  histoManager
+			->insert(idhist + 23,DETRMIN);
+		  histoManager
+			->insert(idhist + 24,cluster.pT / PTREC); 
 		}
 	}
 }

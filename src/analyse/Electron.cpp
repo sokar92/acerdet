@@ -3,7 +3,7 @@
 
 using namespace AcerDet::analyse;
 
-Electron::Electron( const Configuration& config, IHistogramManager& histoManager ) :
+Electron::Electron( const Configuration& config, IHistogramManager* histoMng ) :
 	ETCLU	( config.Cluster.MinEt ),
 	RCONE	( config.Cluster.ConeR ),
 
@@ -17,11 +17,11 @@ Electron::Electron( const Configuration& config, IHistogramManager& histoManager
 	KEYHID	( config.Flag.HistogramId ),
 	KEYSME	( config.Flag.Smearing ),
 
-	IEVENT	( 0 )//,
+	IEVENT	( 0 ),
 	
-	//histo_isol	("Electron: multiplicity isolated", 0.0, 10.0, 10),
-	//histo_hard	("Electron: multiplicity hard", 0.0, 10.0, 10),
-	//histo_sum	("Electron: multipliciyt isol+hard", 0.0, 10.0, 10)
+	histoManager(histoMng),
+	histoRegistered( false )
+	
 {}
 
 Electron::~Electron() {}
@@ -50,6 +50,18 @@ void Electron::printInfo() const {
 }
 
 void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
+
+        int idhist = 300 + KEYHID;
+
+	if (!histoRegistered) {
+		histoRegistered = true;
+		histoManager
+			->registerHistogram(idhist+11, "Electron: multiplicity isolated", 10, 0.0, 10.0);
+		histoManager
+			->registerHistogram(idhist+21, "Electron: multiplicity hard", 10, 0.0, 10.0);
+		histoManager
+			->registerHistogram(idhist+31, "Electron: multiplicity isol+hard", 10, 0.0, 10.0);
+	}
 
 	// variables
 	Real64_t PT, ETA, PHI, ENER, JPT, JETA, JPHI, DR, DDR, PTCRU, ENE, EDEP;
@@ -215,7 +227,8 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 	}
 
 	// store count in histogram
-	//histo_isol.insert( orecord.Electrons.size() );
+	histoManager
+	  ->insert(idhist + 11,  orecord.Electrons.size() );
 
 	// arrange electrons in falling E_T sequence
 	PartData::sortBy_pT( orecord.Electrons );
@@ -267,8 +280,11 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 	}
 	
 	// store in histos
-	//histo_hard.insert( IELE );
-	//histo_sum.insert( IELEISO );
+	histoManager
+  	     ->insert(idhist + 21,IELE );
+	histoManager
+  	     ->insert(idhist + 31,IELE );
+
 }
 
 void Electron::printResults() const {

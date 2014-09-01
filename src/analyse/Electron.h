@@ -7,8 +7,11 @@
 using namespace AcerDet::conf;
 
 #include "../core/IHistogramManager.h"
+using namespace AcerDet::core;
+
 #include "../io/InputRecord.h"
 #include "../io/OutputRecord.h"
+using namespace AcerDet::io;
 
 namespace AcerDet {
 	namespace analyse {
@@ -29,11 +32,11 @@ namespace AcerDet {
 
 			Int32_t IEVENT;
 			
-			//core::Histogram histo_isol;
-			//core::Histogram histo_hard;
-			//core::Histogram histo_sum;
+			IHistogramManager *histoManager;
+			Bool_t histoRegistered;
+
 		public:
-			Electron( const Configuration&, IHistogramManager& );
+			Electron( const Configuration&, IHistogramManager* );
 			~Electron();
 			
 			void printInfo() const;
