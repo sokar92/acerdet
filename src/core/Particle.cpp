@@ -11,7 +11,6 @@ Particle::Particle() :
 	typeID(0),
 	momentum(),
 	production(),
-//	phi(0), theta(0), 
 	id(-1), mother(-1), 
 	daughters(make_pair(-1,-1)) 
 {}
@@ -92,83 +91,6 @@ Real64_t Particle::getTheta() const {
 Real64_t Particle::foldPhi() const {
 	return 0.5 / getPhi();
 }
-
-/*
- * parametrizes smearing for calorymetric energy deposition
- */
-/*
-double reshad (
-	double ene, 
-	double eta, 
-	double caloth, 
-	double pt, 
-	double rcone) 
-{
-	double aa, bb, sigma;
-
-	do {
-		rannor(aa, bb);
-		if (abs(eta) < caloth) sigma = aa * 0.5 / sqrt(ene);
-		else sigma = aa / sqrt(ene);
-	} while (1.0 + sigma <= 0.0);
-	return sigma;
-}
-*/
-
-/*
- * parametrizes photon  resolution 
- */
-/*
-double respho (
-	double ene,
-	double pt,
-	double eta,
-	double phi)
-{
-	double aa, bb, sigma;
-	do {
-		rannor(aa, bb); 
-		sigma = aa * 0.1 / sqrt(ene); 
-	} while(1.0 + sigma <= 0.0);
-	return sigma;
-}
-*/
-
-/*
- * parametrizes electron  resolution
- */
-/*
-double resele (
-	double ene,
-	double pt,
-	double eta,
-	double phi)
-{
-	double aa, bb, sigma;
-	do {
-		rannor(aa, bb);
-		sigma = aa * 0.12 / sqrt(ene);
-	} while (1.0 + sigma <= 0.0);
-	return sigma;
-}
-*/
-
-/*
- * parametrizes muon resolution
- */
-/* double resmuo (
-	double pt,
-	double eta,
-	double phi)
-{
-	double aa, bb, sigma = 0.0;
-	do {
-		rannor(aa, bb);
-		sigma = 0.0005 * pt * aa;
-	} while (1.0 + sigma <= 0.0);
-	return sigma;
-}
-*/
 
 /*
  * Private functions
