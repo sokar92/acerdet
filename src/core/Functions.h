@@ -81,13 +81,6 @@ namespace AcerDet {
 			
 			return radius(x,y);
 		}
-		
-		/*
-		 * Code specific functions 
-		 * TODO -> dummy implementation
-		 */
-		Int32_t kfcomp(Real64_t);
-		Int32_t kuchge(Real64_t);
 	}
 }
 

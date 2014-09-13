@@ -1,9 +1,12 @@
 #include "Jet.h"
 #include <cstdio>
-
 using namespace AcerDet::analyse;
 
-Jet::Jet( const Configuration& config, IHistogramManager * histoMng ) :
+Jet::Jet(
+	const Configuration& config,
+	IHistogramManager * histoMng,
+	const ParticleDataProvider& partDataProvider ) 
+:
 	ETJET	( config.Jet.MinEnergy ),
 	ETAJET	( config.Jet.RapidityCoverage ),
 	RCONE	( config.Cluster.ConeR ),
@@ -18,8 +21,8 @@ Jet::Jet( const Configuration& config, IHistogramManager * histoMng ) :
 	IEVENT	( 0 ),
 	
 	histoManager(histoMng),
-	histoRegistered( false )
-	
+	histoRegistered( false ),
+	partProvider( partDataProvider )	
 {}
 
 Jet::~Jet() {}
@@ -46,10 +49,8 @@ void Jet::printInfo() const {
 }
 
 void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
-
-
-        int idhist = 500 + KEYHID;
-
+	
+	Int32_t idhist = 500 + KEYHID;
 	if (!histoRegistered) {
 		histoRegistered = true;
 		histoManager
@@ -215,7 +216,7 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	
 	// histogram NJET
 	histoManager
-  	      ->insert(idhist+1, orecord.Jets.size() );
+		->insert(idhist+1, orecord.Jets.size() );
 
 	// arrange jets in falling E_T sequence
 	JetData::sortBy_pT( orecord.Jets );
@@ -240,12 +241,12 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 				continue;
 
 			Real64_t DETPHI = 0.0;
-			if (KEYFLD && part.getKuchge() != 0) {
+			if (KEYFLD && partProvider.getChargeType(part.typeID) != 0) {
 				PT = part.pT();
 				if (PT < PTMIN) 
 					continue;
 
-				CHRG = part.getKuchge() / 3.0;
+				CHRG = partProvider.getCharge(part.typeID) / 3.0;
 				DETPHI = CHRG * part.foldPhi();
 			}
 

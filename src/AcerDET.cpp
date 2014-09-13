@@ -23,11 +23,11 @@ AcerDET::AcerDET(
 	analyse_CJet =
 		new analyse::CJet( config, histoManager );
 	analyse_Cluster =
-		new analyse::Cluster( config, histoManager );
+		new analyse::Cluster( config, histoManager, partProvider );
 	analyse_Electron =
 		new analyse::Electron( config, histoManager );
 	analyse_Jet =
-		new analyse::Jet( config, histoManager );
+		new analyse::Jet( config, histoManager, partProvider );
 	analyse_Mis	=
 		new analyse::Mis( config, histoManager );
 	analyse_Muon =

@@ -1,8 +1,7 @@
 RELATIVE_PATH= ../..
 include $(RELATIVE_PATH)/common.inc
 
-OBJECTS= Functions.o \
-	Smearing.o \
+OBJECTS= Smearing.o \
 	CellData.o \
 	ClusterData.o \
 	JetData.o \

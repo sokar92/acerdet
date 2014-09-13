@@ -98,12 +98,11 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 		if (part.type == PT_UNKNOWN || part.isNeutrino() || part.type == PT_MUON || part.type == KFINVS)
 			continue;
 
-//ERW: replace with new implementation
-		if (KEYFLD && part.getKuchge() != 0) {
+		if (KEYFLD && partProvider.getChargeType(part.typeID) != 0) {
 			if (part.pT() < PTMIN)
 				continue;
 				
-			Real64_t CHRG = part.getKuchge() / 3.0;
+			Real64_t CHRG = partProvider.getCharge(part.typeID) / 3.0;
 			DETPHI = CHRG * part.foldPhi();
 		}
 		
@@ -163,7 +162,7 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 
 	// fill histogram
 	histoManager
-		->insert(idhist, orecord.Cells.size() );
+		->insert(idhist, orecord.Cells.size(), 1.0 );
 }
 
 void Cell::printResults() const {

@@ -5,7 +5,11 @@
 using namespace AcerDet::core;
 using namespace AcerDet::analyse;
 
-Cluster::Cluster( const Configuration& config, IHistogramManager * histoMng) :
+Cluster::Cluster(
+	const Configuration& config,
+	IHistogramManager *histoMng,
+	const ParticleDataProvider& partDataProvider)
+:
 	ETCLU	( config.Cluster.MinEt ),
 	RCONE	( config.Cluster.ConeR ),
 	ETACLU	( config.Cluster.RapidityCoverage ),
@@ -21,9 +25,8 @@ Cluster::Cluster( const Configuration& config, IHistogramManager * histoMng) :
 	IEVENT	( 0 ),
 	
 	histoManager(histoMng),
-	histoRegistered( false )
-
-
+	histoRegistered( false ),
+	partProvider( partDataProvider )
 {}
 
 Cluster::~Cluster() {
@@ -175,7 +178,7 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 	
 	// fill histogram
 	histoManager
-	         ->insert(idhist+1, tempClusters.size());
+		->insert(idhist+1, tempClusters.size());
 	
 	// reconstruct baricenter of particles
 	const vector<Particle>& parts = irecord.particles();
@@ -200,12 +203,11 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 			if (part.type == PT_UNKNOWN || part.isNeutrino() || part.type == PT_MUON || part.type == KFINVS)
 				continue;
 
-			/* TODO */
-			if (KEYFLD && part.getKuchge() != 0) {
+			if (KEYFLD && partProvider.getChargeType(part.typeID) != 0) {
 				if (PT < PTMIN)
 					continue;
 					
-				Real64_t CHRG = part.getKuchge() / 3.0;
+				Real64_t CHRG = partProvider.getCharge(part.typeID) / 3.0;
 				DETPHI = CHRG * part.foldPhi();
 			}
 			
@@ -238,13 +240,13 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		
 		// fill  histograms
 		histoManager
-		        ->insert(idhist + 11, ETAREC - cluster.eta_rec);
+			->insert(idhist + 11, ETAREC - cluster.eta_rec);
 		histoManager
-		        ->insert(idhist + 12, PHIREC - cluster.phi_rec); 
+			->insert(idhist + 12, PHIREC - cluster.phi_rec); 
 		histoManager
-		        ->insert(idhist + 13, DETR); 
+			->insert(idhist + 13, DETR); 
 		histoManager
-		        ->insert(idhist + 14, cluster.pT / PTREC);
+			->insert(idhist + 14, cluster.pT / PTREC);
 	}
 
 	for (int ICLU=0; ICLU<orecord.Clusters.size(); ICLU++) {
@@ -253,10 +255,10 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		Real64_t DETRMIN = RCONE;
 
 		// magic: No, here we want to match to cluster only particles outging
-                // magic: from the hard process, like Z->ee, H->gamgam, etc
+        // magic: from the hard process, like Z->ee, H->gamgam, etc
 		// ERW: here only hard-process outgoing particles, so fixed value "6"
-                // ERW: should be dropped and start from O BUT this condition should
-                // ERW: somehow coded into new flag PT_OutHardProcess
+        // ERW: should be dropped and start from O BUT this condition should
+        // ERW: somehow coded into new flag PT_OutHardProcess
 		for (int i=6; i<parts.size(); i++) { 
 			if (parts[i].stateID != 21 || abs(parts[i].typeID) > 10) // TODO: boolean method for this condition
 				continue;
@@ -280,8 +282,8 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 			}
 		}
 
+		// fill histograms
 		if (PTREC) {
-		  // fill histograms
 		  histoManager
 			->insert(idhist + 23,DETRMIN);
 		  histoManager
@@ -301,11 +303,4 @@ void Cluster::printResults() const {
 	printf ("**************************************\n");
 	
 	printf (" Analysed records: %d\n", IEVENT);
-	//histo_bJets				.print( true ); //IDENT + 1
-	//histo_delta_phi			.print( true ); //IDENT + 11
-	//histo_delta_eta			.print( true ); //IDENT + 12
-	//histo_delta_barycenter	.print( true ); //IDENT + 13
-	//histo_delta_parton		.print( true ); //IDENT + 23
-	//histo_pT_bySum			.print( true ); //IDENT + 14
-	//histo_pT_byPart			.print( true ); //IDENT + 24
 }
