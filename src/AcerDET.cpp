@@ -10,20 +10,32 @@ AcerDET::AcerDET(
 	const conf::Configuration& config,
 	core::IParticleDataProviderFactory *partFactory,
 	core::IHistogramManager *histoManager ) :
-		histos( histoManager ),
-		histos_initialized( false ),
-		analyse_BJet		( config, histoManager ),
-		analyse_Calibration	( config ),
-		analyse_Cell		( config, histoManager ),
-		analyse_CJet		( config, histoManager ),
-		analyse_Cluster		( config, histoManager ),
-		analyse_Electron	( config, histoManager ),
-		analyse_Jet		( config, histoManager ),
-		analyse_Mis		( config, histoManager ),
-		analyse_Muon		( config, histoManager ),
-		analyse_Photon		( config, histoManager ),
-		analyse_Tau		( config, histoManager )
+		histos				( histoManager ),
+		histos_initialized	( false )
 {
+	partProvider = partFactory->create();
+	analyse_Cell =
+		new analyse::Cell( config, histoManager, partProvider );
+	analyse_BJet =
+		new analyse::BJet( config, histoManager );
+	analyse_Calibration =
+		new analyse::Calibration( config );
+	analyse_CJet =
+		new analyse::CJet( config, histoManager );
+	analyse_Cluster =
+		new analyse::Cluster( config, histoManager );
+	analyse_Electron =
+		new analyse::Electron( config, histoManager );
+	analyse_Jet =
+		new analyse::Jet( config, histoManager );
+	analyse_Mis	=
+		new analyse::Mis( config, histoManager );
+	analyse_Muon =
+		new analyse::Muon( config, histoManager );
+	analyse_Photon =
+		new analyse::Photon( config, histoManager );
+	analyse_Tau =
+		new analyse::Tau( config, histoManager );
 }
 
 /*
@@ -31,6 +43,18 @@ AcerDET::AcerDET(
  */
 AcerDET::~AcerDET() {
 	histos = NULL;
+	
+	delete analyse_Cell;
+	delete analyse_BJet;
+	delete analyse_Calibration;
+	delete analyse_CJet;
+	delete analyse_Cluster;
+	delete analyse_Electron;
+	delete analyse_Jet;
+	delete analyse_Mis;
+	delete analyse_Muon;
+	delete analyse_Photon;
+	delete analyse_Tau;
 }
 
 /*
@@ -43,17 +67,17 @@ void AcerDET::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		histos_initialized = true;
 	}
 	
-	analyse_Cell		.analyseRecord( irecord, orecord );
-	analyse_Cluster		.analyseRecord( irecord, orecord );
-	analyse_Muon		.analyseRecord( irecord, orecord );
-	analyse_Electron	.analyseRecord( irecord, orecord );
-	analyse_Photon		.analyseRecord( irecord, orecord );
-	analyse_Jet			.analyseRecord( irecord, orecord );
-	analyse_Mis			.analyseRecord( irecord, orecord );
-	analyse_BJet		.analyseRecord( irecord, orecord );
-	analyse_CJet		.analyseRecord( irecord, orecord );
-	analyse_Tau			.analyseRecord( irecord, orecord );
-	analyse_Calibration	.analyseRecord( irecord, orecord );
+	analyse_Cell		->analyseRecord( irecord, orecord );
+	analyse_Cluster		->analyseRecord( irecord, orecord );
+	analyse_Muon		->analyseRecord( irecord, orecord );
+	analyse_Electron	->analyseRecord( irecord, orecord );
+	analyse_Photon		->analyseRecord( irecord, orecord );
+	analyse_Jet			->analyseRecord( irecord, orecord );
+	analyse_Mis			->analyseRecord( irecord, orecord );
+	analyse_BJet		->analyseRecord( irecord, orecord );
+	analyse_CJet		->analyseRecord( irecord, orecord );
+	analyse_Tau			->analyseRecord( irecord, orecord );
+	analyse_Calibration	->analyseRecord( irecord, orecord );
 }
 
 /*
@@ -75,30 +99,30 @@ void AcerDET::printInfo() const {
 	
 	// info about subclasses
 	printf (" Initial configuration:\n");
-	analyse_Cell		.printInfo();
-	analyse_Cluster		.printInfo();
-	analyse_Muon		.printInfo();
-	analyse_Electron	.printInfo();
-	analyse_Photon		.printInfo();
-	analyse_Jet			.printInfo();
-	analyse_Mis			.printInfo();
-	analyse_BJet		.printInfo();
-	analyse_CJet		.printInfo();
-	analyse_Tau			.printInfo();
-	analyse_Calibration	.printInfo();
+	analyse_Cell		->printInfo();
+	analyse_Cluster		->printInfo();
+	analyse_Muon		->printInfo();
+	analyse_Electron	->printInfo();
+	analyse_Photon		->printInfo();
+	analyse_Jet			->printInfo();
+	analyse_Mis			->printInfo();
+	analyse_BJet		->printInfo();
+	analyse_CJet		->printInfo();
+	analyse_Tau			->printInfo();
+	analyse_Calibration	->printInfo();
 }
 
 void AcerDET::printResults() const {
-	analyse_Cell		.printResults();
-	analyse_Cluster		.printResults();
-	analyse_Muon		.printResults();
-	analyse_Electron	.printResults();
-	analyse_Photon		.printResults();
-	analyse_Jet			.printResults();
-	analyse_Mis			.printResults();
-	analyse_BJet		.printResults();
-	analyse_CJet		.printResults();
-	analyse_Tau			.printResults();
+	analyse_Cell		->printResults();
+	analyse_Cluster		->printResults();
+	analyse_Muon		->printResults();
+	analyse_Electron	->printResults();
+	analyse_Photon		->printResults();
+	analyse_Jet			->printResults();
+	analyse_Mis			->printResults();
+	analyse_BJet		->printResults();
+	analyse_CJet		->printResults();
+	analyse_Tau			->printResults();
 }
 
 void AcerDET::storeHistograms( const string& file ) {

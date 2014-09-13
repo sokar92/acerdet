@@ -4,7 +4,11 @@
 #include "../core/Functions.h"
 using namespace AcerDet::analyse;
 
-Cell::Cell( const Configuration& config, IHistogramManager *histoMng ) :
+Cell::Cell(
+	const Configuration& config,
+	IHistogramManager *histoMng,
+	const ParticleDataProvider& partDataProvider ) 
+:
 	ETACEL	( config.Cell.RapidityCoverage ),
 	PTMIN	( config.Cell.MinpT ),
 	ETTHR	( config.Cell.MinEt ),
@@ -18,8 +22,9 @@ Cell::Cell( const Configuration& config, IHistogramManager *histoMng ) :
 
 	IEVENT	( 0 ),
 	
-	histoManager(histoMng),
-	histoRegistered( false )
+	histoManager( histoMng ),
+	histoRegistered( false ),
+	partProvider( partDataProvider )
 {}
 
 Cell::~Cell() {
@@ -53,8 +58,7 @@ void Cell::printInfo() const {
 
 void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
 
-        int idhist = 0 + KEYHID;
-
+	Int32_t idhist = 0 + KEYHID;
 	if (!histoRegistered) {
 		histoRegistered = true;
 		histoManager
@@ -86,14 +90,14 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 		Real64_t DETPHI = 0.0;
 		Real64_t ETA, PHI, PT, PZ;
 		//ERW: getter jest czasami jako .getX() a czasami jak .x()
-                //ERW: moze warto ujednolicic
+        //ERW: moze warto ujednolicic
 		PT = part.pT();
 		PZ = part.pZ();
 		if (PT * PT <= PTLRAT * PZ * PZ)
 			continue;
 		if (part.type == PT_UNKNOWN || part.isNeutrino() || part.type == PT_MUON || part.type == KFINVS)
 			continue;
-/* TODO */
+
 //ERW: replace with new implementation
 		if (KEYFLD && part.getKuchge() != 0) {
 			if (part.pT() < PTMIN)

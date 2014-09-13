@@ -10,6 +10,7 @@
 // --  Include AcerDET 2.0 core components --
 // ------------------------------------------
 #include "core/IParticleDataProviderFactory.h"
+#include "core/ParticleDataProvider.h"
 #include "core/IHistogramManager.h"
 
 // -------------------------------------------
@@ -39,18 +40,19 @@ namespace AcerDet {
 	private:
 		core::IHistogramManager	*histos;
 		Bool_t					histos_initialized;
+		core::ParticleDataProvider partProvider;
 		
-		analyse::BJet			analyse_BJet;
-		analyse::Calibration	analyse_Calibration;
-		analyse::Cell			analyse_Cell;
-		analyse::CJet			analyse_CJet;
-		analyse::Cluster		analyse_Cluster;
-		analyse::Electron		analyse_Electron;
-		analyse::Jet			analyse_Jet;
-		analyse::Mis			analyse_Mis;
-		analyse::Muon			analyse_Muon;
-		analyse::Photon			analyse_Photon;
-		analyse::Tau			analyse_Tau;
+		analyse::BJet			*analyse_BJet;
+		analyse::Calibration	*analyse_Calibration;
+		analyse::Cell			*analyse_Cell;
+		analyse::CJet			*analyse_CJet;
+		analyse::Cluster		*analyse_Cluster;
+		analyse::Electron		*analyse_Electron;
+		analyse::Jet			*analyse_Jet;
+		analyse::Mis			*analyse_Mis;
+		analyse::Muon			*analyse_Muon;
+		analyse::Photon			*analyse_Photon;
+		analyse::Tau			*analyse_Tau;
 	public:
 		AcerDET(
 			const conf::Configuration&,

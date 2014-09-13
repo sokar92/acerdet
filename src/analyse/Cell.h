@@ -7,6 +7,7 @@
 using namespace AcerDet::conf;
 
 #include "../core/IHistogramManager.h"
+#include "../core/ParticleDataProvider.h"
 using namespace AcerDet::core;
 
 #include "../io/InputRecord.h"
@@ -36,9 +37,15 @@ namespace AcerDet {
 			
 			IHistogramManager *histoManager;
 			Bool_t histoRegistered;
+
+			const ParticleDataProvider& partProvider;
 			
 		public:
-			Cell( const Configuration&, IHistogramManager* );
+			Cell( 
+				const Configuration&,
+				IHistogramManager*,
+				const ParticleDataProvider& );
+
 			~Cell();
 			
 			/**
