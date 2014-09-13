@@ -2,6 +2,9 @@
 #include <cstdio>
 using namespace AcerDet::analyse;
 
+#include "../core/Smearing.h"
+using namespace AcerDet::core;
+
 Jet::Jet(
 	const Configuration& config,
 	IHistogramManager * histoMng,
@@ -85,16 +88,8 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 			ClusterData& cluster = orecord.Clusters[i];
 			
 			EECLU = cluster.pT * cosh(cluster.eta_rec); // Po co tu liczyc jak zaraz jest nadpisane?
-			//SIGMA = RESHAD(EECLU, cluster.eta_rec, CALOTH, cluster.pT, RCONE);
+			Real64_t coef = cluster.pT * (1.0 + Smearing::forHadron(EECLU, cluster.eta_rec, CALOTH));
 			
-			//Real64_t coef = cluster.pT * (1.0 + SIGMA);
-			Real64_t coef = 1.0;
-			
-			//PXCLU = coef * cos (cluster.phi_rec);
-			//PYCLU = coef * sin (cluster.phi_rec);
-			//PZCLU = coef * sinh(cluster.eta_rec);
-			//EECLU = coef * cosh(cluster.eta_rec);
-	
 			Particle pClu;
 			pClu.momentum = Vector4f(
 				cos (cluster.phi_rec),
@@ -106,22 +101,10 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 			pClu.momentum *= coef;
 
 			THETA = pClu.getTheta();
-			//if (abs(PZCLU / EECLU) < 1) {
-			//	THETA = ACOS(PZCLU / SQRT(PXCLU**2+PYCLU**2+PZCLU**2))
-			//} ELSE {
-			//	IF (PZCLU > 0) THETA = 0
-			//	IF (PZCLU < 0) THETA = PI
-			//}
-
 			ETACLU = -log(max(0.0001, abs(tan(0.5*THETA))));
-			//PTCLU  = SQRT(PXCLU**2+PYCLU**2)
-			//PHICLU = ANGLE(PXCLU,PYCLU)
 			PTCLU = pClu.pT();
 			PHICLU = pClu.getPhi();
 
-			//PCLU(I,5) = PTCLU
-			//PCLU(I,3) = ETACLU
-			//PCLU(I,4) = PHICLU
 			cluster.eta_rec = ETACLU;
 			cluster.phi_rec = PHICLU;
 			cluster.pT = PTCLU;
@@ -164,11 +147,6 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 				(abs(orecord.Clusters[MUCLU].eta_rec) > CALOTH && DR < RCONE) 
 			) {
 				Real64_t coef = orecord.Clusters[MUCLU].pT;
-				//PXCLU = PCLU(MUCLU,5) * COS(PCLU(MUCLU,4)) + PT * COS(PHI)
-				//PYCLU = PCLU(MUCLU,5) * SIN(PCLU(MUCLU,4)) + PT * SIN(PHI)
-				//PZCLU = PCLU(MUCLU,5) * SINH(PCLU(MUCLU,3)) + PT * SINH(ETA)
-				//EECLU = PCLU(MUCLU,5) * COSH(PCLU(MUCLU,3)) + PT * COSH(ETA)
-
 				Vector4f muVec = Vector4f(
 					cos(orecord.Clusters[MUCLU].phi_rec),
 					sin(orecord.Clusters[MUCLU].phi_rec),
@@ -179,9 +157,6 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 				Particle pClu;
 				pClu.momentum = muVec * orecord.Clusters[MUCLU].pT + Vec * PT;
 				
-				//PTCLU = SQRT(PXCLU**2+PYCLU**2)
-				//ETACLU = SIGN(LOG((SQRT(PTCLU**2+PZCLU**2)+ABS(PZCLU))/PTCLU),PZCLU) 
-				//PHICLU = ANGLE(PXCLU,PYCLU)
 				PTCLU = pClu.pT();
 				ETACLU = pClu.getEta();
 				PHICLU = pClu.getPhi();
@@ -237,7 +212,10 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 			if(PT * PT <= PTLRAT * PZ * PZ) 
 				continue; 
 
-			if (part.type == PT_UNKNOWN || part.isNeutrino() || part.type == PT_MUON || part.type == KFINVS)
+			if (part.type == PT_UNKNOWN
+			|| part.isNeutrino()
+			|| part.type == PT_MUON
+			|| part.type == KFINVS)
 				continue;
 
 			Real64_t DETPHI = 0.0;
@@ -318,9 +296,9 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 
 		if (PTREC != 0) {
 		  histoManager
-		     	->insert(idhist+14,DETRMIN);
+			->insert(idhist+14, DETRMIN, 1.0);
 		  histoManager
-			->insert(idhist+24,jet.pT / PTREC);
+			->insert(idhist+24, jet.pT / PTREC, 1.0);
 		}
 	}
 }
@@ -336,11 +314,4 @@ void Jet::printResults() const {
 	printf ("**********************************\n");
 	
 	printf (" Analysed records: %d\n", IEVENT);
-	//histo_bJets				.print( true ); //IDENT + 1
-	//histo_delta_phi			.print( true ); //IDENT + 11
-	//histo_delta_eta			.print( true ); //IDENT + 12
-	//histo_delta_barycenter	.print( true ); //IDENT + 13
-	//histo_delta_parton		.print( true ); //IDENT + 23
-	//histo_pT_bySum			.print( true ); //IDENT + 14
-	//histo_pT_byPart			.print( true ); //IDENT + 24
 }
