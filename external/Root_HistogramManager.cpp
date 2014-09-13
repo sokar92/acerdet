@@ -23,11 +23,11 @@ void Root_HistogramManager::registerHistogram(
 		->addTH1F(name, title.c_str(), blocks, minVal, maxVal);
 }
 
-void Root_HistogramManager::insert( Int32_t id, Real64_t value ) {
+void Root_HistogramManager::insert( Int32_t id, Real64_t value, Real64_t weigth ) {
 	// printf ("HISTOS: insert(%d)\n", id);
 	HistoManager::getInstance()
 		->GetHistoTH1F(id)
-		->Fill(value);
+		->Fill(value, weigth);
 }
 
 void Root_HistogramManager::storeHistograms( const string& file ) {
