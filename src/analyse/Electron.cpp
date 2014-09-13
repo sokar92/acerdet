@@ -73,22 +73,25 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 	const vector<Particle>& parts = irecord.particles();
 
 	// znajdz poczatek danych poczatek powinien byc 21
-	printf (" --- Ele section --- \n");
-	for (int i=0; i<parts.size(); ++i) {
-		printf ("%d ", parts[i].stateID);
-	} printf ("\n");
+	// printf (" --- Ele section --- \n");
+	// for (int i=0; i<parts.size(); ++i) {
+	// 	 printf ("%d ", parts[i].stateID);
+	// } printf ("\n");
 	
-	Int32_t NSTOP = -1, NSTART = 0;
+	// find last position with '21' status
+	Int32_t last21 = -1;
+	//Int32_t NSTOP = 0, NSTART = 1;
 	for (int i=0; i<parts.size(); ++i) {
-		if (parts[i].stateID != 21) {
-			NSTOP = i-1;
-			NSTART = i;
-			break;
+		if (parts[i].stateID == 21) {
+		//	NSTOP = i-1;
+		//	NSTART = i;
+			last21 = i;
 		}
 	}
 
 	// look for isolated electrons, sort clusters common
-	for (int i=NSTART; i<parts.size(); ++i) {
+	// for (int i=NSTART; i<parts.size(); ++i) {
+	for (int i=last21+1; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
 	
 		if (!part.isStable()) 
@@ -232,7 +235,8 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 	PartData::sortBy_pT( orecord.Electrons );
 
 	Int32_t IELE = 0, IELEISO = 0;
-	for (int i=0; i<=NSTOP; ++i) {
+	// for (int i=0; i<=NSTOP; ++i) {
+	for (int i=0; i<=last21; ++i) {
 		const Particle& part = parts[i];
 		
 		if (part.type == PT_ELECTRON) {
@@ -242,8 +246,12 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 			ENER = 0.0;
 			Bool_t ISOL = true;
 
-			for (int j=0; j<=NSTOP; ++j) {
-				if (abs(parts[j].typeID) <= 21 && i != j && !parts[j].isNeutrino()) {
+			// for (int j=0; j<=NSTOP; ++j) {
+			for (int j=0; j<=last21; ++j) {
+				if (abs(parts[j].typeID) <= 21
+				&& i != j
+				&& !parts[j].isNeutrino()) 
+				{
 					JPT = parts[j].pT(); 
 					JETA = parts[j].getEta(); 
 					JPHI = parts[j].getPhi();
@@ -282,7 +290,6 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
   	     ->insert(idhist + 21,IELE );
 	histoManager
   	     ->insert(idhist + 31,IELE );
-
 }
 
 void Electron::printResults() const {
@@ -296,7 +303,4 @@ void Electron::printResults() const {
 	printf ("***************************************\n");
 	
 	printf (" Analysed records: %d\n", IEVENT);
-	//histo_isol	.print( true );
-	//histo_hard	.print( true );
-	//histo_sum	.print( true );
 }

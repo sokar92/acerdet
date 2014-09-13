@@ -75,7 +75,7 @@ InputRecord HepMC_InputConverter::convert( const GenEvent& event ) {
 		HepMC::GenVertex* prod = gpart->production_vertex();
 		part.mother = extractMother(prod);
 		part.daughters = make_pair(extractDaughter1(prod), extractDaughter2(prod));
-		printf ("id: %d m: %d d: %d %d\n", part.id, part.mother, part.daughters.first, part.daughters.second);
+		//printf ("id: %d m: %d d: %d %d\n", part.id, part.mother, part.daughters.first, part.daughters.second);
 
 		// state (named & id)
 		part.state = getParticleStatus(gpart);
@@ -94,7 +94,7 @@ InputRecord HepMC_InputConverter::convert( const GenEvent& event ) {
 		}
 		
 		parts.push_back(part);
-		cout << part; // to delete in release!
+		//cout << part; // to delete in release!
 	}
 	
 	return InputRecord(parts);
