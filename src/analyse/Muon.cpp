@@ -1,7 +1,9 @@
 #include "Muon.h"
 #include <cstdio>
-
 using namespace AcerDet::analyse;
+
+#include "../core/Smearing.h"
+using namespace AcerDet::core;
 
 Muon::Muon( const Configuration& config, IHistogramManager* histoMng ) :
 	ETCLU	( config.Cluster.MinEt ),
@@ -49,10 +51,8 @@ void Muon::printInfo() const {
 }
 
 void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
-
-
-        int idhist = 200 + KEYHID;
-
+	
+	Int32_t idhist = 200 + KEYHID;
 	if (!histoRegistered) {
 		histoRegistered = true;
 		histoManager
@@ -64,7 +64,6 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 		histoManager
 			->registerHistogram(idhist+13, "Muon: muon multiplicity HARD+isol", 10, 0.0, 10.0);
 	}
-
 
 	// new event to compute
 	IEVENT++;
@@ -81,10 +80,6 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			break;
 		}
 	}
-	
-//	printf ("Muon: ");
-//	for (int i=0; i<parts.size(); ++i) printf ("%d ", parts[i].stateID);
-//	printf ("\nstart = %d stop = %d\n", NSTART, NSTOP);
 	
 	// look for isolated muons, sort clusters common
 	for (int i=NSTART; i<parts.size(); ++i) {
@@ -111,18 +106,9 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 
 			// apply smearing
 			if (KEYSME) {
-				// SIGMA = RESMUO(PT,ETA,PHI)
-				// PXMUO = part.pX() / (1.0 + SIGMA);
-				// PYMUO = part.pY() / (1.0 + SIGMA);
-				// PZMUO = part.pZ() / (1.0 + SIGMA);
-				// EEMUO = part.e()  / (1.0 + SIGMA);
-				// PT    = sqrt(PXMUO*PXMUO + PYMUO*PYMUO);
-				
-				//SIGMA = RESMUO(PT,ETA,PHI)
-				
-				//Particle pMuo = part;
-				//pMuo.momentum /= (1.0 + SIGMA);
-				//PT = pMuo.pT();
+				Particle pMuo = part;
+				pMuo.momentum /= (1.0 + Smearing::forMuon(PT));
+				PT = pMuo.pT();
 			}
 			
 			if (PT < PTMUMIN) 

@@ -183,6 +183,7 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 	// reconstruct baricenter of particles
 	const vector<Particle>& parts = irecord.particles();
 	for (int ICLU = 0; ICLU < orecord.Clusters.size(); ICLU++) {
+
 		const ClusterData& cluster = orecord.Clusters[ICLU];
 		Real64_t ETAREC = 0.0, PTREC = 0.0, PHIREC = 0.0;
 
@@ -200,7 +201,10 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 			if (PT * PT <= PTLRAT * PZ * PZ) 
 				continue;
  
-			if (part.type == PT_UNKNOWN || part.isNeutrino() || part.type == PT_MUON || part.type == KFINVS)
+			if (part.type == PT_UNKNOWN
+			|| part.isNeutrino()
+			|| part.type == PT_MUON
+			|| part.type == KFINVS)
 				continue;
 
 			if (KEYFLD && partProvider.getChargeType(part.typeID) != 0) {

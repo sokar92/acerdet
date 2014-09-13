@@ -1,7 +1,9 @@
 #include "Photon.h"
 #include <cstdio>
-
 using namespace AcerDet::analyse;
+
+#include "../core/Smearing.h"
+using namespace AcerDet::core;
 
 Photon::Photon( const Configuration& config, IHistogramManager* histoMng ) :
 	ETCLU	( config.Cluster.MinEt ),
@@ -51,8 +53,7 @@ void Photon::printInfo() const {
 
 void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
 
-        int idhist = 400 + KEYHID;
-
+	Int32_t idhist = 400 + KEYHID;
 	if (!histoRegistered) {
 		histoRegistered = true;
 		histoManager
@@ -107,20 +108,11 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 				ENE = parts[i].e();
 				if (ENE <= 0.0) 
 					continue;
-					
-				// SIGPH = RESPHO(ENE,PT,ETA,PHI);
-				// pxpho = parts[i].pX() * (1.0 + sigph);
-				// pypho = parts[i].pY() * (1.0 + sigph);
-				// pzpho = parts[i].pZ() * (1.0 + sigph);
-				// eepho = parts[i].e()  * (1.0 + sigph);
-				// PT = sqrt(pxpho*pxpho + pypho*pypho);
-				// ENE = eepho;
-				
-				//Particle pPho = part;
-				//pPho.momentum *= (1.0 + SIGPH);
-				
-				//PT = pPho.pT();
-				//ENE = pPho.e();
+						
+				Particle pPho = part;
+				pPho.momentum *= (1.0 + Smearing::forPhoton(ENE));
+				PT = pPho.pT();
+				ENE = pPho.e();
 			}
 
 			if (PT < PTLMIN) 

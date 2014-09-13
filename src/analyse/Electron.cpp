@@ -1,7 +1,9 @@
 #include "Electron.h"
 #include <cstdio>
-
 using namespace AcerDet::analyse;
+
+#include "../core/Smearing.h"
+using namespace AcerDet::core;
 
 Electron::Electron( const Configuration& config, IHistogramManager* histoMng ) :
 	ETCLU	( config.Cluster.MinEt ),
@@ -21,7 +23,6 @@ Electron::Electron( const Configuration& config, IHistogramManager* histoMng ) :
 	
 	histoManager(histoMng),
 	histoRegistered( false )
-	
 {}
 
 Electron::~Electron() {}
@@ -50,9 +51,8 @@ void Electron::printInfo() const {
 }
 
 void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
-
-        int idhist = 300 + KEYHID;
-
+	
+	Int32_t idhist = 300 + KEYHID;
 	if (!histoRegistered) {
 		histoRegistered = true;
 		histoManager
@@ -72,7 +72,12 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 	// reference to particles container
 	const vector<Particle>& parts = irecord.particles();
 
-	// znajdz poczatek danych
+	// znajdz poczatek danych poczatek powinien byc 21
+	printf (" --- Ele section --- \n");
+	for (int i=0; i<parts.size(); ++i) {
+		printf ("%d ", parts[i].stateID);
+	} printf ("\n");
+	
 	Int32_t NSTOP = -1, NSTART = 0;
 	for (int i=0; i<parts.size(); ++i) {
 		if (parts[i].stateID != 21) {
@@ -106,16 +111,9 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 				if (ENE <= 0.0) 
 					continue;
 
-				// SIGPH = RESELE(ENE,PT,ETA,PHI);
-				// PXELE = P(I,1) * (1.0 + SIGPH);
-				// PYELE = P(I,2) * (1.0 + SIGPH);
-				// PZELE = P(I,3) * (1.0 + SIGPH);
-				// EEELE = P(I,4) * (1.0 + SIGPH);
-				// PT = sqrt(PXELE*PXELE + PYELE*PYELE);
-				
-				//Particle pEle = part;
-				//pEle.momentum *= (1.0 + SIGPH);
-				//PT = pEle.pT();
+				Particle pEle = part;
+				pEle.momentum *= (1.0 + Smearing::forElectron(ENE));
+				PT = pEle.pT();
 			}
         
 			if (PT < PTLMIN)
