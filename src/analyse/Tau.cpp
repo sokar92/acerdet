@@ -46,10 +46,7 @@ void Tau::printInfo() const {
 }
 
 void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
-
-
-        int idhist = 900 + KEYHID;
-
+	Int32_t idhist = 900 + KEYHID;
 	if (!histoRegistered) {
 		histoRegistered = true;
 		histoManager
@@ -57,37 +54,35 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 		histoManager
 			->registerHistogram(idhist+21, "Tau: taus multiplicity", 10, 0.0, 10.0);
 	}
-	
-	//histo_jets	("Tau: jets-multiplicity", 0.0, 10.0, 10),
-	//histo_taus	("Tau: multiplicity", 0.0, 10.0, 10)
 
+	// variables
+	Real64_t PT, ETA, PHI, JETTAU, IN;
 
-
-/*
  	// new event to compute
 	IEVENT++;
 
 	// reference to particles container
 	const vector<Particle>& parts = irecord.particles();
 
-	// znajdz poczatek danych
-	Int32_t NSTOP = 0, NSTART = 1;
+	// find last position with '21' status
+	Int32_t last21 = -1;
+	//Int32_t NSTOP = 0, NSTART = 1;
 	for (int i=0; i<parts.size(); ++i) {
-		if (parts[i].stateID != 21) {
-			NSTOP = i-1;
-			NSTART = i;
-			break;
+		if (parts[i].stateID == 21) {
+		//	NSTOP = i-1;
+		//	NSTART = i;
+			last21 = i;
 		}
 	}
 	
 	// look for tau-jets
 	Int32_t NTAU = 0, NJETTAU = 0;
-	for (int i=NSTART; i<parts.size(); ++i) {
+	for (int i=last21+1; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
 		
 		if (part.type == PT_TAU) {
 			// if there are still jets
-			if (!orecord.Jets.isEmpty()) {
+			if (!orecord.Jets.empty()) {
 				Bool_t TAUJET = true;
 				
 				// choose only hadronic tau-decay
@@ -95,7 +90,7 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 				if (!part.hasDaughter())
 					continue;
 				
-				for (int j=part.daughters.first, j<=part.daughters.second; ++j) {
+				for (int j=part.daughters.first; j<=part.daughters.second; ++j) {
 					if (abs(parts[j].typeID) == 11 || abs(parts[j].typeID) == 13)
 						TAUJET = false;
 					// TODO uzyj enumow do typow
@@ -108,22 +103,15 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 				
 				Particle tmpPart = part;
 				tmpPart.momentum -= parts[IN].momentum;
-				
-				//PT = sqrt(
-				//	pow(part.pX() - parts[IN].pX(), 2) +
-				//	pow(part.pY() - parts[IN].pY(), 2)
-				//);
+
 				PT = tmpPart.pT(); 
 				if (PT < PTTAU) 
 					TAUJET = false;
 				
-				
-				//ETA = SIGN(LOG((SQRT(PT**2+(P(I,3)-P(IN,3))**2)+ABS(P(I,3)-P(IN,3)))/PT),P(I,3)-P(IN,3)) 
-				ETA = tmpPArt.getEta();
+				ETA = tmpPart.getEta();
 				if (abs(ETA) > ETATAU) 
 					TAUJET = false;
-					
-				//PHI = ANGLE(P(I,1)-P(IN,1),P(I,2)-P(IN,2))
+
 				PHI = tmpPart.getPhi();
 				if (TAUJET) 
 					NTAU++;
@@ -133,14 +121,14 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 				for (int j=0; j<orecord.Jets.size(); ++j) {
 					
 					Real64_t DDR = sqrt(
-						pow(ETA - PJET(II,3), 2) +
-						pow(PHI - PJET(II,4), 2)
+						pow(ETA - orecord.Jets[j].eta_rec, 2) +
+						pow(PHI - orecord.Jets[j].phi_rec, 2)
 					);
 					
-					if (abs(PHI - PJET(II,4)) > PI)
+					if (abs(PHI - orecord.Jets[j].phi_rec) > PI)
 						DDR = sqrt(
-							pow(ETA - PJET(II,3), 2) +
-							pow(abs(PHI - PJET(II,4)) - 2*PI, 2)
+							pow(ETA - orecord.Jets[j].eta_rec, 2) +
+							pow(abs(PHI - orecord.Jets[j].phi_rec) - 2*PI, 2)
 						);
 
 					if (DDR < DR) {
@@ -154,9 +142,11 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 					JETTAU = 0;
 				}
 				
-				if (TAUJET && abs(PJET(JETTAU,3)) < 2.5 && PT/PJET(JETTAU,5) > PTFRAC) {
-					KJET(JETTAU,2) = K(I,2); // ?
-					NJETTAU++;
+				if (TAUJET
+				&& abs(orecord.Jets[JETTAU].eta_rec) < 2.5    // why not CONST ?
+				&& PT / orecord.Jets[JETTAU].pT > PTFRAC) {
+					// KJET(JETTAU,2) = K(I,2); // ?
+					// NJETTAU++;
 				}
 			}
 		}
@@ -166,8 +156,6 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 		->insert(idhist+11,  NJETTAU);
 	histoManager
 		->insert(idhist+21,  NTAU);
-	
-*/
 }
 
 void Tau::printResults() const {
