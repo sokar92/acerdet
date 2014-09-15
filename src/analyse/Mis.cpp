@@ -44,10 +44,8 @@ void Mis::printInfo() const {
 }
 
 void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
-
-
-        int idhist = 600 + KEYHID;
-
+	
+	Int32_t idhist = 600 + KEYHID;
 	if (!histoRegistered) {
 		histoRegistered = true;
 		histoManager
@@ -66,13 +64,14 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	// reference to particles container
 	const vector<Particle>& parts = irecord.particles();
 
-	// znajdz poczatek danych
-	Int32_t NSTOP = 0, NSTART = 1;
+	// find last position with '21' status
+	Int32_t last21 = -1;
+	//Int32_t NSTOP = 0, NSTART = 1;
 	for (int i=0; i<parts.size(); ++i) {
-		if (parts[i].stateID != 21) {
-			NSTOP = i-1;
-			NSTART = i;
-			break;
+		if (parts[i].stateID == 21) {
+		//	NSTOP = i-1;
+		//	NSTART = i;
+			last21 = i;
 		}
 	}
 	
@@ -188,7 +187,7 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	// sum up momenta  of neutrinos 
 	Real64_t PXXNUES = 0.0;
 	Real64_t PYYNUES = 0.0;
-	for (int i=NSTART; i<parts.size(); ++i) {   
+	for (int i=last21+1; i<parts.size(); ++i) {   
 		if (parts[i].isNeutrino() || abs(parts[i].typeID) == KFINVS) {
 			PXXNUES += parts[i].pX();
 			PYYNUES += parts[i].pY();
@@ -212,8 +211,4 @@ void Mis::printResults() const {
 	printf ("***********************************\n");
 	
 	printf (" Analysed records: %d\n", IEVENT);
-	//histo_reconstructed_pT			.print( true );
-	//histo_reconstructed_pT_cells	.print( true );
-	//histo_pTmiss					.print( true );
-	//histo_pTnu						.print( true );
 }

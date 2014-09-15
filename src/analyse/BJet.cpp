@@ -18,7 +18,6 @@ BJet::BJet( const Configuration& config, IHistogramManager *histoMng ) :
 
 	histoManager(histoMng),
 	histoRegistered( false )
-	
 {}
 
 BJet::~BJet() {}
@@ -48,32 +47,36 @@ void BJet::printInfo() const {
 void BJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
 	if (!KEYBCL)
 		return;
-/*
+
+	// variables
+	Real64_t PT, ETA, PHI, DR, DDR, DETR, DPHIA, DETRMIN, PTREC, CHRG;
+
 	// new event to compute
 	IEVENT++;
 
 	// reference to particles container
 	const vector<Particle>& parts = irecord.particles();
-	Int32_t N = parts.size();
 
-	// znajdz poczatek danych
-	Int32_t NSTOP = 0, NSTART = 1;
+	// find last position with '21' status
+	Int32_t last21 = -1;
+	//Int32_t NSTOP = 0, NSTART = 1;
 	for (int i=0; i<parts.size(); ++i) {
-		if (parts[i].stateID != 21) {
-			NSTOP = i-1;
-			NSTART = i;
-			break;
+		if (parts[i].stateID == 21) {
+		//	NSTOP = i-1;
+		//	NSTART = i;
+			last21 = i;
 		}
 	}
 	
 	// look for c-jets
-	for (int i=NSTART; i<parts.size(); ++i) {
+	for (int i=last21+1; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
 		
-		if (part.type == PT_BJET) {  // && part.statusID != 21 ? po co
+		if (part.type == PT_BJET
+		&& part.stateID != 21) {
 			// if there is a b-quark found before hadronization
 			// if there are still jets
-			if (!orecord.Jets.isEmpty()) {
+			if (!orecord.Jets.empty()) {
 				Bool_t BJET = true;
 				Int32_t JETB = -1;
 				
@@ -102,14 +105,14 @@ void BJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 				DR = 100.0;
 				for (int j=0; j<orecord.Jets.size(); ++j) {
 					DDR = sqrt(
-						pow(ETA - PJET(II,3), 2) +
-						pow(PHI - PJET(II,4), 2)
+						pow(ETA - orecord.Jets[j].eta_rec, 2) +
+						pow(PHI - orecord.Jets[j].phi_rec, 2)
 					);
 					
-					if (abs(PHI - PJET(II,4)) > PI )
+					if (abs(PHI - orecord.Jets[j].phi_rec) > PI )
 						DDR = sqrt(
-							pow(ETA - PJET(II,3), 2) + 
-							pow(abs(PHI - PJET(II,4))-2*PI, 2)
+							pow(ETA - orecord.Jets[j].eta_rec, 2) + 
+							pow(abs(PHI - orecord.Jets[j].phi_rec) - 2*PI, 2)
 						);
 						
 					if (DDR < DR) 
@@ -122,18 +125,18 @@ void BJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 					continue;
 					
 				// label  b-jet
-				KJET(JETB,2) = 5;
-				KJET(JETB,5) = I;
-				NJETB = NJETB + 1;
+				// KJET(JETB,2) = 5;
+				// KJET(JETB,5) = I;
+				// NJETB = NJETB + 1;
 			}
 		}
 	}
 
-	histo_bJets.insert(NJETB);
+	// histo_bJets.insert(NJETB);
 	
 	// check partons
 	Int32_t IQUAB = 0, IBJET = 0;
-	for (int i=6; i<=NSTOP; ++i) {								// 7? -> barcode = numery czastek w zdarzeniu
+	for (int i=6; i<=last21; ++i) {								// 7? -> barcode = numery czastek w zdarzeniu
 		const Particle& part = parts[i];
 		
 		if (part.type == PT_BJET) {
@@ -148,14 +151,14 @@ void BJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 				for (int j=0; j<orecord.Jets.size(); ++j) {
 					if (orecord.Jets[j].type == PT_BJET) {
 						DDR = sqrt(
-							pow(ETA - PJET(II,3), 2) +
-							pow(PHI - PJET(II,4), 2)
+							pow(ETA - orecord.Jets[j].eta_rec, 2) +
+							pow(PHI - orecord.Jets[j].phi_rec, 2)
 						);
 						
-						if (abs(PHI - PJET(II,4)) > PI)
+						if (abs(PHI - orecord.Jets[j].phi_rec) > PI)
 							DDR = sqrt(
-								pow(ETA - PJET(II,3), 2) +
-								pow(abs(PHI - PJET(II,4))-2*PI, 2)
+								pow(ETA - orecord.Jets[j].eta_rec, 2) +
+								pow(abs(PHI - orecord.Jets[j].phi_rec) - 2*PI, 2)
 							);
 						
 						if (DDR < DR) 
@@ -170,7 +173,7 @@ void BJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	}
 
 	// store count of b-quarks in histogram
-	histo_bQuarks.insert(IQUAB);
+	// histo_bQuarks.insert(IQUAB);
 	
 	for (int i=0; i<orecord.Jets.size(); ++i) {
 		PTREC = 0;
@@ -180,19 +183,20 @@ void BJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			for (int j=6; j<parts.size(); ++j) {
 				const Particle& part = parts[j];
 				
-				if (part.type != PT_BJET) // && part.stateID != 21
+				if (part.type != PT_BJET
+				&& part.stateID != 21)
 					continue;
 
 				PT = part.pT();
 				ETA = part.getEta();
 				PHI = part.getPhi();
-				DPHIA = abs(orecord.Jets[i].phi (PJET(IJET,4)) - PHI); 
+				DPHIA = abs(orecord.Jets[i].phi_rec - PHI); 
 
 				if (DPHIA > PI) 
 					DPHIA -= 2*PI;
 
 				DETR = sqrt(
-					pow(ETA - orecord.Jets[i].eta (PJET(IJET,3)) , 2) +
+					pow(ETA - orecord.Jets[i].eta_rec, 2) +
 					pow(DPHIA, 2)
 				);
 				
@@ -204,11 +208,10 @@ void BJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 		}
 
 		if (PTREC != 0) {
-			histo_delta.insert(DETRMIN);
-			histo_pT.insert(orecord.Jets[i].pT (PJET(IJET,5)) / PTREC);
+		//	histo_delta.insert(DETRMIN);
+		//	histo_pT.insert(orecord.Jets[i].pT (PJET(IJET,5)) / PTREC);
 		}
 	}
-	*/
 }
 
 void BJet::printResults() const {
@@ -223,9 +226,5 @@ void BJet::printResults() const {
 		printf ("***********************************\n");
 	
 		printf (" Analysed records: %d\n", IEVENT);
-		//histo_bJets		.print( true );
-		//histo_bQuarks	.print( true );
-		//histo_delta		.print( true );
-		//histo_pT		.print( true );
 	}
 }
