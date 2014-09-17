@@ -72,29 +72,12 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 	// reference to particles container
 	const vector<Particle>& parts = irecord.particles();
 
-	// znajdz poczatek danych poczatek powinien byc 21
-	// printf (" --- Ele section --- \n");
-	// for (int i=0; i<parts.size(); ++i) {
-	// 	 printf ("%d ", parts[i].stateID);
-	// } printf ("\n");
-	
-	// find last position with '21' status
-	Int32_t last21 = -1;
-	//Int32_t NSTOP = 0, NSTART = 1;
-	for (int i=0; i<parts.size(); ++i) {
-		if (parts[i].statusID == 21) {
-		//	NSTOP = i-1;
-		//	NSTART = i;
-			last21 = i;
-		}
-	}
-
 	// look for isolated electrons, sort clusters common
-	// for (int i=NSTART; i<parts.size(); ++i) {
-	for (int i=last21+1; i<parts.size(); ++i) {
+	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
-	
-		if (!part.isStable()) 
+
+		// pick only final particles
+		if (!part.isFinal() || !part.isStable())
 			continue;
 			
 		// analyse electrons
@@ -119,10 +102,7 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 				PT = pEle.pT();
 			}
         
-			if (PT < PTLMIN)
-				continue;
-
-			if (abs(ETA) > ETAMAX)
+			if (PT < PTLMIN || abs(ETA) > ETAMAX)
 				continue;
 				
 			// mark eletron-cluster
@@ -235,9 +215,12 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 	PartData::sortBy_pT( orecord.Electrons );
 
 	Int32_t IELE = 0, IELEISO = 0;
-	// for (int i=0; i<=NSTOP; ++i) {
-	for (int i=0; i<=last21; ++i) {
+	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
+		
+		// pick only particles from hard process
+		if (!part.isHardProcess())
+			continue;
 		
 		if (part.type == PT_ELECTRON) {
 			PT = part.pT(); 
@@ -246,9 +229,9 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 			ENER = 0.0;
 			Bool_t ISOL = true;
 
-			// for (int j=0; j<=NSTOP; ++j) {
-			for (int j=0; j<=last21; ++j) {
-				if (abs(parts[j].typeID) <= 21
+			for (int j=0; j<parts.size(); ++j) {
+				if (parts[j].isHardProcess()
+				&& abs(parts[j].typeID) <= 21
 				&& i != j
 				&& !parts[j].isNeutrino()) 
 				{

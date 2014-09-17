@@ -104,6 +104,9 @@ namespace AcerDet {
 			 * Type Check
 			 */
 			Bool_t isNeutrino() const;
+			
+			Bool_t isFinal() const;
+			Bool_t isHardProcess() const;
 
 			/*
 			* Print basic informations about particle

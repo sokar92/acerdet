@@ -70,23 +70,12 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 
 	// reference to particles container
 	const vector<Particle>& parts = irecord.particles();
-
-	// find last position with '21' status
-	Int32_t last21 = -1;
-	//Int32_t NSTOP = 0, NSTART = 1;
-	for (int i=0; i<parts.size(); ++i) {
-		if (parts[i].statusID == 21) {
-		//	NSTOP = i-1;
-		//	NSTART = i;
-			last21 = i;
-		}
-	}
 	
 	// look for c-jets
-	for (int i=last21+1; i<parts.size(); ++i) {
+	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
 		
-		if (part.type == PT_CJET && part.statusID != 21) {
+		if (part.type == PT_CJET && part.isFinal()) {
 			// if there is a c-quark found before hadronization
 			// if there are still jets
 			if (!orecord.Jets.empty()) {
@@ -154,10 +143,10 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	
 	// check partons
 	Int32_t IQUAC = 0, ICJET = 0;
-	for (int i=6; i<=last21; ++i) {
+	for (int i=6; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
 		
-		if (part.type == PT_CJET) {
+		if (part.isHardProcess() && part.type == PT_CJET) {
 			PT = part.pT();
 			ETA = part.getEta(); 
 			PHI = part.getPhi();
@@ -202,7 +191,7 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			for (int j=6; j<parts.size(); ++j) {
 				const Particle& part = parts[j];
 				
-				if (part.statusID != 21 || part.type != PT_CJET) 
+				if (part.isHardProcess() || part.type != PT_CJET) 
 					continue;
 				
 				PT = part.pT();

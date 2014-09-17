@@ -42,7 +42,16 @@ Bool_t Particle::isBeam() const {
 }
 
 Bool_t Particle::isDecayed() const {
-	return status == PS_DECAYED;
+	//return status == PS_DECAYED;
+	return status < 0;
+}
+
+Bool_t Particle::isFinal() const {
+	return statusID > 31;
+}
+
+Bool_t Particle::isHardProcess() const {
+	return abs(statusID) < 29;
 }
 
 /*

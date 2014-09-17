@@ -63,24 +63,13 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 
 	// reference to particles container
 	const vector<Particle>& parts = irecord.particles();
-
-	// find last position with '21' status
-	Int32_t last21 = -1;
-	//Int32_t NSTOP = 0, NSTART = 1;
-	for (int i=0; i<parts.size(); ++i) {
-		if (parts[i].statusID == 21) {
-		//	NSTOP = i-1;
-		//	NSTART = i;
-			last21 = i;
-		}
-	}
 	
 	// look for tau-jets
 	Int32_t NTAU = 0, NJETTAU = 0;
-	for (int i=last21+1; i<parts.size(); ++i) {
+	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
 		
-		if (part.type == PT_TAU) {
+		if (part.isFinal() && part.type == PT_TAU) {
 			// if there are still jets
 			if (!orecord.Jets.empty()) {
 				Bool_t TAUJET = true;

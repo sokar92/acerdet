@@ -54,9 +54,8 @@ void Cluster::printInfo() const {
 }
 
 void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
-
-       int idhist = 100 + KEYHID;
-
+	
+	Int32_t idhist = 100 + KEYHID;
 	if (!histoRegistered) {
 		histoRegistered = true;
 		histoManager

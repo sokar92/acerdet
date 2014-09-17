@@ -71,23 +71,11 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	// reference to particles container
 	const vector<Particle>& parts = irecord.particles();
 
-	// find last position with '21' status
-	Int32_t last21 = -1;
-	//Int32_t NSTOP = 0, NSTART = 1;
-	for (int i=0; i<parts.size(); ++i) {
-		if (parts[i].statusID == 21) {
-		//	NSTOP = i-1;
-		//	NSTART = i;
-			last21 = i;
-		}
-	}
-	
 	// look for isolated muons, sort clusters common
-	// for (int i=NSTART; i<parts.size(); ++i) {
-	for (int i=last21+1; i<parts.size(); ++i) {
+	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
 
-		if (!part.isStable()) 
+		if (!part.isFinal() || !part.isStable()) 
 			continue;
 
 		if (part.type == PT_MUON) {
@@ -209,9 +197,11 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 
 	// cross-check with partons
 	Int32_t IMUO = 0, IMUOISO = 0;
-	//for (int i=0; i<=NSTOP; ++i) {
-	for (int i=0; i<=last21; ++i) {
+	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
+		
+		if (!part.isHardProcess())
+			continue;
 		
 		if (part.type == PT_MUON) {
 			Real64_t PT = part.pT();
@@ -220,9 +210,9 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			Real64_t ENER = 0.0;
 			Bool_t ISOL = true;
 			
-			// for (int j=0; j<=NSTOP; ++j) {
-			for (int j=0; j<=last21; ++j) {
-				if (abs(parts[j].typeID) <= 21
+			for (int j=0; j<parts.size(); ++j) {
+				if (parts[j].isHardProcess()
+				&& abs(parts[j].typeID) <= 21
 				&& i != j
 				&& !parts[j].isNeutrino()) 
 				{

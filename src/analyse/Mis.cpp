@@ -64,17 +64,6 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	// reference to particles container
 	const vector<Particle>& parts = irecord.particles();
 
-	// find last position with '21' status
-	Int32_t last21 = -1;
-	//Int32_t NSTOP = 0, NSTART = 1;
-	for (int i=0; i<parts.size(); ++i) {
-		if (parts[i].statusID == 21) {
-		//	NSTOP = i-1;
-		//	NSTART = i;
-			last21 = i;
-		}
-	}
-	
 	//sum up reconstructed momenta
 	Real64_t PXREC = 0.0, PYREC = 0.0;
 	Real64_t PXSUM = 0.0, PYSUM = 0.0;
@@ -187,7 +176,9 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	// sum up momenta  of neutrinos 
 	Real64_t PXXNUES = 0.0;
 	Real64_t PYYNUES = 0.0;
-	for (int i=last21+1; i<parts.size(); ++i) {   
+	for (int i=0; i<parts.size(); ++i) {
+		if (!parts[i].isFinal())
+			continue;
 		if (parts[i].isNeutrino() || abs(parts[i].typeID) == KFINVS) {
 			PXXNUES += parts[i].pX();
 			PYYNUES += parts[i].pY();
