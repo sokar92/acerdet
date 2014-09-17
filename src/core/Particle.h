@@ -20,7 +20,7 @@ namespace AcerDet {
 		/*
 		  A state of particle
 		*/
-		enum ParticleState {
+		enum ParticleStatus {
 			PS_NULL = 0,
 			PS_BEAM,
 			PS_FINAL,
@@ -52,8 +52,8 @@ namespace AcerDet {
 		 */
 		class Particle {
 		public:
-			ParticleState state;
-			Int32_t stateID;
+			ParticleStatus status;
+			Int32_t statusID;
 			
 			ParticleType type;
 			Int32_t typeID;
@@ -61,7 +61,7 @@ namespace AcerDet {
 			Vector4f momentum;
 			Vector4f production;
 
-			Int32_t id, mother;
+			Int32_t barcode, mother;
 			pair<Int32_t,Int32_t> daughters;
 
 			/*
@@ -110,10 +110,9 @@ namespace AcerDet {
 			*/			
 			friend ostream& operator << (ostream& str, const Particle& p) {
 				str << "Particle:" << endl;
-				str << "\tID: " << p.id << endl;
+				str << "\tBarcode: " << p.barcode << endl;
 				str << "\tType: " << p.getTypeName() << endl;
-				str << "\tState: " << p.getStateName() << endl;
-				//str << "\tPolarization (phi, theta): (" << p.phi << ", " << p.theta << ")" << endl;
+				str << "\tStatus: " << p.getStatusName() << endl;
 				str << "\tMomentum (px,py,pz,e) = " << p.momentum << endl;
 				str << "\tProduction (x,y,z,t) = " << p.production << endl;
 				str << endl;
@@ -150,7 +149,7 @@ namespace AcerDet {
 		private:
 			string getTypeName() const;
 			
-			string getStateName() const;
+			string getStatusName() const;
 		};
 
 		/*
@@ -160,12 +159,6 @@ namespace AcerDet {
 
 /*
 		public:
-			T getPhi() const { return _phi; }
-			T getTheta() const { return _theta; }
-			
-			void setPhi(T phi) { _phi = phi; }
-			void setTheta(T theta) { _theta = theta ; }
-
 			// Invariant mass. If mass is negative then -sqrt(-mass) is returned
 			T recalculated_mass()  const
 			{
@@ -177,14 +170,7 @@ namespace AcerDet {
 				return sqrt( m2 );
 			}
 
-			void print()
-			{
-				if (_id)	printf("%4d: %15.8e %15.8e %15.8e %15.8e  | %15.8e\n", getID(), getPx(), getPy(), getPz(), getE(), recalculated_mass());
-				else 		printf(" SUM: %15.8e %15.8e %15.8e %15.8e  | %15.8e\n", getPx(), getPy(), getPz(), getE(), recalculated_mass());
-			}
 		public:
-			double getAnglePhi();
-			double getAngleTheta();
 			void rotateXZ(double theta);
 			void rotateXY(double theta);
 			void boostAlongZ(double pz, double e);

@@ -264,7 +264,7 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
         // ERW: should be dropped and start from O BUT this condition should
         // ERW: somehow coded into new flag PT_OutHardProcess
 		for (int i=6; i<parts.size(); i++) { 
-			if (parts[i].stateID != 21 || abs(parts[i].typeID) > 10) // TODO: boolean method for this condition
+			if (parts[i].statusID != 21 || abs(parts[i].typeID) > 10) // TODO: boolean method for this condition
 				continue;
 
 			PT = parts[i].pT();

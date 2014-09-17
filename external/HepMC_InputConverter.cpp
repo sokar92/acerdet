@@ -71,7 +71,7 @@ InputRecord HepMC_InputConverter::convert( const GenEvent& event ) {
 		core::Particle part;
 		
 		// particle tree hierarchy
-		part.id = gpart->barcode();
+		part.barcode = gpart->barcode();
 		HepMC::GenVertex* prod = gpart->production_vertex();
 		part.mother = extractMother(prod);
 		part.daughters = make_pair(extractDaughter1(prod), extractDaughter2(prod));

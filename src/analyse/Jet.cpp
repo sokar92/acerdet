@@ -272,7 +272,7 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 		for (int j=6; j<parts.size(); ++j) {
 			const Particle& part = parts[j];
 			 
-			if (part.stateID != 21 || abs(part.typeID) > 10) 
+			if (part.statusID != 21 || abs(part.typeID) > 10) 
 				continue;
 
 			PT = part.pT();

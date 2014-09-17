@@ -77,7 +77,7 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 	Int32_t last21 = -1;
 	//Int32_t NSTOP = 0, NSTART = 1;
 	for (int i=0; i<parts.size(); ++i) {
-		if (parts[i].stateID == 21) {
+		if (parts[i].statusID == 21) {
 		//	NSTOP = i-1;
 		//	NSTART = i;
 			last21 = i;
@@ -201,9 +201,9 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 					orecord.Clusters.erase(orecord.Clusters.begin() + LCLU);
 
 				PartData newParton;
-				newParton.state = part.stateID;
+				newParton.state = part.statusID;
 				newParton.particleID = i;
-				newParton.motherState = parts[part.mother].stateID;
+				newParton.motherState = parts[part.mother].statusID;
 				newParton.eta = ETA;
 				newParton.phi = PHI;
 				newParton.pT = PT;

@@ -75,7 +75,7 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	Int32_t last21 = -1;
 	//Int32_t NSTOP = 0, NSTART = 1;
 	for (int i=0; i<parts.size(); ++i) {
-		if (parts[i].stateID == 21) {
+		if (parts[i].statusID == 21) {
 		//	NSTOP = i-1;
 		//	NSTART = i;
 			last21 = i;
@@ -86,7 +86,7 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	for (int i=last21+1; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
 		
-		if (part.type == PT_CJET && part.stateID != 21) {
+		if (part.type == PT_CJET && part.statusID != 21) {
 			// if there is a c-quark found before hadronization
 			// if there are still jets
 			if (!orecord.Jets.empty()) {
@@ -202,7 +202,7 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			for (int j=6; j<parts.size(); ++j) {
 				const Particle& part = parts[j];
 				
-				if (part.stateID != 21 || part.type != PT_CJET) 
+				if (part.statusID != 21 || part.type != PT_CJET) 
 					continue;
 				
 				PT = part.pT();

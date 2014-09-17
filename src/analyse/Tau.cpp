@@ -68,7 +68,7 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	Int32_t last21 = -1;
 	//Int32_t NSTOP = 0, NSTART = 1;
 	for (int i=0; i<parts.size(); ++i) {
-		if (parts[i].stateID == 21) {
+		if (parts[i].statusID == 21) {
 		//	NSTOP = i-1;
 		//	NSTART = i;
 			last21 = i;

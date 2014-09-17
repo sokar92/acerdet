@@ -5,13 +5,13 @@ using namespace AcerDet::core;
 #define ParticleNull (-1)
 
 Particle::Particle() : 
-	state(PS_NULL), 
-	stateID(-1),
+	status(PS_NULL), 
+	statusID(-1),
 	type(PT_UNKNOWN),
 	typeID(0),
 	momentum(),
 	production(),
-	id(-1), mother(-1), 
+	barcode(-1), mother(-1), 
 	daughters(make_pair(-1,-1)) 
 {}
 
@@ -34,15 +34,15 @@ Int32_t Particle::daughtersCount() const {
 }
 
 Bool_t Particle::isStable() const {
-	return 0 < stateID && stateID <= 10;
+	return 0 < statusID && statusID <= 10;
 }
 
 Bool_t Particle::isBeam() const {
-	return state == PS_BEAM;
+	return status == PS_BEAM;
 }
 
 Bool_t Particle::isDecayed() const {
-	return state == PS_DECAYED;
+	return status == PS_DECAYED;
 }
 
 /*
@@ -89,7 +89,7 @@ Real64_t Particle::foldPhi() const {
  */
 
 string Particle::getTypeName() const {
-	switch(type) {
+	switch (type) {
 	case PT_JET: return string("Jet");
 	case PT_BJET: return string("B-Jet");
 	case PT_CJET: return string("C-Jet");
@@ -106,8 +106,8 @@ string Particle::getTypeName() const {
 	}
 }
 
-string Particle::getStateName() const {
-	switch(state) {
+string Particle::getStatusName() const {
+	switch (status) {
 	case PS_BEAM: return string("Beam");
 	case PS_FINAL: return string("Final");
 	case PS_DECAYED: return string("Decayed");
