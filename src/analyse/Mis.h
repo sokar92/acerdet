@@ -16,30 +16,36 @@ using namespace AcerDet::io;
 namespace AcerDet {
 	namespace analyse {
 
+		//! Title
+		/*!
+		 * Detailed description
+		 */
 		class Mis {
 		private:
-			Real64_t PTMUMIN;
-			Real64_t ETAMAX;
-			Real64_t ETCELL;
-			Real64_t CALOTH;
+			Real64_t PTMUMIN; /*!< detailed description  */
+			Real64_t ETAMAX; /*!< detailed description  */
+			Real64_t ETCELL; /*!< detailed description  */
+			Real64_t CALOTH; /*!< detailed description  */
 			
-			Int32_t KEYHID;
-			Bool_t KEYSME;
-			Int32_t KFINVS;
+			Int32_t KEYHID; /*!< detailed description  */
+			Bool_t KEYSME; /*!< detailed description  */
+			Int32_t KFINVS; /*!< detailed description  */
 			
-			Int32_t IEVENT;
+			Int32_t IEVENT; /*!< detailed description  */
 			
-			IHistogramManager *histoManager;
-			Bool_t histoRegistered;
+			IHistogramManager *histoManager; /*!< detailed description  */
+			Bool_t histoRegistered; /*!< detailed description  */
 		
 		public:
 			Mis( const Configuration&, IHistogramManager* );
 			~Mis();
 			
+			//! Print information about Mis algorithm class to standard output
 			void printInfo() const;
 			
 			void analyseRecord( const io::InputRecord&, io::OutputRecord& );
 			
+			//! Print Mis algorithm execution results to standard output
 			void printResults() const;
 		};
 

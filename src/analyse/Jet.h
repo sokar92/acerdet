@@ -17,24 +17,28 @@ using namespace AcerDet::io;
 namespace AcerDet {
 	namespace analyse {
 
+		//! Title
+		/*!
+		 * Detailed description
+		 */
 		class Jet {
 		private:
-			Real64_t ETJET;
-			Real64_t ETAJET;
-			Real64_t RCONE;
-			Real64_t PTMIN;
-			Real64_t CALOTH;
+			Real64_t ETJET; /*!< detailed description  */
+			Real64_t ETAJET; /*!< detailed description  */
+			Real64_t RCONE; /*!< detailed description  */
+			Real64_t PTMIN; /*!< detailed description  */
+			Real64_t CALOTH; /*!< detailed description  */
 
-			Int32_t KEYHID;
-			Bool_t KEYSME;
-			Bool_t KEYFLD;
-			Int32_t KFINVS;
+			Int32_t KEYHID; /*!< detailed description  */
+			Bool_t KEYSME; /*!< detailed description  */
+			Bool_t KEYFLD; /*!< detailed description  */
+			Int32_t KFINVS; /*!< detailed description  */
 
-			Int32_t IEVENT;
+			Int32_t IEVENT; /*!< detailed description  */
 			
-			IHistogramManager *histoManager;
-			Bool_t histoRegistered;
-			const ParticleDataProvider& partProvider;
+			IHistogramManager *histoManager; /*!< detailed description  */
+			Bool_t histoRegistered; /*!< detailed description  */
+			const ParticleDataProvider& partProvider; /*!< detailed description  */
 			
 		public:
 			Jet(
@@ -44,10 +48,12 @@ namespace AcerDet {
 
 			~Jet();
 			
+			//! Print information about Jet algorithm class to standard output
 			void printInfo() const;
 			
 			void analyseRecord( const io::InputRecord&, io::OutputRecord& );
 			
+			//! Print Jet algorithm execution results to standard output
 			void printResults() const;
 		};
 

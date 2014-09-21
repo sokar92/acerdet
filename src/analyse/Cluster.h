@@ -17,25 +17,29 @@ using namespace AcerDet::io;
 namespace AcerDet {
 	namespace analyse {
 
+		//! Title
+		/*!
+		 * Detailed description
+		 */
 		class Cluster {
 		private:
-			Real64_t ETCLU;
-			Real64_t RCONE;
-			Real64_t ETACLU;
-			Real64_t ETINI;
+			Real64_t ETCLU; /*!< detailed description  */
+			Real64_t RCONE; /*!< detailed description  */
+			Real64_t ETACLU; /*!< detailed description  */
+			Real64_t ETINI; /*!< detailed description  */
 			
-			Real64_t PTMIN;
-			Real64_t CALOTH;
+			Real64_t PTMIN; /*!< detailed description  */
+			Real64_t CALOTH; /*!< detailed description  */
 			
-			Int32_t KEYHID;
-			Bool_t KEYFLD;
-			Int32_t KFINVS;
+			Int32_t KEYHID; /*!< detailed description  */
+			Bool_t KEYFLD; /*!< detailed description  */
+			Int32_t KFINVS; /*!< detailed description  */
 			
-			Int32_t IEVENT;
+			Int32_t IEVENT; /*!< detailed description  */
 			
-			IHistogramManager *histoManager;
-			Bool_t histoRegistered;
-			const ParticleDataProvider& partProvider;
+			IHistogramManager *histoManager; /*!< detailed description  */
+			Bool_t histoRegistered; /*!< detailed description  */
+			const ParticleDataProvider& partProvider; /*!< detailed description  */
 
 		public:
 			Cluster(
@@ -45,10 +49,12 @@ namespace AcerDet {
 
 			~Cluster();
 			
+			//! Print information about Cluster algorithm class to standard output
 			void printInfo() const;
 			
 			void analyseRecord( const io::InputRecord&, io::OutputRecord& );
 
+			//! Print Cluster algorithm execution results to standard output
 			void printResults() const;
 		};
 

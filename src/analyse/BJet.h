@@ -12,31 +12,37 @@ using namespace AcerDet::conf;
 
 namespace AcerDet {
 	namespace analyse {
-		
+
+		//! Title
+		/*!
+		 * Detailed description
+		 */		
 		class BJet {
 		private:
-			Real64_t ETJET;
-			Real64_t RCONE;
-			Real64_t PTBMIN;
-			Real64_t ETBMAX;
-			Real64_t RJB;
+			Real64_t ETJET; /*!< detailed description  */
+			Real64_t RCONE; /*!< detailed description  */
+			Real64_t PTBMIN; /*!< detailed description  */
+			Real64_t ETBMAX; /*!< detailed description  */
+			Real64_t RJB; /*!< detailed description  */
 
-			Int32_t KEYHID;
-			Bool_t KEYBCL;
+			Int32_t KEYHID; /*!< detailed description  */
+			Bool_t KEYBCL; /*!< detailed description  */
 
-			Int32_t IEVENT;
+			Int32_t IEVENT; /*!< detailed description  */
 			
-			IHistogramManager *histoManager;
-			Bool_t histoRegistered;
+			IHistogramManager *histoManager; /*!< detailed description  */
+			Bool_t histoRegistered; /*!< detailed description  */
 
 		public:
 			BJet( const Configuration&, IHistogramManager* );
 			~BJet();
 			
+			//! Print information about BJet algorithm class to standard output
 			void printInfo() const;
 			
 			void analyseRecord( const io::InputRecord&, io::OutputRecord& );
 			
+			//! Print BJet algorithm execution results to standard output
 			void printResults() const;
 		};
 

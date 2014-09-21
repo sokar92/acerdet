@@ -16,30 +16,36 @@ using namespace AcerDet::io;
 namespace AcerDet {
 	namespace analyse {
 
+		//! Title
+		/*!
+		 * Detailed description
+		 */
 		class CJet {
 		private:
-			Real64_t ETJET;
-			Real64_t RCONE;
-			Real64_t PTCMIN;
-			Real64_t ETCMAX;
-			Real64_t RJC;
+			Real64_t ETJET; /*!< detailed description  */
+			Real64_t RCONE; /*!< detailed description  */
+			Real64_t PTCMIN; /*!< detailed description  */
+			Real64_t ETCMAX; /*!< detailed description  */
+			Real64_t RJC; /*!< detailed description  */
 
-			Int32_t KEYHID;
-			Bool_t KEYBCL;
+			Int32_t KEYHID; /*!< detailed description  */
+			Bool_t KEYBCL; /*!< detailed description  */
 
-			Int32_t IEVENT;
+			Int32_t IEVENT; /*!< detailed description  */
 
-			IHistogramManager *histoManager;
-			Bool_t histoRegistered;
+			IHistogramManager *histoManager; /*!< detailed description  */
+			Bool_t histoRegistered; /*!< detailed description  */
 			
 		public:
 			CJet( const Configuration&, IHistogramManager* );
 			~CJet();
 
+			//! Print information about CJet algorithm class to standard output
 			void printInfo() const;
 
 			void analyseRecord( const io::InputRecord&, io::OutputRecord& );
 
+			//! Print CJet algorithm execution results to standard output
 			void printResults() const;
 		};
 

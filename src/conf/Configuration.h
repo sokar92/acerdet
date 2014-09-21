@@ -9,16 +9,25 @@ using namespace std;
 namespace AcerDet {
 	namespace conf {
 
+		//! Global configuration
+		/*!
+		 * A set of parameters used by analyse algorithms.
+		 */
 		struct Configuration {
+			
+			//! Common flags
+			/*!
+			 * A set of commonly used parameters.
+			 */
 			struct _Flag {
-				int HistogramId;
-				bool Smearing;
-				bool BField;
-				int SusyParticle;
+				int HistogramId;	/*!< detailed description  */
+				bool Smearing;		/*!< detailed description  */
+				bool BField;		/*!< detailed description  */
+				int SusyParticle;	/*!< detailed description  */
 
-				bool BCJetsLabeling;
-				bool TauJetsLabeling;
-				bool JetCalibration;
+				bool BCJetsLabeling;	/*!< detailed description  */
+				bool TauJetsLabeling;	/*!< detailed description  */
+				bool JetCalibration;	/*!< detailed description  */
 
 				_Flag();
 
@@ -27,13 +36,17 @@ namespace AcerDet {
 
 			} Flag;
 
+			//! Cell-specific flags
+			/*!
+			 * A set of parameters used by analyse::Cell algorithm.
+			 */
 			struct _Cell {
-				double RapidityCoverage;
-				double MinpT;
-				double MinEt;
-				double EtaTransition;
-				double GranularityEta;
-				double GranularityPhi;
+				double RapidityCoverage;	/*!< detailed description  */
+				double MinpT;			/*!< detailed description  */
+				double MinEt;			/*!< detailed description  */
+				double EtaTransition;	/*!< detailed description  */
+				double GranularityEta;	/*!< detailed description  */
+				double GranularityPhi;	/*!< detailed description  */
 
 				_Cell();
 
@@ -42,11 +55,15 @@ namespace AcerDet {
 
 			} Cell;
 
+			//! Cluster-specific flags
+			/*!
+			 * A set of parameters used by analyse::Cluster algorithm.
+			 */
 			struct _Cluster {
-				double RapidityCoverage;
-				double ConeR;
-				double MinEt;
-				double MinEtInit;
+				double RapidityCoverage;	/*!< detailed description  */
+				double ConeR;		/*!< detailed description  */
+				double MinEt;		/*!< detailed description  */
+				double MinEtInit;	/*!< detailed description  */
 
 				_Cluster();
 
@@ -55,12 +72,16 @@ namespace AcerDet {
 
 			} Cluster;
 
+			//! Muon-specific flags
+			/*!
+			 * A set of parameters used by analyse::Muon algorithm.
+			 */
 			struct _Muon {
-				double MinMomenta;
-				double MaxEta;
-				double MinIsolRlj;
-				double ConeR;
-				double MaxEnergy;
+				double MinMomenta;	/*!< detailed description  */
+				double MaxEta;		/*!< detailed description  */
+				double MinIsolRlj;	/*!< detailed description  */
+				double ConeR;		/*!< detailed description  */
+				double MaxEnergy;	/*!< detailed description  */
 
 				_Muon();
 
@@ -69,13 +90,17 @@ namespace AcerDet {
 
 			} Muon;
 
+			//! Photon-specific flags
+			/*!
+			 * A set of parameters used by analyse::Photon algorithm.
+			 */
 			struct _Photon {
-				double MinMomenta;
-				double MaxEta;
-				double MinJetsRlj;
-				double MinIsolRlj;
-				double ConeR;
-				double MaxEnergy;
+				double MinMomenta;	/*!< detailed description  */
+				double MaxEta;		/*!< detailed description  */
+				double MinJetsRlj;	/*!< detailed description  */
+				double MinIsolRlj;	/*!< detailed description  */
+				double ConeR;		/*!< detailed description  */
+				double MaxEnergy;	/*!< detailed description  */
 
 				_Photon();
 
@@ -84,13 +109,17 @@ namespace AcerDet {
 
 			} Photon;
 
+			//! Electron-specific flags
+			/*!
+			 * A set of parameters used by analyse::Electron algorithm.
+			 */
 			struct _Electron {
-				double MinMomenta;
-				double MaxEta;
-				double MinJetsRlj;
-				double MinIsolRlj;
-				double ConeR;
-				double MaxEnergy;
+				double MinMomenta;	/*!< detailed description  */
+				double MaxEta;		/*!< detailed description  */
+				double MinJetsRlj;	/*!< detailed description  */
+				double MinIsolRlj;	/*!< detailed description  */
+				double ConeR;		/*!< detailed description  */
+				double MaxEnergy;	/*!< detailed description  */
 
 				_Electron();
 
@@ -99,9 +128,13 @@ namespace AcerDet {
 
 			} Electron;
 
+			//! Jet-specific flags
+			/*!
+			 * A set of parameters used by analyse::Jet algorithm.
+			 */
 			struct _Jet {
-				double RapidityCoverage;
-				double MinEnergy;
+				double RapidityCoverage;	/*!< detailed description  */
+				double MinEnergy;	/*!< detailed description  */
 
 				_Jet();
 
@@ -110,10 +143,14 @@ namespace AcerDet {
 
 			} Jet;
 
+			//! BJet-specific flags
+			/*!
+			 * A set of parameters used by analyse::BJet algorithm.
+			 */
 			struct _BJet {
-				double MinMomenta;
-				double MaxEta;
-				double MaxRbj;
+				double MinMomenta;	/*!< detailed description  */
+				double MaxEta;		/*!< detailed description  */
+				double MaxRbj;		/*!< detailed description  */
 
 				_BJet();
 
@@ -122,10 +159,14 @@ namespace AcerDet {
 
 			} BJet;
 
+			//! CJet-specific flags
+			/*!
+			 * A set of parameters used by analyse::CJet algorithm.
+			 */
 			struct _CJet {
-				double MinMomenta;
-				double MaxEta;
-				double MaxRcj;
+				double MinMomenta;	/*!< detailed description  */
+				double MaxEta;		/*!< detailed description  */
+				double MaxRcj;		/*!< detailed description  */
 
 				_CJet();
 
@@ -134,11 +175,15 @@ namespace AcerDet {
 
 			} CJet;
 
+			//! Tau-specific flags
+			/*!
+			 * A set of parameters used by analyse::Tau algorithm.
+			 */
 			struct _Tau {
-				double MinpT;
-				double MaxEta;
-				double MinR;
-				double MaxR;
+				double MinpT;	/*!< detailed description  */
+				double MaxEta;	/*!< detailed description  */
+				double MinR;	/*!< detailed description  */
+				double MaxR;	/*!< detailed description  */
 
 				_Tau();
 
@@ -147,8 +192,12 @@ namespace AcerDet {
 
 			} Tau;
 
+			//! Mis-specific flags
+			/*!
+			 * A set of parameters used by analyse::Mis algorithm.
+			 */
 			struct _Misc {
-				double MinEt;
+				double MinEt;	/*!< detailed description  */
 
 				_Misc();
 
@@ -157,13 +206,23 @@ namespace AcerDet {
 
 			} Misc;
 
-			/* save configuration in specific file */
-			static void save( const Configuration&, const std::string& );
+			//! Save configuration to specific file
+			/*!
+			 * \param configuration configuration to save
+			 * \param fileName name of destination file
+			 */
+			static void save(
+				const Configuration& configuration,
+				const std::string& fileName );
 
-			/* reads configuration from given file */
-			static Configuration fromFile( const std::string& );
+			//! Read configuration from given file
+			/*!
+			 * \param fileName name of file to read from
+			 */
+			static Configuration fromFile(
+				const std::string& fileName );
 
-			/* returns default configuration */
+			//! Returns default configuration
 			static Configuration getDefault();
 		};
 

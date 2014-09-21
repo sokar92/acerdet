@@ -13,6 +13,9 @@ SUBTARGETS= compile_core \
 
 OBJECTS= AcerDET.o
 
+DOXYGEN= doxygen
+DOXYGEN_CONFIG= doxygen.config
+
 # ----------------------
 # -- Parts of library --
 # ----------------------
@@ -24,6 +27,13 @@ OBJS= $(shell find . -regex '.*\.o')
 # ---------------------------
 
 all: $(SUBTARGETS) $(OBJECTS) libs
+
+# ---------------------------------
+# -- Build project documentation --
+# ---------------------------------
+
+docu:
+	$(DOXYGEN) $(DOXYGEN_CONFIG)
 
 # ---------------------------
 # -- Create Shared Library --

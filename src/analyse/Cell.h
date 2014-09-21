@@ -17,28 +17,29 @@ using namespace AcerDet::io;
 namespace AcerDet {
 	namespace analyse {
 
-		/**
-		 * Algorithm class for finding cells
+		//! Title
+		/*!
+		 * Detailed description
 		 */
 		class Cell {
 		private:
-			Real64_t ETACEL;
-			Real64_t PTMIN;
-			Real64_t ETTHR;
-			Real64_t CALOTH;
-			Real64_t DBETA;
-			Real64_t DBPHI;
+			Real64_t ETACEL; /*!< detailed description  */
+			Real64_t PTMIN; /*!< detailed description  */
+			Real64_t ETTHR; /*!< detailed description  */
+			Real64_t CALOTH; /*!< detailed description  */
+			Real64_t DBETA; /*!< detailed description  */
+			Real64_t DBPHI; /*!< detailed description  */
 			
-			Int32_t KEYHID;
-			Bool_t  KEYFLD;
-			Int32_t KFINVS;
+			Int32_t KEYHID; /*!< detailed description  */
+			Bool_t  KEYFLD; /*!< detailed description  */
+			Int32_t KFINVS; /*!< detailed description  */
 			
-			Int32_t IEVENT;
+			Int32_t IEVENT; /*!< detailed description  */
 			
-			IHistogramManager *histoManager;
-			Bool_t histoRegistered;
+			IHistogramManager *histoManager; /*!< detailed description  */
+			Bool_t histoRegistered; /*!< detailed description  */
 
-			const ParticleDataProvider& partProvider;
+			const ParticleDataProvider& partProvider; /*!< detailed description  */
 			
 		public:
 			Cell( 
@@ -48,10 +49,7 @@ namespace AcerDet {
 
 			~Cell();
 			
-			/**
-			 * Print basic informations about class
-			 * and configuration to stdout.
-			 */
+			//! Print information about Cell algorithm class to standard output
 			void printInfo() const;
 			
 			/**
@@ -59,9 +57,7 @@ namespace AcerDet {
 			 */
 			void analyseRecord( const InputRecord&, OutputRecord& ); 
 			
-			/**
-			 * Prints statistics to stdout.
-			 */
+			//! Print Cell algorithm execution results to standard output
 			void printResults() const;
 		};
 

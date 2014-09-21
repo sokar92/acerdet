@@ -16,29 +16,35 @@ using namespace AcerDet::io;
 namespace AcerDet {
 	namespace analyse {
 
+		//! Title
+		/*!
+		 * Detailed description
+		 */
 		class Tau {
 		private:
-			Real64_t ETJET;
-			Real64_t PTTAU;
-			Real64_t ETATAU;
-			Real64_t RJTAU;
-			Real64_t PTFRAC;
+			Real64_t ETJET; /*!< detailed description  */
+			Real64_t PTTAU; /*!< detailed description  */
+			Real64_t ETATAU; /*!< detailed description  */
+			Real64_t RJTAU; /*!< detailed description  */
+			Real64_t PTFRAC; /*!< detailed description  */
 
-			Int32_t KEYHID;
-			Bool_t KEYTAU;
+			Int32_t KEYHID; /*!< detailed description  */
+			Bool_t KEYTAU; /*!< detailed description  */
 
-			Int32_t IEVENT;
+			Int32_t IEVENT; /*!< detailed description  */
 
-			IHistogramManager *histoManager;
-			Bool_t histoRegistered;
+			IHistogramManager *histoManager; /*!< detailed description  */
+			Bool_t histoRegistered; /*!< detailed description  */
 		public:
 			Tau( const Configuration&, IHistogramManager* );
 			~Tau();
 
+			//! Print information about Tau algorithm class to standard output
 			void printInfo() const;
 			
 			void analyseRecord( const io::InputRecord&, io::OutputRecord& );
 
+			//! Print Tau algorithm execution results to standard output
 			void printResults() const;
 		};
 		

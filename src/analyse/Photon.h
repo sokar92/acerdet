@@ -16,33 +16,39 @@ using namespace AcerDet::io;
 namespace AcerDet {
 	namespace analyse {
 
+		//! Title
+		/*!
+		 * Detailed description
+		 */
 		class Photon {
 		private:
-			Real64_t ETCLU;
-			Real64_t RCONE;
-			Real64_t PTLMIN;
-			Real64_t ETAMAX;
-			Real64_t RJE;
-			Real64_t RISOLJ;
-			Real64_t RDEP;
-			Real64_t EDMAX;
+			Real64_t ETCLU; /*!< detailed description  */
+			Real64_t RCONE; /*!< detailed description  */
+			Real64_t PTLMIN; /*!< detailed description  */
+			Real64_t ETAMAX; /*!< detailed description  */
+			Real64_t RJE; /*!< detailed description  */
+			Real64_t RISOLJ; /*!< detailed description  */
+			Real64_t RDEP; /*!< detailed description  */
+			Real64_t EDMAX; /*!< detailed description  */
 
-			Int32_t KEYHID;
-			Bool_t KEYSME;
+			Int32_t KEYHID; /*!< detailed description  */
+			Bool_t KEYSME; /*!< detailed description  */
 
-			Int32_t IEVENT;
+			Int32_t IEVENT; /*!< detailed description  */
 			
-			IHistogramManager *histoManager;
-			Bool_t histoRegistered;
+			IHistogramManager *histoManager; /*!< detailed description  */
+			Bool_t histoRegistered; /*!< detailed description  */
 
 		public:
 			Photon( const Configuration&, IHistogramManager* );
 			~Photon();
 
+			//! Print information about Photon algorithm class to standard output
 			void printInfo() const;
 			
 			void analyseRecord( const io::InputRecord&, io::OutputRecord& );
 			
+			//! Print Photon algorithm execution results to standard output
 			void printResults() const;
 		};
 		

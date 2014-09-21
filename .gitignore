@@ -6,3 +6,4 @@
 *.root
 /src/AcerDET
 /src/include
+/src/doc
