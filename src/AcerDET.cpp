@@ -61,7 +61,7 @@ AcerDET::~AcerDET() {
  * Analyse single InputRecord from event
  */
 void AcerDET::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
-	printf ("AcerDET: analyse\n");
+//	printf ("AcerDET: analyse\n");
 	if (!histos_initialized) {
 		histos->init();
 		histos_initialized = true;

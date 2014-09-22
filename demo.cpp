@@ -81,7 +81,7 @@ int main( int argc, char **argv ) {
 	OutputRecord oRec;
 	
 	for( int iEvent = 0; iEvent < events_limit; ++iEvent ) {
-		printf("Event %d\n", iEvent);
+//		printf("Event %d\n", iEvent);
 		
 		if( !pythia.next() ) {
 			printf("continue ...\n");
