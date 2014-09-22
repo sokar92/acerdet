@@ -244,12 +244,31 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		// fill  histograms
 		histoManager
 			->insert(idhist + 11, ETAREC - cluster.eta_rec);
+		
+		double val = ETAREC - cluster.eta_rec;
+		if (val < -0.5 || 0.5 < val)
+			printf ("cluster_ETA %f - %f = %f out of range [%f, %f]\n", ETAREC, cluster.eta_rec, val, -0.5, 0.5); 
+		
 		histoManager
 			->insert(idhist + 12, PHIREC - cluster.phi_rec); 
+
+		val = PHIREC - cluster.phi_rec;
+		if (val < -0.5 || 0.5 < val)
+			printf ("cluster_PHI %f - %f = %f out of range [%f, %f]\n", PHIREC, cluster.phi_rec, val, -0.5, 0.5); 	
+		
 		histoManager
-			->insert(idhist + 13, DETR); 
+			->insert(idhist + 13, DETR);
+		
+		val = DETR;
+		if (val < -0.5 || 0.5 < val)
+			printf ("%f out of range [%f, %f]\n", val, -0.5, 0.5); 
+		
 		histoManager
 			->insert(idhist + 14, cluster.pT / PTREC);
+			
+		val = cluster.pT / PTREC;
+		if (val < 0.0 || 2.0 < val)
+			printf ("%f / %f = %f out of range [%f, %f]\n", cluster.pT, PTREC, val, 0.0, 2.0); 
 	}
 
 	for (int ICLU=0; ICLU<orecord.Clusters.size(); ICLU++) {
