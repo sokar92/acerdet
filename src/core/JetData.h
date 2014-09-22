@@ -28,8 +28,12 @@ namespace AcerDet {
 			 * 4 - eT
 			 */
 			
-			Int32_t type;
-			Real64_t eta, phi, eta_rec, phi_rec, pT;
+			Int32_t type; /*!< detailed description  */
+			Real64_t eta; /*!< detailed description  */
+			Real64_t phi; /*!< detailed description  */
+			Real64_t eta_rec; /*!< detailed description  */
+			Real64_t phi_rec; /*!< detailed description  */
+			Real64_t pT; /*!< detailed description  */
 			
 			JetData();
 			

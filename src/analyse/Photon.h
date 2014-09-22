@@ -46,7 +46,14 @@ namespace AcerDet {
 			//! Print information about Photon algorithm class to standard output
 			void printInfo() const;
 			
-			void analyseRecord( const io::InputRecord&, io::OutputRecord& );
+			//! Analyse input record and find photons
+			/*!
+			 * \param input <input data desc>
+			 * \param output <output data desc>
+			 */
+			void analyseRecord(
+				const io::InputRecord& input,
+				io::OutputRecord& output );
 			
 			//! Print Photon algorithm execution results to standard output
 			void printResults() const;

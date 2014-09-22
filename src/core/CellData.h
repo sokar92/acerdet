@@ -28,8 +28,12 @@ namespace AcerDet {
 			 * 4 - eT
 			 */
 			
-			Int32_t cellID, hits, state;
-			Real64_t eta, phi, pT;
+			Int32_t cellID; /*!< detailed description  */
+			Int32_t hits; /*!< detailed description  */
+			Int32_t state; /*!< detailed description  */
+			Real64_t eta; /*!< detailed description  */
+			Real64_t phi; /*!< detailed description  */
+			Real64_t pT; /*!< detailed description  */
 			
 			CellData();
 			

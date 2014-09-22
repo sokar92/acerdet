@@ -28,8 +28,13 @@ namespace AcerDet {
 			 * 4 - pT
 			 */
 			
-			Int32_t num, particleID, motherState, state;
-			Real64_t eta, phi, pT;
+			Int32_t num; /*!< detailed description  */
+			Int32_t particleID; /*!< detailed description  */
+			Int32_t motherState; /*!< detailed description  */
+			Int32_t state; /*!< detailed description  */
+			Real64_t eta; /*!< detailed description  */
+			Real64_t phi; /*!< detailed description  */
+			Real64_t pT; /*!< detailed description  */
 			
 			PartData();
 			

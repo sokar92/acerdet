@@ -15,11 +15,11 @@ namespace AcerDet {
 		class ParticleDataProvider {
 		private:
 			struct Data {
-				Int32_t chargeType;
-				Real64_t charge;
-				string name;
+				Int32_t chargeType; /*!< detailed description  */
+				Real64_t charge; /*!< detailed description  */
+				string name; /*!< detailed description  */
 			};
-			map<Int32_t, Data> parts;
+			map<Int32_t, Data> parts; /*!< detailed description  */
 		public:
 			ParticleDataProvider();
 			

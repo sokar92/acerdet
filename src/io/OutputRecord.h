@@ -13,16 +13,16 @@ namespace AcerDet {
 		
 		class OutputRecord {
 		public:			
-			vector<CellData> Cells;
-			vector<ClusterData> Clusters;
+			vector<CellData> Cells; /*!< detailed description  */
+			vector<ClusterData> Clusters; /*!< detailed description  */
 			
-			vector<PartData> Muons;
-			vector<PartData> NonisolatedMuons;
+			vector<PartData> Muons; /*!< detailed description  */
+			vector<PartData> NonisolatedMuons; /*!< detailed description  */
+
+			vector<PartData> Electrons; /*!< detailed description  */
+			vector<PartData> Photons; /*!< detailed description  */
 			
-			vector<PartData> Electrons;
-			vector<PartData> Photons;
-			
-			vector<JetData> Jets;
+			vector<JetData> Jets; /*!< detailed description  */
 			
 			OutputRecord();
 			

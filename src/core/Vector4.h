@@ -16,8 +16,8 @@ namespace AcerDet {
 		template<typename T>
 		class Vector4 {
 		public:
-			Vector3<T> p;
-			T e;
+			Vector3<T> p; /*!< detailed description  */
+			T e; /*!< detailed description  */
 			
 			Vector4() : p(), e(0) {}
 			Vector4(const Vector4<T>& v) : p(v.p), e(v.e) {}

@@ -52,10 +52,14 @@ namespace AcerDet {
 			//! Print information about Cell algorithm class to standard output
 			void printInfo() const;
 			
-			/**
-			 * Analyse input record.
+			//! Analyse input record group cells
+			/*!
+			 * \param input <input data desc>
+			 * \param output <output data desc>
 			 */
-			void analyseRecord( const InputRecord&, OutputRecord& ); 
+			void analyseRecord(
+				const InputRecord& input,
+				OutputRecord& output ); 
 			
 			//! Print Cell algorithm execution results to standard output
 			void printResults() const;

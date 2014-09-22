@@ -11,8 +11,8 @@ namespace AcerDet {
 	namespace core {
 		class Smearing {
 		private:
-			static std::default_random_engine generator;
-			static std::normal_distribution<Real64_t> distribution;
+			static std::default_random_engine generator; /*!< detailed description  */
+			static std::normal_distribution<Real64_t> distribution; /*!< detailed description  */
 		public:
 			/*
 			 * parametrizes electron resolution 

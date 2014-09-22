@@ -12,7 +12,9 @@ namespace AcerDet {
 		template<typename T>
 		class Vector3 {
 		public:
-			T x,y,z;
+			T x; /*!< detailed description  */
+			T y; /*!< detailed description  */
+			T z; /*!< detailed description  */
 
 			Vector3() : x(0), y(0), z(0) {};
 			Vector3(T X, T Y, T Z) : x(X), y(Y), z(Z) {}

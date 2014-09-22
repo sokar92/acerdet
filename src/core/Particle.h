@@ -21,30 +21,30 @@ namespace AcerDet {
 		  A state of particle
 		*/
 		enum ParticleStatus {
-			PS_NULL = 0,
-			PS_BEAM,
-			PS_FINAL,
-			PS_DECAYED,
-			PS_HISTORY
+			PS_NULL = 0, /*!< detailed description  */
+			PS_BEAM, /*!< detailed description  */
+			PS_FINAL, /*!< detailed description  */
+			PS_DECAYED, /*!< detailed description  */
+			PS_HISTORY /*!< detailed description  */
 		};
 		
 		/*
 		  Type of particle - self descriptive
 		*/
 		enum ParticleType {
-			PT_UNKNOWN = 0,
-			PT_JET,				//
-			PT_BJET,			// 5
-			PT_CJET,			// 4
-			PT_CELL,			//
-			PT_CLUSTER,			//
-			PT_MUON,			// 13
-			PT_ELECTRON,		// 11
-			PT_PHOTON,			// 22 (gamma)
-			PT_TAU,				// 15
-			PT_NEUTRINO_ELE,	// 12
-			PT_NEUTRINO_MUO,	// 14
-			PT_NEUTRINO_TAU		// 16
+			PT_UNKNOWN = 0, /*!< detailed description  */
+			PT_JET,	/*!< detailed description  */			//
+			PT_BJET, /*!< detailed description  */			// 5
+			PT_CJET, /*!< detailed description  */			// 4
+			PT_CELL, /*!< detailed description  */			//
+			PT_CLUSTER, /*!< detailed description  */		//
+			PT_MUON, /*!< detailed description  */			// 13
+			PT_ELECTRON, /*!< detailed description  */		// 11
+			PT_PHOTON, /*!< detailed description  */		// 22 (gamma)
+			PT_TAU,	 /*!< detailed description  */			// 15
+			PT_NEUTRINO_ELE, /*!< detailed description  */	// 12
+			PT_NEUTRINO_MUO, /*!< detailed description  */	// 14
+			PT_NEUTRINO_TAU /*!< detailed description  */	// 16
 		};
 		
 		/*
@@ -52,17 +52,18 @@ namespace AcerDet {
 		 */
 		class Particle {
 		public:
-			ParticleStatus status;
-			Int32_t statusID;
-			
-			ParticleType type;
-			Int32_t typeID;
-			
-			Vector4f momentum;
-			Vector4f production;
+			ParticleStatus status; /*!< detailed description  */
+			Int32_t statusID; /*!< detailed description  */
 
-			Int32_t barcode, mother;
-			pair<Int32_t,Int32_t> daughters;
+			ParticleType type; /*!< detailed description  */
+			Int32_t typeID; /*!< detailed description  */
+			
+			Vector4f momentum; /*!< detailed description  */
+			Vector4f production; /*!< detailed description  */
+
+			Int32_t barcode; /*!< detailed description  */
+			Int32_t mother; /*!< detailed description  */
+			pair<Int32_t,Int32_t> daughters; /*!< detailed description  */
 
 			/*
 			 * Default ctor
