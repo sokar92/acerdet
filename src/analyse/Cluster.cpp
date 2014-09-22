@@ -261,14 +261,14 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		
 		val = DETR;
 		if (val < -0.5 || 0.5 < val)
-			printf ("%f out of range [%f, %f]\n", val, -0.5, 0.5); 
+			printf ("cluster_DETR %f out of range [%f, %f]\n", val, -0.5, 0.5); 
 		
 		histoManager
 			->insert(idhist + 14, cluster.pT / PTREC);
 			
 		val = cluster.pT / PTREC;
 		if (val < 0.0 || 2.0 < val)
-			printf ("%f / %f = %f out of range [%f, %f]\n", cluster.pT, PTREC, val, 0.0, 2.0); 
+			printf ("cluster_PT %f / %f = %f out of range [%f, %f]\n", cluster.pT, PTREC, val, 0.0, 2.0); 
 	}
 
 	for (int ICLU=0; ICLU<orecord.Clusters.size(); ICLU++) {
@@ -306,11 +306,19 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 
 		// fill histograms
 		if (PTREC) {
-		  histoManager
-			->insert(idhist + 23,DETRMIN);
-		  histoManager
-			->insert(idhist + 24,cluster.pT / PTREC); 
-		}
+			histoManager
+				->insert(idhist + 23, DETRMIN);
+			
+			if (DETRMIN < 0.0 || 0.5 < DETRMIN)
+				printf ("cluster_DETRMIN %f out of range [%f, %f]\n", DETRMIN, 0.0, 0.5); 
+			
+			histoManager
+				->insert(idhist + 24, cluster.pT / PTREC);
+			
+			double val = cluster.pT / PTREC;
+			if (val < 0.0 || 2.0 < val)
+				printf ("cluster_PTREC %f / %f = %f out of range [%f, %f]\n", cluster.pT, PTREC, val, 0.0, 2.0);  
+			}
 	}
 }
 

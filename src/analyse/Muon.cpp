@@ -191,9 +191,16 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	
 	// call histograms
 	histoManager
-	  ->insert(idhist + 10,orecord.Muons.size() );
+		->insert(idhist + 10,orecord.Muons.size() );
+	double val = orecord.Muons.size();
+	if (val < 0.0 || 10.0 < val)
+		printf ("muons %f out of range [%f, %f]\n", val, 0.0, 10.0);
+		
 	histoManager
-	  ->insert(idhist + 11,orecord.NonisolatedMuons.size() );
+		->insert(idhist + 11,orecord.NonisolatedMuons.size() );
+	val = orecord.NonisolatedMuons.size();
+	if (val < 0.0 || 10.0 < val)
+		printf ("muons_nonisol %f out of range [%f, %f]\n", val, 0.0, 10.0);
 
 	// cross-check with partons
 	Int32_t IMUO = 0, IMUOISO = 0;
@@ -253,8 +260,15 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	// fill histogram
 	histoManager
 	    ->insert(idhist + 12,  IMUO );
+	val = IMUO;
+	if (val < 0.0 || 10.0 < val)
+		printf ("muons_imuo %f out of range [%f, %f]\n", val, 0.0, 10.0);
+	
 	histoManager
 	    ->insert(idhist + 13,  IMUOISO );
+	val = IMUOISO;
+	if (val < 0.0 || 10.0 < val)
+		printf ("muons_imuiso %f out of range [%f, %f]\n", val, 0.0, 10.0);
 
 }
 
