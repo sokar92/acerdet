@@ -17,9 +17,9 @@ using namespace AcerDet::io;
 namespace AcerDet {
 	namespace analyse {
 
-		//! Title
+		//! Cell algorithm class
 		/*!
-		 * Detailed description
+		 * An algorithm for grouping particles into cells.
 		 */
 		class Cell {
 		private:
@@ -30,23 +30,30 @@ namespace AcerDet {
 			Real64_t DBETA; /*!< detailed description  */
 			Real64_t DBPHI; /*!< detailed description  */
 			
-			Int32_t KEYHID; /*!< detailed description  */
-			Bool_t  KEYFLD; /*!< detailed description  */
-			Int32_t KFINVS; /*!< detailed description  */
+			Int32_t KEYHID; /*!< Histogram unique id */
+			Bool_t  KEYFLD; /*!< Should cell mathcing algorithm use folding? */
+			Int32_t KFINVS; /*!< Should cell matching algorithm care about invisible particles?  */
 			
-			Int32_t IEVENT; /*!< detailed description  */
+			Int32_t IEVENT; /*!< Number of events computed by this class */
 			
-			IHistogramManager *histoManager; /*!< detailed description  */
-			Bool_t histoRegistered; /*!< detailed description  */
+			IHistogramManager *histoManager; /*!< Histogram manager instance */
+			Bool_t histoRegistered; /*!< Histogram manager initialization state true if initialized false otherwise */
 
-			const ParticleDataProvider& partProvider; /*!< detailed description  */
+			const ParticleDataProvider& partProvider; /*!< External provider for particle properties such as charge or name */
 			
 		public:
+			/** A constructor
+			 * \param configuration global AcerDET configuration
+			 * \param histogramManager histogram manager instance
+			 * \param particleData provider of external particle data (such as charge and name) 
+			 */
 			Cell( 
-				const Configuration&,
-				IHistogramManager*,
-				const ParticleDataProvider& );
+				const Configuration& configuration,
+				IHistogramManager* histogramManager,
+				const ParticleDataProvider& particleData );
 
+			/** A destructor
+			 */
 			~Cell();
 			
 			//! Print information about Cell algorithm class to standard output
