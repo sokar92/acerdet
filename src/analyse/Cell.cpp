@@ -83,19 +83,26 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	// Find cell that was hit by given particle.
 	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
-		
-		if (!part.isStable())
+
+		// TO Check!
+		// oryginal K(i,1) - dotyczy statusow
+		//if (!part.isStable()) 
+		if (part.status != PS_FINAL) 
 			continue;
 			
 		Real64_t DETPHI = 0.0;
 		Real64_t ETA, PHI, PT, PZ;
-		//ERW: getter jest czasami jako .getX() a czasami jak .x()
-        //ERW: moze warto ujednolicic
+
 		PT = part.pT();
 		PZ = part.pZ();
+		
 		if (PT * PT <= PTLRAT * PZ * PZ)
 			continue;
-		if (part.type == PT_UNKNOWN || part.isNeutrino() || part.type == PT_MUON || part.type == KFINVS)
+		
+		if (part.type == PT_UNKNOWN
+		|| part.isNeutrino()
+		|| part.type == PT_MUON
+		|| part.type == KFINVS)
 			continue;
 
 		if (KEYFLD && partProvider.getChargeType(part.typeID) != 0) {

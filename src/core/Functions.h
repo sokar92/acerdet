@@ -17,11 +17,13 @@ namespace AcerDet {
 		 */
 		template<typename T>
 		inline T saturatePi(T angle) {
+			double res = angle;
 			if (angle > PI)
-				return angle - 2.0 * PI;
-			if (angle < PI)
-				return angle + 2.0 * PI;
-			return angle;
+				res = angle - 2.0 * PI;
+			if (angle < -PI)
+				res = angle + 2.0 * PI;
+				printf(" saturate input = %f output = %f \n", angle, res);
+			return res; //angle;
 		}
 		
 		/*

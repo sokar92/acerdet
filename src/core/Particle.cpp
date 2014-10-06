@@ -51,7 +51,7 @@ Bool_t Particle::isFinal() const {
 }
 
 Bool_t Particle::isHardProcess() const {
-	return abs(statusID) < 29;
+	return abs(statusID) < 29; // dodac czy matka tez
 }
 
 /*

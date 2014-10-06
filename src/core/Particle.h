@@ -115,8 +115,8 @@ namespace AcerDet {
 			friend ostream& operator << (ostream& str, const Particle& p) {
 				str << "Particle:" << endl;
 				str << "\tBarcode: " << p.barcode << endl;
-				str << "\tType: " << p.getTypeName() << endl;
-				str << "\tStatus: " << p.getStatusName() << endl;
+				str << "\tType: " << p.getTypeName() << "(" << p.typeID << ")" << endl;
+				str << "\tStatus: " << p.getStatusName() << "(" << p.statusID << ")" << endl;
 				str << "\tMomentum (px,py,pz,e) = " << p.momentum << endl;
 				str << "\tProduction (x,y,z,t) = " << p.production << endl;
 				str << endl;

@@ -89,21 +89,27 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 	while (true) {
 		
 		// find indicator cell with maximum associated energy
+// OBS: WTF? skad zalozenia? jak szukamy maxa to CELLS musza byc posortowane po ET a nie sa!
 		Int32_t ICMAX = -1;
-		Real64_t ETMAX = 0.0;
+		// Real64_t ETMAX = 0.0;
 		for (int i=0; i<orecord.Cells.size(); ++i) {
 			const CellData& cell = orecord.Cells[i];
+			
 			if (cell.state != 2) 
 				continue;
 
-			ICMAX = i;
-			ETA = cell.eta;
-			PHI = cell.phi;
-			ETMAX = cell.pT;
+// OBS: brakowalo najistotniejszego warunku!! (teraz ma sens)
+			if (ICMAX < 0 || cell.pT > orecord.Cells[ICMAX].pT) {
+				ICMAX = i;
+			}
+// OBS: im wiecej zmiennych tym gorzej! -> simplify
+			// ETA = cell.eta;
+			// PHI = cell.phi;
+			// ETMAX = cell.pT;
 		}
 		
 		// stop condition - maximum energy is less then required minimum
-		if (ICMAX < 0 || ETMAX < ETINI) // without first condition Segmentation Fault possible
+		if (ICMAX < 0 || orecord.Cells[ICMAX].pT < ETINI) // without first condition Segmentation Fault possible
 			break;
 
 		// change state of indicator cell to 'computed'
@@ -111,12 +117,12 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 
 		// create new cluster from this cell
 		ClusterData newCluster;
-		newCluster.cellID = orecord.Cells[ICMAX].cellID; // cell -> cluster
+		newCluster.cellID = orecord.Cells[ICMAX].cellID; // cluster inherits cell global ID (related to position in detector)
 		newCluster.hits = 1;							 // single hit
 		newCluster.state = 1;							 // state ok
 		
-		newCluster.eta = ETA;
-		newCluster.phi = PHI;
+		newCluster.eta = orecord.Cells[ICMAX].eta;		// cluster inherits cell eta
+		newCluster.phi = orecord.Cells[ICMAX].phi;		// cluster inherits cell phi
 		newCluster.pT = 0;
 		
 		// Sum up unused cells within required distance of initiator.
@@ -126,20 +132,27 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 			if (cell.state == 0) 
 				continue;
 				
-			DPHIA = abs(cell.phi - PHI); 
+			DPHIA = abs(cell.phi - orecord.Cells[ICMAX].phi); 
 			PHIC = cell.phi; 
 
 			if (DPHIA > PI) 
-				PHIC += sign(2.0 * PI, PHI);
+				PHIC += sign(2.0 * PI, orecord.Cells[ICMAX].phi);
 
-			if (abs(ETA) < CALOTH && pow((cell.eta - ETA), 2.0) + pow((PHIC-PHI), 2.0) > pow(RCONE, 2.0)) continue;
-			if (abs(ETA) > CALOTH && pow((cell.eta - ETA), 2.0) + pow((PHIC-PHI), 2.0) > pow(RCONE, 2.0)) continue;
+			if (abs(orecord.Cells[ICMAX].eta) < CALOTH &&
+				pow((cell.eta - orecord.Cells[ICMAX].eta), 2.0) +
+				pow((cell.phi - orecord.Cells[ICMAX].phi), 2.0)
+				> pow(RCONE, 2.0)) continue;
+			
+			if (abs(orecord.Cells[ICMAX].eta) > CALOTH && 
+				pow((cell.eta - orecord.Cells[ICMAX].eta), 2.0) +
+				pow((cell.phi - orecord.Cells[ICMAX].phi), 2.0)
+				> pow(RCONE, 2.0)) continue;
 			
 			orecord.Cells[i].state = -orecord.Cells[i].state; // negate cell state temporalily 
-			newCluster.hits++; // another hit
-			newCluster.hits += cell.hits; // ? TODO: makes sense ?
-			newCluster.eta_rec += cell.pT * cell.eta; 
-			newCluster.phi_rec += cell.pT * PHIC;
+			// newCluster.hits++; // another hit
+			newCluster.hits	+= cell.hits; // ? TODO: makes sense ?
+			newCluster.eta_rec += cell.pT * cell.eta; // eta_rec = akumulacyjna suma pt * eta 
+			newCluster.phi_rec += cell.pT * cell.phi; // phi_rec = akumulacyjna suma pt * phi
 			newCluster.pT += cell.pT; // sum energy in cluster
 			
 			i++;
@@ -153,11 +166,13 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 					orecord.Cells[j].state = -orecord.Cells[j].state; 
 			}
 		} else {
+//printf ("DEBUG -> new cluster eta_r = %f phi_r = %f pT = %f\n", newCluster.eta_rec, newCluster.phi_rec, newCluster.pT);
 			newCluster.eta_rec /= newCluster.pT; 
 			newCluster.phi_rec /= newCluster.pT; 
 			
-			if (abs(newCluster.phi_rec) > PI) 
-				newCluster.phi_rec -= sign(2.0 * PI, newCluster.phi_rec); 
+			//if (abs(newCluster.phi_rec) > PI) 
+			//	newCluster.phi_rec -= sign(2.0 * PI, newCluster.phi_rec); // saturate!
+			newCluster.phi_rec = saturatePi( newCluster.phi_rec );
 
 			//mark used cells in orecord.vCell
 			for (int j=0; j<orecord.Cells.size(); j++) {
@@ -189,7 +204,8 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		for (int i=0; i<parts.size(); ++i) {
 			const Particle& part = parts[i];
 
-			if (!part.isStable()) 
+			//if (!part.isStable())
+			if (part.status != PS_FINAL)
 				continue;
 			
 			Real64_t DETPHI = 0.0;
@@ -197,6 +213,7 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 			
 			PT = part.pT();
 			PZ = part.pZ();
+			
 			if (PT * PT <= PTLRAT * PZ * PZ) 
 				continue;
  
@@ -209,22 +226,23 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 			if (KEYFLD && partProvider.getChargeType(part.typeID) != 0) {
 				if (PT < PTMIN)
 					continue;
-					
+
 				Real64_t CHRG = partProvider.getCharge(part.typeID) / 3.0;
 				DETPHI = CHRG * part.foldPhi();
+// OBS: charge podaje sensowny bo +-0.33
+// printf("DEBUG -> in charge section CHRG = %f DETPHI = %f\n", CHRG, DETPHI);
 			}
 			
 			PT = part.pT();
 			ETA = part.getEta();
 			PHI = saturatePi(part.getPhi() + DETPHI);
-			
-			// czy nie rownowazne saturatePi?
-			// ERW: tak to jest rownowazne, ale trzeba przetestowac
-			// ERW: nalezaloby zrobic histogram DPHIA i zaobaczyc jaki ma zakres
+// OBS: PHI oraz cluster.phi grubo poza zakresem! (osiagaja nawet 9) WSZYSTKIE KATY DODATNIE!
+// OBS: SPRAWDZ funkcje w Particle (get phi eta ... )
+// printf ("DEBUG -> PHI = %f cluster.phi = %f getPhi = %f DETPHI = %f \n", PHI, cluster.phi, part.getPhi(), DETPHI);
 			DPHIA = abs(cluster.phi - PHI);
 
 			if (DPHIA > PI) 
-				DPHIA -= 2 * PI;
+				DPHIA -= 2 * PI; // dlaczego nie robic tu saturate ?
 
 			if (abs(cluster.eta) < CALOTH && pow(cluster.eta - ETA, 2) + pow(DPHIA,2) > pow(RCONE,2)) continue;
 			if (abs(cluster.eta) > CALOTH && pow(cluster.eta - ETA, 2) + pow(DPHIA,2) > pow(RCONE,2)) continue;
@@ -233,9 +251,11 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 			ETAREC += ETA * PT;
 			PHIREC += PHI * PT;
 		}
-
+// OBS: ciezko cokolwiek na temat tego wnioskowac (zmienne akumulacyjne)
+// printf ("DEBUG: ETA_rec = %f PHI_rec = %f PTREC = %f \n", ETAREC, PHIREC, PTREC);
 		ETAREC /= PTREC;
 		PHIREC /= PTREC;
+		
 		Real64_t DETR = sqrt( 
 			pow((ETAREC - cluster.eta_rec), 2) + 
 			pow((PHIREC - cluster.phi_rec), 2) 
@@ -245,30 +265,31 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		histoManager
 			->insert(idhist + 11, ETAREC - cluster.eta_rec);
 		
-		double val = ETAREC - cluster.eta_rec;
-		if (val < -0.5 || 0.5 < val)
-			printf ("cluster_ETA %f - %f = %f out of range [%f, %f]\n", ETAREC, cluster.eta_rec, val, -0.5, 0.5); 
+//		double val = ETAREC - cluster.eta_rec;
+//		if (val < -0.5 || 0.5 < val)
+//			printf ("cluster_ETA %f - %f = %f out of range [%f, %f]\n", ETAREC, cluster.eta_rec, val, -0.5, 0.5); 
 		
 		histoManager
 			->insert(idhist + 12, PHIREC - cluster.phi_rec); 
 
-		val = PHIREC - cluster.phi_rec;
-		if (val < -0.5 || 0.5 < val)
-			printf ("cluster_PHI %f - %f = %f out of range [%f, %f]\n", PHIREC, cluster.phi_rec, val, -0.5, 0.5); 	
+// OBS: phirec znacznie poza zakresem [-pi, pi]  osiaga okolo 2pi
+//		val = PHIREC - cluster.phi_rec;
+//		if (val < -0.5 || 0.5 < val)
+//			printf ("cluster_PHI %f - %f = %f out of range [%f, %f]\n", PHIREC, cluster.phi_rec, val, -0.5, 0.5); 	
 		
 		histoManager
 			->insert(idhist + 13, DETR);
-		
-		val = DETR;
-		if (val < -0.5 || 0.5 < val)
-			printf ("cluster_DETR %f out of range [%f, %f]\n", val, -0.5, 0.5); 
+// OBS: detr poza zakresem konsekwencja phirec! (patrz definicja DETR)
+//		val = DETR;
+//		if (val < -0.5 || 0.5 < val)
+//			printf ("cluster_DETR %f out of range [%f, %f]\n", val, -0.5, 0.5); 
 		
 		histoManager
 			->insert(idhist + 14, cluster.pT / PTREC);
 			
-		val = cluster.pT / PTREC;
-		if (val < 0.0 || 2.0 < val)
-			printf ("cluster_PT %f / %f = %f out of range [%f, %f]\n", cluster.pT, PTREC, val, 0.0, 2.0); 
+//		val = cluster.pT / PTREC;
+//		if (val < 0.0 || 2.0 < val)
+//			printf ("cluster_PT %f / %f = %f out of range [%f, %f]\n", cluster.pT, PTREC, val, 0.0, 2.0); 
 	}
 
 	for (int ICLU=0; ICLU<orecord.Clusters.size(); ICLU++) {
@@ -282,13 +303,15 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
         // ERW: should be dropped and start from O BUT this condition should
         // ERW: somehow coded into new flag PT_OutHardProcess
 		for (int i=6; i<parts.size(); i++) { 
-			if (parts[i].statusID != 21 || abs(parts[i].typeID) > 10) // TODO: boolean method for this condition
-				continue;
-
+// OBS: 21 smiedzi!  jaki tu warunek
+		//	if (parts[i].statusID != 21 || abs(parts[i].typeID) > 10) // TODO: boolean method for this condition 
+		//		continue;
+// OBS: nie dochodzi do tej linijki ani razu
+printf ("xDebug cluster inside\n");
 			PT = parts[i].pT();
 			ETA = parts[i].getEta(); 
 			PHI = parts[i].getPhi();
-			
+	// to samo ? czemu nie saturate		
 			DPHIA = abs(cluster.phi_rec - PHI); 
 			if (DPHIA > PI) 
 				DPHIA = DPHIA - 2 * PI;
@@ -305,20 +328,22 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		}
 
 		// fill histograms
-		if (PTREC) {
+// OBS: wszystkie ptrec sa rowne 0 dlatego histogramy puste!
+		if (PTREC != 0) {
+			printf ("xDEBUG %d -> %f\n", IEVENT, PTREC);
 			histoManager
 				->insert(idhist + 23, DETRMIN);
 			
-			if (DETRMIN < 0.0 || 0.5 < DETRMIN)
-				printf ("cluster_DETRMIN %f out of range [%f, %f]\n", DETRMIN, 0.0, 0.5); 
+//			if (DETRMIN < 0.0 || 0.5 < DETRMIN)
+//				printf ("cluster_DETRMIN %f out of range [%f, %f]\n", DETRMIN, 0.0, 0.5); 
 			
 			histoManager
 				->insert(idhist + 24, cluster.pT / PTREC);
 			
-			double val = cluster.pT / PTREC;
-			if (val < 0.0 || 2.0 < val)
-				printf ("cluster_PTREC %f / %f = %f out of range [%f, %f]\n", cluster.pT, PTREC, val, 0.0, 2.0);  
-			}
+//			double val = cluster.pT / PTREC;
+//			if (val < 0.0 || 2.0 < val)
+//				printf ("cluster_PTREC %f / %f = %f out of range [%f, %f]\n", cluster.pT, PTREC, val, 0.0, 2.0);  
+		} //else printf ("DEBUG %d -> %f\n", IEVENT, PTREC);
 	}
 }
 

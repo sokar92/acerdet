@@ -21,7 +21,7 @@ ParticleType HepMC_InputConverter::getParticleType(int code) {
 	return PT_UNKNOWN;
 }
 
-ParticleState HepMC_InputConverter::getParticleStatus(HepMC::GenParticle* gpart) {
+ParticleStatus HepMC_InputConverter::getParticleStatus(HepMC::GenParticle* gpart) {
 	if (gpart->is_beam()) return PS_BEAM; 			  // status_code == 4
 	else if (gpart->is_undecayed()) return PS_FINAL;  // status_code == 1 -> final state
 	else if (gpart->has_decayed()) return PS_DECAYED; // status_code == 2 -> before hadronization
@@ -78,8 +78,8 @@ InputRecord HepMC_InputConverter::convert( const GenEvent& event ) {
 		//printf ("id: %d m: %d d: %d %d\n", part.id, part.mother, part.daughters.first, part.daughters.second);
 
 		// state (named & id)
-		part.state = getParticleStatus(gpart);
-		part.stateID = gpart->status();
+		part.status = getParticleStatus(gpart);
+		part.statusID = gpart->status();
 		
 		// type (named & id)
 		part.type = getParticleType(gpart->pdg_id());
@@ -94,7 +94,7 @@ InputRecord HepMC_InputConverter::convert( const GenEvent& event ) {
 		}
 		
 		parts.push_back(part);
-		//cout << part; // to delete in release!
+		cout << part; // to delete in release!
 	}
 	
 	return InputRecord(parts);
