@@ -191,12 +191,6 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 				newParton.pT = PT;
 				
 				orecord.Electrons.push_back( newParton );
-				
-				// KELE(NELE,1) = NELE
-				// KELE(NELE,2) = K(I,2)			// typ elektronu
-				// KELE(NELE,3) = I
-				// KELE(NELE,4) = K(K(I,3),2)		// typ matki (w drzewku)
-				// KELE(NELE,5) = 1
 			}
 		}
 	}
@@ -204,9 +198,6 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 	// store count in histogram
 	histoManager
 		->insert(idhist + 11,  orecord.Electrons.size() );
-	double val = orecord.Electrons.size();
-	if (val < 0.0 || 10.0 < val)
-		printf ("electrons %f out of range [%f, %f]\n", val, 0.0, 10.0);
 
 	// arrange electrons in falling E_T sequence
 	PartData::sortBy_pT( orecord.Electrons );
@@ -267,16 +258,10 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 	
 	// store in histos
 	histoManager
-  	     ->insert(idhist + 21, IELE);
-  	val = IELE;
-	if (val < 0.0 || 10.0 < val)
-		printf ("electrons_iele %f out of range [%f, %f]\n", val, 0.0, 10.0);
-		
+  	     ->insert(idhist + 21, IELE, 1.0);
+
 	histoManager
-  	     ->insert(idhist + 31, IELEISO);
-  	val = IELEISO;
-	if (val < 0.0 || 10.0 < val)
-		printf ("electrons_isol %f out of range [%f, %f]\n", val, 0.0, 10.0);
+  	     ->insert(idhist + 31, IELEISO, 1.0);
 }
 
 void Electron::printResults() const {

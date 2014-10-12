@@ -193,18 +193,6 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 				newParton.pT = PT;
 				
 				orecord.Electrons.push_back( newParton );
-				
-				// KPHO(NPHO,1) = NPHO;
-				// KPHO(NPHO,2) = K(I,2);
-				// KPHO(NPHO,3) = I;
-				// KPHO(NPHO,4) = K(K(I,3),2);
-				// KPHO(NPHO,5) = 1;
-           		
-				// PPHO(NPHO,1) = ETA;
-				// PPHO(NPHO,2) = PHI;
-				// PPHO(NPHO,3) = ETA;
-				// PPHO(NPHO,4) = PHI;
-				// PPHO(NPHO,5) = PT;
 			}
 		}
 	}
@@ -212,11 +200,7 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 	// store count in histogram
 	histoManager
 		->insert(idhist+11, orecord.Photons.size() );
-	
-	double val = orecord.Photons.size();
-	if (val < 0.0 || 10.0 < val)
-		printf ("photons_count %f out of range [%f, %f]\n", val, 0.0, 10.0); 
-	
+
 	// arrange photons in falling E_T sequence
 	PartData::sortBy_pT( orecord.Photons );
 	
@@ -278,13 +262,9 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 	// fill histograms
 	histoManager
      	->insert(idhist+21, IPHO );
-	if (IPHO < 0.0 || 10.0 < IPHO)
-		printf ("photons_ipho %f out of range [%f, %f]\n", IPHO, 0.0, 10.0);
 	
 	histoManager
      	->insert(idhist+31, IPHOISO );
-	if (IPHOISO < 0.0 || 10.0 < IPHOISO)
-		printf ("photons_iphoiso %f out of range [%f, %f]\n", IPHOISO, 0.0, 10.0);
 }
 
 void Photon::printResults() const {

@@ -74,11 +74,12 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	// look for isolated muons, sort clusters common
 	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
-
+//printf ("partMuon [%d]\n", i);
 		if (!part.status != PS_FINAL || !part.isStable()) 
 			continue;
 
 		if (part.type == PT_MUON) {
+printf ("Muon [%d]\n", i);
 			Real64_t ETA, PHI, PT, DDR;
 
 			// analyse not decayed muons
@@ -167,15 +168,9 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	// call histograms
 	histoManager
 		->insert(idhist + 10, orecord.Muons.size(), 1.0 );
-	double val = orecord.Muons.size();
-	if (val < 0.0 || 10.0 < val)
-		printf ("muons %f out of range [%f, %f]\n", val, 0.0, 10.0);
 		
 	histoManager
 		->insert(idhist + 11, orecord.NonisolatedMuons.size(), 1.0 );
-	val = orecord.NonisolatedMuons.size();
-	if (val < 0.0 || 10.0 < val)
-		printf ("muons_nonisol %f out of range [%f, %f]\n", val, 0.0, 10.0);
 
 	// cross-check with partons
 	Int32_t IMUO = 0, IMUOISO = 0;
@@ -235,16 +230,9 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	// fill histogram
 	histoManager
 	    ->insert(idhist + 12,  IMUO, 1.0 );
-	val = IMUO;
-	if (val < 0.0 || 10.0 < val)
-		printf ("muons_imuo %f out of range [%f, %f]\n", val, 0.0, 10.0);
 	
 	histoManager
 	    ->insert(idhist + 13,  IMUOISO, 1.0 );
-	val = IMUOISO;
-	if (val < 0.0 || 10.0 < val)
-		printf ("muons_imuiso %f out of range [%f, %f]\n", val, 0.0, 10.0);
-
 }
 
 void Muon::printResults() const {
