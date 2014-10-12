@@ -75,7 +75,7 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
 
-		if (!part.isFinal() || !part.isStable()) 
+		if (!part.status != PS_FINAL || !part.isStable()) 
 			continue;
 
 		if (part.type == PT_MUON) {
@@ -154,50 +154,25 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			newParton.phi = PHI;
 			newParton.pT = PT;
 			
-			// fill /ISOMUO/ with isolated muon
 			if (ISOL) {
+				// fill /ISOMUO/ with isolated muon
 				orecord.Muons.push_back(newParton);
-			//	NMUO = NMUO + 1
-			//	KMUO(NMUO,1) = NMUO				// ktory isol
-			//	KMUO(NMUO,2) = K(I,2)			// state z particle
-			//	KMUO(NMUO,3) = I				// numer czastki w evencie
-			//	KMUO(NMUO,4) = K(K(I,3),2)		// numer matki w evencie
-			//	KMUO(NMUO,5) = 1				// stan ?
-
-			//	PMUO(NMUO,1) = ETA
-			//	PMUO(NMUO,2) = PHI
-			//	PMUO(NMUO,3) = ETA
-			//	PMUO(NMUO,4) = PHI
-			//	PMUO(NMUO,5) = PT
-			
-			// fill /NOISOMUO/ with non-isolated muon
 			} else {
+				// fill /NOISOMUO/ with non-isolated muon
 				orecord.NonisolatedMuons.push_back(newParton);
-			//	NMUOX = NMUOX + 1
-			//	KMUOX(NMUOX,1) = NMUOX
-			//	KMUOX(NMUOX,2) = K(I,2)
-          	//	KMUOX(NMUOX,3) = I
-			//	KMUOX(NMUOX,4) = K(K(I,3),2)
-			//	KMUOX(NMUOX,5) = 1
-
-          	//	PMUOX(NMUOX,1) = ETA
-          	//	PMUOX(NMUOX,2) = PHI
-          	//	PMUOX(NMUOX,3) = ETA
-          	//	PMUOX(NMUOX,4) = PHI
-          	//	PMUOX(NMUOX,5) = PT
 			}
 		}
 	}
 	
 	// call histograms
 	histoManager
-		->insert(idhist + 10,orecord.Muons.size() );
+		->insert(idhist + 10, orecord.Muons.size(), 1.0 );
 	double val = orecord.Muons.size();
 	if (val < 0.0 || 10.0 < val)
 		printf ("muons %f out of range [%f, %f]\n", val, 0.0, 10.0);
 		
 	histoManager
-		->insert(idhist + 11,orecord.NonisolatedMuons.size() );
+		->insert(idhist + 11, orecord.NonisolatedMuons.size(), 1.0 );
 	val = orecord.NonisolatedMuons.size();
 	if (val < 0.0 || 10.0 < val)
 		printf ("muons_nonisol %f out of range [%f, %f]\n", val, 0.0, 10.0);
@@ -207,7 +182,7 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
 		
-		if (!part.isHardProcess())
+		if (!part.isHardProcess()) // TO CHECK!!
 			continue;
 		
 		if (part.type == PT_MUON) {
@@ -259,13 +234,13 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 
 	// fill histogram
 	histoManager
-	    ->insert(idhist + 12,  IMUO );
+	    ->insert(idhist + 12,  IMUO, 1.0 );
 	val = IMUO;
 	if (val < 0.0 || 10.0 < val)
 		printf ("muons_imuo %f out of range [%f, %f]\n", val, 0.0, 10.0);
 	
 	histoManager
-	    ->insert(idhist + 13,  IMUOISO );
+	    ->insert(idhist + 13,  IMUOISO, 1.0 );
 	val = IMUOISO;
 	if (val < 0.0 || 10.0 < val)
 		printf ("muons_imuiso %f out of range [%f, %f]\n", val, 0.0, 10.0);
