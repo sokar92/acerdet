@@ -84,9 +84,6 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
 
-		// TO Check!
-		// oryginal K(i,1) - dotyczy statusow
-		//if (!part.isStable()) 
 		if (part.status != PS_FINAL) 
 			continue;
 			

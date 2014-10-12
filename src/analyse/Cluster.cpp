@@ -191,7 +191,6 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		for (int i=0; i<parts.size(); ++i) {
 			const Particle& part = parts[i];
 
-			//if (!part.isStable())
 			if (part.status != PS_FINAL)
 				continue;
 			
@@ -216,20 +215,15 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 
 				Real64_t CHRG = partProvider.getCharge(part.typeID) / 3.0;
 				DETPHI = CHRG * part.foldPhi();
-// OBS: charge podaje sensowny bo +-0.33
-// printf("DEBUG -> in charge section CHRG = %f DETPHI = %f\n", CHRG, DETPHI);
 			}
 			
 			PT = part.pT();
 			ETA = part.getEta();
 			PHI = saturatePi(part.getPhi() + DETPHI);
-// OBS: PHI oraz cluster.phi grubo poza zakresem! (osiagaja nawet 9) WSZYSTKIE KATY DODATNIE!
-// OBS: SPRAWDZ funkcje w Particle (get phi eta ... )
-// printf ("DEBUG -> PHI = %f cluster.phi = %f getPhi = %f DETPHI = %f \n", PHI, cluster.phi, part.getPhi(), DETPHI);
 			DPHIA = abs(cluster.phi - PHI);
 
 			if (DPHIA > PI) 
-				DPHIA -= 2 * PI; // dlaczego nie robic tu saturate ?
+				DPHIA -= 2 * PI; // dlaczego nie robic tu saturate wszystkie roznice wyjda dodatnie?
 
 			if (abs(cluster.eta) < CALOTH && pow(cluster.eta - ETA, 2) + pow(DPHIA,2) > pow(RCONE,2)) continue;
 			if (abs(cluster.eta) > CALOTH && pow(cluster.eta - ETA, 2) + pow(DPHIA,2) > pow(RCONE,2)) continue;
@@ -238,8 +232,7 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 			ETAREC += ETA * PT;
 			PHIREC += PHI * PT;
 		}
-// OBS: ciezko cokolwiek na temat tego wnioskowac (zmienne akumulacyjne)
-// printf ("DEBUG: ETA_rec = %f PHI_rec = %f PTREC = %f \n", ETAREC, PHIREC, PTREC);
+
 		ETAREC /= PTREC;
 		PHIREC /= PTREC;
 		
@@ -252,31 +245,14 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		histoManager
 			->insert(idhist + 11, ETAREC - cluster.eta_rec);
 		
-//		double val = ETAREC - cluster.eta_rec;
-//		if (val < -0.5 || 0.5 < val)
-//			printf ("cluster_ETA %f - %f = %f out of range [%f, %f]\n", ETAREC, cluster.eta_rec, val, -0.5, 0.5); 
-		
 		histoManager
 			->insert(idhist + 12, PHIREC - cluster.phi_rec); 
-
-// OBS: phirec znacznie poza zakresem [-pi, pi]  osiaga okolo 2pi
-//		val = PHIREC - cluster.phi_rec;
-//		if (val < -0.5 || 0.5 < val)
-//			printf ("cluster_PHI %f - %f = %f out of range [%f, %f]\n", PHIREC, cluster.phi_rec, val, -0.5, 0.5); 	
 		
 		histoManager
 			->insert(idhist + 13, DETR);
-// OBS: detr poza zakresem konsekwencja phirec! (patrz definicja DETR)
-//		val = DETR;
-//		if (val < -0.5 || 0.5 < val)
-//			printf ("cluster_DETR %f out of range [%f, %f]\n", val, -0.5, 0.5); 
 		
 		histoManager
-			->insert(idhist + 14, cluster.pT / PTREC);
-			
-//		val = cluster.pT / PTREC;
-//		if (val < 0.0 || 2.0 < val)
-//			printf ("cluster_PT %f / %f = %f out of range [%f, %f]\n", cluster.pT, PTREC, val, 0.0, 2.0); 
+			->insert(idhist + 14, cluster.pT / PTREC);			
 	}
 
 	for (int ICLU=0; ICLU<orecord.Clusters.size(); ICLU++) {
@@ -330,7 +306,7 @@ printf ("xDebug cluster inside\n");
 //			double val = cluster.pT / PTREC;
 //			if (val < 0.0 || 2.0 < val)
 //				printf ("cluster_PTREC %f / %f = %f out of range [%f, %f]\n", cluster.pT, PTREC, val, 0.0, 2.0);  
-		} //else printf ("DEBUG %d -> %f\n", IEVENT, PTREC);
+		}
 	}
 }
 
