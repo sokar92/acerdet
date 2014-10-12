@@ -89,27 +89,21 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 	while (true) {
 		
 		// find indicator cell with maximum associated energy
-// OBS: WTF? skad zalozenia? jak szukamy maxa to CELLS musza byc posortowane po ET a nie sa!
 		Int32_t ICMAX = -1;
-		// Real64_t ETMAX = 0.0;
 		for (int i=0; i<orecord.Cells.size(); ++i) {
 			const CellData& cell = orecord.Cells[i];
 			
+			// a cell was used already
 			if (cell.status != 2) 
 				continue;
 
-// OBS: brakowalo najistotniejszego warunku!! (teraz ma sens)
 			if (ICMAX < 0 || cell.pT > orecord.Cells[ICMAX].pT) {
 				ICMAX = i;
 			}
-// OBS: im wiecej zmiennych tym gorzej! -> simplify
-			// ETA = cell.eta;
-			// PHI = cell.phi;
-			// ETMAX = cell.pT;
 		}
 		
-		// stop condition - maximum energy is less then required minimum
-		if (ICMAX < 0 || orecord.Cells[ICMAX].pT < ETINI) // without first condition Segmentation Fault possible
+		if (ICMAX < 0  // cell not found (all used) 
+		|| orecord.Cells[ICMAX].pT < ETINI) // maximum energy is less then required minimum
 			break;
 
 		// change state of indicator cell to 'computed'
@@ -153,8 +147,6 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 			newCluster.eta_rec += cell.pT * cell.eta; // eta_rec = akumulacyjna suma pt * eta 
 			newCluster.phi_rec += cell.pT * cell.phi; // phi_rec = akumulacyjna suma pt * phi
 			newCluster.pT += cell.pT; // sum energy in cluster
-			
-			i++;
 		}
 		
 		// Reject cluster below minimum ET, else accept. 

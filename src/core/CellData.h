@@ -8,6 +8,13 @@
 
 namespace AcerDet {
 	namespace core {
+		enum CellStatus {
+			UNKNOWN = 0,
+			CREATED,
+			MARKED,
+			CLUSTER_JOINED
+		};
+
 		class CellData {
 		public:
 			/*
@@ -27,10 +34,9 @@ namespace AcerDet {
 			 * 3 -
 			 * 4 - pT
 			 */
-			
 			Int32_t cellID; /*!< unique cell id describing it's position in detector */
-			Int32_t hits; /*!< number of energy peeks contained by this cell */
 			Int32_t status; /*!< cell status */
+			Int32_t hits; /*!< number of energy peeks contained by this cell */
 			Real64_t eta; /*!< eta */
 			Real64_t phi; /*!< phi */
 			Real64_t pT; /*!< energy accumulated by cell */

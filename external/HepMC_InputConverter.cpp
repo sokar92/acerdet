@@ -75,7 +75,6 @@ InputRecord HepMC_InputConverter::convert( const GenEvent& event ) {
 		HepMC::GenVertex* prod = gpart->production_vertex();
 		part.mother = extractMother(prod);
 		part.daughters = make_pair(extractDaughter1(prod), extractDaughter2(prod));
-		//printf ("id: %d m: %d d: %d %d\n", part.id, part.mother, part.daughters.first, part.daughters.second);
 
 		// state (named & id)
 		part.status = getParticleStatus(gpart);
