@@ -28,12 +28,17 @@ namespace AcerDet {
 			 * 4 - eT
 			 */
 			
-			Int32_t type; /*!< detailed description  */
-			Real64_t eta; /*!< detailed description  */
-			Real64_t phi; /*!< detailed description  */
-			Real64_t eta_rec; /*!< detailed description  */
-			Real64_t phi_rec; /*!< detailed description  */
-			Real64_t pT; /*!< detailed description  */
+			enum JetType {
+				UNKNOWN = 0,
+				C_JET = 4,
+				B_JET = 5
+			} type; /*!< A type of jet (if recognised) */
+			
+			Real64_t eta; /*!< eta (inherited from ?) */
+			Real64_t phi; /*!< phi (inherited from ?) */
+			Real64_t eta_rec; /*!< custom accumulated eta (inherited from ?) */
+			Real64_t phi_rec; /*!< custom accumulated phi (inherited from ?) */
+			Real64_t pT; /*!< accumulated energy */
 			
 			JetData();
 			

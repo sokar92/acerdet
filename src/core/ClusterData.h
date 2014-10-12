@@ -16,7 +16,7 @@ namespace AcerDet {
 			 * 1 -
 			 * 2 - cellID
 			 * 3 - hits
-			 * 4 - state
+			 * 4 - status
 			 */
 			
 			/*
@@ -25,17 +25,17 @@ namespace AcerDet {
 			 * 1 - phi
 			 * 2 - eta_rec
 			 * 3 - phi_rec 
-			 * 4 - eT
+			 * 4 - pT
 			 */
 			
-			Int32_t cellID; /*!< detailed description  */
-			Int32_t hits; /*!< detailed description  */
-			Int32_t state; /*!< detailed description  */
-			Real64_t eta; /*!< detailed description  */
-			Real64_t phi; /*!< detailed description  */
-			Real64_t eta_rec; /*!< detailed description  */
-			Real64_t phi_rec; /*!< detailed description  */
-			Real64_t pT; /*!< detailed description  */
+			Int32_t cellID; /*!< unique id describing cluster position in detector (inherited from Cell) */
+			Int32_t hits; /*!< sum of energy peeks accumulated by cluster */
+			Int32_t status; /*!< cluster status */
+			Real64_t eta; /*!< eta */
+			Real64_t phi; /*!< phi */
+			Real64_t eta_rec; /*!< custom accumulated eta */
+			Real64_t phi_rec; /*!< custom accumulated phi */
+			Real64_t pT; /*!< accumulated energy */
 			
 			ClusterData();
 			

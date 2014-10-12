@@ -16,7 +16,7 @@ namespace AcerDet {
 			 * 1 -
 			 * 2 - cellID
 			 * 3 - hits
-			 * 4 - state
+			 * 4 - status
 			 */
 			
 			/*
@@ -25,15 +25,15 @@ namespace AcerDet {
 			 * 1 - phi
 			 * 2 -
 			 * 3 -
-			 * 4 - eT
+			 * 4 - pT
 			 */
 			
-			Int32_t cellID; /*!< detailed description  */
-			Int32_t hits; /*!< detailed description  */
-			Int32_t state; /*!< detailed description  */
-			Real64_t eta; /*!< detailed description  */
-			Real64_t phi; /*!< detailed description  */
-			Real64_t pT; /*!< detailed description  */
+			Int32_t cellID; /*!< unique cell id describing it's position in detector */
+			Int32_t hits; /*!< number of energy peeks contained by this cell */
+			Int32_t status; /*!< cell status */
+			Real64_t eta; /*!< eta */
+			Real64_t phi; /*!< phi */
+			Real64_t pT; /*!< energy accumulated by cell */
 			
 			CellData();
 			

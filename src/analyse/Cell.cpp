@@ -144,7 +144,7 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			CellData newCell;
 			newCell.cellID = cellID;		// not used ID
 			newCell.hits = 1;				// only single hit for now
-			newCell.state = 2;				// type?
+			newCell.status = 2;
 			newCell.pT = PT;				// pT from single hit
 			
 			if (abs(ETA) < CALOTH) {

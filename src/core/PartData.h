@@ -13,9 +13,9 @@ namespace AcerDet {
 			/*
 			 * K
 			 * 0 - num
-			 * 1 - state
-			 * 2 - particleID
-			 * 3 - motherState
+			 * 1 - status
+			 * 2 - barcode
+			 * 3 - motherStatus
 			 * 4 - 
 			 */
 			
@@ -28,13 +28,13 @@ namespace AcerDet {
 			 * 4 - pT
 			 */
 			
-			Int32_t num; /*!< detailed description  */
-			Int32_t particleID; /*!< detailed description  */
-			Int32_t motherState; /*!< detailed description  */
-			Int32_t state; /*!< detailed description  */
-			Real64_t eta; /*!< detailed description  */
-			Real64_t phi; /*!< detailed description  */
-			Real64_t pT; /*!< detailed description  */
+			Int32_t num; /*!< particle unique id (sequential number in event) */
+			Int32_t barcode; /*!< particle barcode */
+			Int32_t motherStatus; /*!< status of mother particle (if exists) */
+			Int32_t status; /*!< particle status */
+			Real64_t eta; /*!< eta */
+			Real64_t phi; /*!< phi */
+			Real64_t pT; /*!< energy */
 			
 			PartData();
 			

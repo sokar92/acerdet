@@ -183,9 +183,9 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 					orecord.Clusters.erase(orecord.Clusters.begin() + LCLU);
 
 				PartData newParton;
-				newParton.state = part.statusID;
-				newParton.particleID = i;
-				newParton.motherState = parts[part.mother].statusID;
+				newParton.status = part.statusID;
+				newParton.num = i;
+				newParton.motherStatus = parts[part.mother].statusID;
 				newParton.eta = ETA;
 				newParton.phi = PHI;
 				newParton.pT = PT;
@@ -197,12 +197,6 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 				// KELE(NELE,3) = I
 				// KELE(NELE,4) = K(K(I,3),2)		// typ matki (w drzewku)
 				// KELE(NELE,5) = 1
-
-				// PELE(NELE,1) = ETA
-				// PELE(NELE,2) = PHI
-           		// PELE(NELE,3) = ETA
-           		// PELE(NELE,4) = PHI
-           		// PELE(NELE,5) = PT
 			}
 		}
 	}

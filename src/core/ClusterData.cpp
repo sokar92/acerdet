@@ -7,7 +7,7 @@ using namespace std;
 ClusterData::ClusterData() :
 	cellID (-1),
 	hits (0),
-	state (0),
+	status (0),
 	eta (0.0),
 	phi (0.0),
 	eta_rec (0.0),

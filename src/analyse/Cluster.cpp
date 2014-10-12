@@ -95,7 +95,7 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		for (int i=0; i<orecord.Cells.size(); ++i) {
 			const CellData& cell = orecord.Cells[i];
 			
-			if (cell.state != 2) 
+			if (cell.status != 2) 
 				continue;
 
 // OBS: brakowalo najistotniejszego warunku!! (teraz ma sens)
@@ -113,13 +113,13 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 			break;
 
 		// change state of indicator cell to 'computed'
-		orecord.Cells[ICMAX].state = 1; // TODO: create markAsComputed method
+		orecord.Cells[ICMAX].status = 1; // TODO: create markAsComputed method
 
 		// create new cluster from this cell
 		ClusterData newCluster;
 		newCluster.cellID = orecord.Cells[ICMAX].cellID; // cluster inherits cell global ID (related to position in detector)
 		newCluster.hits = 1;							 // single hit
-		newCluster.state = 1;							 // state ok
+		newCluster.status = 1;							 // state ok
 		
 		newCluster.eta = orecord.Cells[ICMAX].eta;		// cluster inherits cell eta
 		newCluster.phi = orecord.Cells[ICMAX].phi;		// cluster inherits cell phi
@@ -129,7 +129,7 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		for (int i=0; i<orecord.Cells.size(); ++i) {
 			const CellData& cell = orecord.Cells[i];
 			
-			if (cell.state == 0) 
+			if (cell.status == 0) 
 				continue;
 				
 			DPHIA = abs(cell.phi - orecord.Cells[ICMAX].phi); 
@@ -148,9 +148,8 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 				pow((cell.phi - orecord.Cells[ICMAX].phi), 2.0)
 				> pow(RCONE, 2.0)) continue;
 			
-			orecord.Cells[i].state = -orecord.Cells[i].state; // negate cell state temporalily 
-			// newCluster.hits++; // another hit
-			newCluster.hits	+= cell.hits; // ? TODO: makes sense ?
+			orecord.Cells[i].status = -orecord.Cells[i].status; // negate cell state temporalily 
+			newCluster.hits	+= cell.hits; //
 			newCluster.eta_rec += cell.pT * cell.eta; // eta_rec = akumulacyjna suma pt * eta 
 			newCluster.phi_rec += cell.pT * cell.phi; // phi_rec = akumulacyjna suma pt * phi
 			newCluster.pT += cell.pT; // sum energy in cluster
@@ -162,8 +161,8 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		if (newCluster.pT < ETCLU) {
 			// revert changes
 			for (int j=0; j<orecord.Cells.size(); j++) {
-				if (orecord.Cells[j].state < 0) 
-					orecord.Cells[j].state = -orecord.Cells[j].state; 
+				if (orecord.Cells[j].status < 0) 
+					orecord.Cells[j].status = -orecord.Cells[j].status; 
 			}
 		} else {
 //printf ("DEBUG -> new cluster eta_r = %f phi_r = %f pT = %f\n", newCluster.eta_rec, newCluster.phi_rec, newCluster.pT);
@@ -176,8 +175,8 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 
 			//mark used cells in orecord.vCell
 			for (int j=0; j<orecord.Cells.size(); j++) {
-				if (orecord.Cells[j].state < 0) // marked to cluster 
-					orecord.Cells[j].state = 0; // joined with cluster
+				if (orecord.Cells[j].status < 0) // marked to cluster 
+					orecord.Cells[j].status = 0; // joined with cluster
 			}
 			
 			tempClusters.push_back(newCluster);

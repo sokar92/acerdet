@@ -5,7 +5,7 @@ using namespace AcerDet::core;
 using namespace std;
 
 JetData::JetData() :
-	type (-1),
+	type (UNKNOWN),
 	eta (0.0),
 	phi (0.0),
 	eta_rec (0.0),
@@ -13,8 +13,8 @@ JetData::JetData() :
 	pT (0.0)
 {}
 
-Bool_t JetData::isBJet() const { return type == 5; }
-Bool_t JetData::isCJet() const { return type == 4; }
+Bool_t JetData::isBJet() const { return type == B_JET; }
+Bool_t JetData::isCJet() const { return type == C_JET; }
 
 bool JetData::comparator_pT(const JetData& l, const JetData& r) {
 	return l.pT > r.pT;

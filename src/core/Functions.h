@@ -22,7 +22,6 @@ namespace AcerDet {
 				res = angle - 2.0 * PI;
 			if (angle < -PI)
 				res = angle + 2.0 * PI;
-				printf(" saturate input = %f output = %f \n", angle, res);
 			return res; //angle;
 		}
 		

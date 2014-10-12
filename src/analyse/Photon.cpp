@@ -185,9 +185,9 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 					orecord.Clusters.erase(orecord.Clusters.begin() + LCLU);
 
 				PartData newParton;
-				newParton.state = part.statusID;
-				newParton.particleID = i;
-				newParton.motherState = parts[part.mother].statusID;
+				newParton.status = part.statusID;
+				newParton.num = i;
+				newParton.motherStatus = parts[part.mother].statusID;
 				newParton.eta = ETA;
 				newParton.phi = PHI;
 				newParton.pT = PT;
