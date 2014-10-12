@@ -142,7 +142,7 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 		// Or book new cell
 		if (!found) {
 			CellData newCell;
-			newCell.status = 2;//CellStatus::CREATED;
+			newCell.status = CellStatus::CREATED;
 			newCell.cellID = cellID;		// not used ID
 			newCell.hits = 1;				// only single hit for now
 			newCell.pT = PT;				// pT from single hit

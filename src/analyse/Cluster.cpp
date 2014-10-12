@@ -94,7 +94,7 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 			const CellData& cell = orecord.Cells[i];
 			
 			// a cell was used already
-			if (cell.status != 2) 
+			if (cell.status != CellStatus::CREATED) 
 				continue;
 
 			if (ICMAX < 0 || cell.pT > orecord.Cells[ICMAX].pT) {
@@ -106,13 +106,13 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		|| orecord.Cells[ICMAX].pT < ETINI) // maximum energy is less then required minimum
 			break;
 
-		// change state of indicator cell to 'computed'
-		orecord.Cells[ICMAX].status = 1; // TODO: create markAsComputed method
+		// change state of indicator cell to 'marked'
+		orecord.Cells[ICMAX].status = CellStatus::MARKED;
 
 		// create new cluster from this cell
 		ClusterData newCluster;
 		newCluster.cellID = orecord.Cells[ICMAX].cellID; // cluster inherits cell global ID (related to position in detector)
-		newCluster.hits = 1;							 // single hit
+		newCluster.hits = 1;							 // single hit  tu powinno byc 0 - liczymy w nastepnej petli jeszcze raz
 		newCluster.status = 1;							 // state ok
 		
 		newCluster.eta = orecord.Cells[ICMAX].eta;		// cluster inherits cell eta
@@ -123,7 +123,7 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		for (int i=0; i<orecord.Cells.size(); ++i) {
 			const CellData& cell = orecord.Cells[i];
 			
-			if (cell.status == 0) 
+			if (cell.status == CellStatus::CLUSTER_JOINED) 
 				continue;
 				
 			DPHIA = abs(cell.phi - orecord.Cells[ICMAX].phi); 
@@ -142,7 +142,7 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 				pow((cell.phi - orecord.Cells[ICMAX].phi), 2.0)
 				> pow(RCONE, 2.0)) continue;
 			
-			orecord.Cells[i].status = -orecord.Cells[i].status; // negate cell state temporalily 
+			orecord.Cells[i].status = CellStatus::MARKED;
 			newCluster.hits	+= cell.hits; //
 			newCluster.eta_rec += cell.pT * cell.eta; // eta_rec = akumulacyjna suma pt * eta 
 			newCluster.phi_rec += cell.pT * cell.phi; // phi_rec = akumulacyjna suma pt * phi
@@ -153,22 +153,18 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		if (newCluster.pT < ETCLU) {
 			// revert changes
 			for (int j=0; j<orecord.Cells.size(); j++) {
-				if (orecord.Cells[j].status < 0) 
-					orecord.Cells[j].status = -orecord.Cells[j].status; 
+				if (orecord.Cells[j].status == CellStatus::MARKED) 
+					orecord.Cells[j].status = CellStatus::CREATED;
 			}
+			orecord.Cells[ICMAX].status = CellStatus::REJECTED;
 		} else {
-//printf ("DEBUG -> new cluster eta_r = %f phi_r = %f pT = %f\n", newCluster.eta_rec, newCluster.phi_rec, newCluster.pT);
-			newCluster.eta_rec /= newCluster.pT; 
-			newCluster.phi_rec /= newCluster.pT; 
-			
-			//if (abs(newCluster.phi_rec) > PI) 
-			//	newCluster.phi_rec -= sign(2.0 * PI, newCluster.phi_rec); // saturate!
-			newCluster.phi_rec = saturatePi( newCluster.phi_rec );
+			newCluster.eta_rec /= newCluster.pT;
+			newCluster.phi_rec = saturatePi( newCluster.phi_rec / newCluster.pT );
 
-			//mark used cells in orecord.vCell
+			//mark used cells in orecord.Cell
 			for (int j=0; j<orecord.Cells.size(); j++) {
-				if (orecord.Cells[j].status < 0) // marked to cluster 
-					orecord.Cells[j].status = 0; // joined with cluster
+				if (orecord.Cells[j].status == CellStatus::MARKED) // marked to cluster 
+					orecord.Cells[j].status = CellStatus::CLUSTER_JOINED; // joined with cluster
 			}
 			
 			tempClusters.push_back(newCluster);
