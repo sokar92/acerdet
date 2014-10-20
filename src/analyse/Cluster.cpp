@@ -94,7 +94,7 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 			const CellData& cell = orecord.Cells[i];
 			
 			// a cell was used already
-			if (cell.status != CellStatus::CREATED) 
+			if (cell.status != 2) 
 				continue;
 
 			if (ICMAX < 0 || cell.pT > orecord.Cells[ICMAX].pT) {
@@ -107,7 +107,7 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 			break;
 
 		// change state of indicator cell to 'marked'
-		orecord.Cells[ICMAX].status = CellStatus::MARKED;
+		orecord.Cells[ICMAX].status = 1;
 
 		// create new cluster from this cell
 		ClusterData newCluster;
@@ -123,7 +123,7 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		for (int i=0; i<orecord.Cells.size(); ++i) {
 			const CellData& cell = orecord.Cells[i];
 			
-			if (cell.status == CellStatus::CLUSTER_JOINED) 
+			if (cell.status == 0) 
 				continue;
 				
 			DPHIA = abs(cell.phi - orecord.Cells[ICMAX].phi); 
@@ -142,7 +142,7 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 				pow((cell.phi - orecord.Cells[ICMAX].phi), 2.0)
 				> pow(RCONE, 2.0)) continue;
 			
-			orecord.Cells[i].status = CellStatus::MARKED;
+			orecord.Cells[i].status = -orecord.Cells[i].status;
 			newCluster.hits	+= cell.hits; //
 			newCluster.eta_rec += cell.pT * cell.eta; // eta_rec = akumulacyjna suma pt * eta 
 			newCluster.phi_rec += cell.pT * cell.phi; // phi_rec = akumulacyjna suma pt * phi
@@ -153,18 +153,17 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		if (newCluster.pT < ETCLU) {
 			// revert changes
 			for (int j=0; j<orecord.Cells.size(); j++) {
-				if (orecord.Cells[j].status == CellStatus::MARKED) 
-					orecord.Cells[j].status = CellStatus::CREATED;
+				if (orecord.Cells[j].status < 0) 
+					orecord.Cells[j].status = -orecord.Cells[j].status;
 			}
-			orecord.Cells[ICMAX].status = CellStatus::REJECTED;
 		} else {
 			newCluster.eta_rec /= newCluster.pT;
 			newCluster.phi_rec = saturatePi( newCluster.phi_rec / newCluster.pT );
 
 			//mark used cells in orecord.Cell
 			for (int j=0; j<orecord.Cells.size(); j++) {
-				if (orecord.Cells[j].status == CellStatus::MARKED) // marked to cluster 
-					orecord.Cells[j].status = CellStatus::CLUSTER_JOINED; // joined with cluster
+				if (orecord.Cells[j].status < 0) // marked to cluster 
+					orecord.Cells[j].status = 0; // joined with cluster
 			}
 			
 			tempClusters.push_back(newCluster);
@@ -270,7 +269,7 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		//	if (parts[i].statusID != 21 || abs(parts[i].typeID) > 10) // TODO: boolean method for this condition 
 		//		continue;
 // OBS: nie dochodzi do tej linijki ani razu
-printf ("xDebug cluster inside\n");
+//printf ("xDebug cluster inside\n");
 			PT = parts[i].pT();
 			ETA = parts[i].getEta(); 
 			PHI = parts[i].getPhi();
@@ -293,7 +292,7 @@ printf ("xDebug cluster inside\n");
 		// fill histograms
 // OBS: wszystkie ptrec sa rowne 0 dlatego histogramy puste!
 		if (PTREC != 0) {
-			printf ("xDEBUG %d -> %f\n", IEVENT, PTREC);
+//			printf ("xDEBUG %d -> %f\n", IEVENT, PTREC);
 			histoManager
 				->insert(idhist + 23, DETRMIN);
 			

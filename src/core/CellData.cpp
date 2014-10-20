@@ -6,7 +6,7 @@ using namespace std;
 
 CellData::CellData() :
 	cellID (-1),
-	status (UNKNOWN),
+	status (0),
 	hits (0),
 	eta (0.0),
 	phi (0.0),

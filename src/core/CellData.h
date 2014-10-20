@@ -8,14 +8,6 @@
 
 namespace AcerDet {
 	namespace core {
-		enum CellStatus {
-			UNKNOWN = 0,	/*!< undefined status */
-			CREATED, /*!< created and not computed cell */
-			MARKED, /*!< marked as joined with cluster but not permanently yet */
-			CLUSTER_JOINED, /*!< merked as joined with cluster */
-			REJECTED /*!< cluster indicator cell with not enough energy */
-		};
-
 		class CellData {
 		public:
 			/*
@@ -36,7 +28,7 @@ namespace AcerDet {
 			 * 4 - pT
 			 */
 			Int32_t cellID; /*!< unique cell id describing it's position in detector */
-			CellStatus status; /*!< cell status */
+			Int32_t status; /*!< cell status */
 			Int32_t hits; /*!< number of energy peeks contained by this cell */
 			Real64_t eta; /*!< eta */
 			Real64_t phi; /*!< phi */

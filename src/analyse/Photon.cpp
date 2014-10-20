@@ -261,10 +261,10 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 
 	// fill histograms
 	histoManager
-     	->insert(idhist+21, IPHO );
+     	->insert(idhist+21, IPHO, 1.0 );
 	
 	histoManager
-     	->insert(idhist+31, IPHOISO );
+     	->insert(idhist+31, IPHOISO, 1.0 );
 }
 
 void Photon::printResults() const {

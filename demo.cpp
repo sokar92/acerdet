@@ -91,6 +91,8 @@ int main( int argc, char **argv ) {
 		resetRecord(oRec);
 
 		GenEvent *hepmc = new GenEvent();
+		printf (" ---- PRINTING --- \n");
+		hepmc->print();
 		toHepMC.fill_next_event( event, hepmc );
 
 		acerDet.analyseRecord(
