@@ -77,7 +77,7 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 		const Particle& part = parts[i];
 
 		// pick only final particles
-		if (!part.isFinal() || !part.isStable())
+		if (!part.isFinal())// || !part.isStable())
 			continue;
 			
 		// analyse electrons

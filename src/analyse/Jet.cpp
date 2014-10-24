@@ -203,9 +203,10 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 
 		for (int j=0; j<parts.size(); ++j) {
 			const Particle& part = parts[j];
-			 
-			if (!part.isStable()) 
-				continue;
+
+// TODO: change to isFinal()			 
+//			if (!part.isStable()) 
+//				continue;
 			
 			PT = part.pT();
 			PZ = part.pZ();

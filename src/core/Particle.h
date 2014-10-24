@@ -89,7 +89,7 @@ namespace AcerDet {
 			/*
 			 * Check if particle is stable
 			 */
-			Bool_t isStable() const;
+			//Bool_t isStable() const;
 
 			/*
 			 * Check if particle is beam

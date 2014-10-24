@@ -75,7 +75,7 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
 //printf ("partMuon [%d]\n", i);
-		if (!part.status != PS_FINAL || !part.isStable()) 
+		if (!part.status != PS_FINAL)// || !part.isStable()) 
 			continue;
 
 		if (part.type == PT_MUON) {

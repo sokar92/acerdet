@@ -78,7 +78,7 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 		const Particle& part = parts[i];
 	
 		if (!part.isFinal() 
-		|| !part.isStable()
+		//|| !part.isStable()
 		|| part.pT() == 0) 
 			continue;
 		

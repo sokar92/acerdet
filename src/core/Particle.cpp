@@ -33,9 +33,9 @@ Int32_t Particle::daughtersCount() const {
 	return 0;
 }
 
-Bool_t Particle::isStable() const {
-	return 0 < statusID && statusID <= 10;
-}
+//Bool_t Particle::isStable() const {
+//	return 0 < statusID && statusID <= 10;
+//}
 
 Bool_t Particle::isBeam() const {
 	return status == PS_BEAM;
