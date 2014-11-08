@@ -80,20 +80,16 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			continue;
 
 		if (part.type == PT_MUON) {
-			Real64_t ETA, PHI, PT, DDR;
 
 			// analyse not decayed muons
 			Bool_t ISOL = true;
 			
-			PT = part.pT();
+			Real64_t PT = part.pT();
 			if (PT < PTMUMINT) 
 				continue;
-			
-			ETA = part.getEta(); 
-			if (abs(ETA) > ETAMAX) 
+			 
+			if (abs(part.getEta()) > ETAMAX) 
 				continue;  
-			
-			PHI = part.getPhi();
 
 			// apply smearing
 			if (KEYSME) {
@@ -109,15 +105,15 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			for (int j=0; j<orecord.Clusters.size(); ++j) {
 				const ClusterData& cluster = orecord.Clusters[j];
 				
-				DDR = sqrt( 
-					pow(ETA - cluster.eta_rec, 2.0) + 
-					pow(PHI - cluster.phi_rec, 2.0) 
+				Real64_t DDR = sqrt( 
+					pow(part.getEta() - cluster.eta_rec, 2.0) + 
+					pow(part.getPhi() - cluster.phi_rec, 2.0) 
 				);
 
-				if (abs(PHI - cluster.phi_rec) > PI)
+				if (abs(part.getPhi() - cluster.phi_rec) > PI)
 					DDR = sqrt( 
-						pow(ETA - cluster.eta_rec, 2.0) + 
-						pow(abs(PHI - cluster.phi_rec) - 2.0*PI, 2.0) 
+						pow(part.getEta() - cluster.eta_rec, 2.0) + 
+						pow(abs(part.getPhi() - cluster.phi_rec) - 2.0*PI, 2.0) 
 					);
 
 				if (DDR < RISOLJ) 
@@ -129,15 +125,15 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			for (int j=0; j<orecord.Cells.size(); ++j) {
 				const CellData& cell = orecord.Cells[j];
 				
-				DDR = sqrt(
-					pow(ETA - cell.eta, 2.0) +
-					pow(PHI - cell.phi, 2.0)
+				Real64_t DDR = sqrt(
+					pow(part.getEta() - cell.eta, 2.0) +
+					pow(part.getPhi() - cell.phi, 2.0)
 				);
 				
-				if (abs(PHI - cell.phi) > PI)
+				if (abs(part.getPhi() - cell.phi) > PI)
 					DDR = sqrt( 
-						pow(ETA - cell.eta, 2) + 
-						pow(abs(PHI - cell.phi) - 2*PI, 2) 
+						pow(part.getEta() - cell.eta, 2) + 
+						pow(abs(part.getPhi() - cell.phi) - 2*PI, 2) 
 					);
 				
 				if (DDR < RDEP) 
@@ -150,10 +146,14 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			PartData newParton;
 			newParton.status = part.statusID;
 			newParton.num = i;
-			newParton.motherStatus = parts[part.mother].statusID;
-			newParton.eta = ETA;
-			newParton.phi = PHI;
-			newParton.pT = PT;
+			if (part.hasMother()) {
+				newParton.motherStatus = parts[part.mother-1].statusID;
+			} else {
+				newParton.motherStatus = -1;
+			}
+			newParton.eta = part.getEta();
+			newParton.phi = part.getPhi();
+			newParton.pT  = PT;
 			
 			if (ISOL) {
 				// fill /ISOMUO/ with isolated muon
@@ -181,9 +181,7 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			continue;
 		
 		if (part.type == PT_MUON) {
-			Real64_t PT = part.pT();
-			Real64_t ETA = part.getEta(); 
-			Real64_t PHI = part.getPhi();
+ 
 			Real64_t ENER = 0.0;
 			Bool_t ISOL = true;
 
@@ -192,37 +190,37 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 				&& abs(parts[j].pdg_id) <= 21
 				&& i != j
 				&& !parts[j].isNeutrino()) 
-				{
-					Real64_t JPT = parts[j].pT(); 
-					Real64_t JETA = parts[j].getEta(); 
-					Real64_t JPHI = parts[j].getPhi();
-					
+				{  					
 					Real64_t DDR = sqrt(
-						pow(ETA - JETA, 2) + 
-						pow(JPHI - PHI, 2) 
+						pow(part.getEta() - parts[j].getEta(), 2) + 
+						pow(part.getPhi() - parts[j].getPhi(), 2) 
 					);
 					
-					if (abs(JPHI - PHI) > PI)
+					if (abs(part.getPhi() - parts[j].getPhi()) > PI)
 						DDR = sqrt(
-							pow(ETA - JETA, 2) + 
-							pow(abs(JPHI - PHI) - 2*PI, 2) 
+							pow(part.getEta() - parts[j].getEta(), 2) + 
+							pow(abs(part.getPhi() - parts[j].getPhi()) - 2*PI, 2) 
 						);
 
-					if (DDR < RISOLJ && JPT > ETCLU) 
+					if (DDR < RISOLJ
+					&& parts[j].pT() > ETCLU) 
 						ISOL = false;
 						
-					if (DDR < RDEP && JPT < ETCLU) 
-						ENER += JPT;
+					if (DDR < RDEP
+					&& parts[j].pT() < ETCLU) 
+						ENER += parts[j].pT();
 				}
 			}
 
 			if (ENER > EDMAX) 
 				ISOL = false;
 				
-			if (abs(ETA) < ETAMAX && PT > PTMUMIN) 
+			if (abs(part.getEta()) < ETAMAX
+			&& part.pT() > PTMUMIN) 
 				IMUO++;
 				
-			if (abs(ETA) < ETAMAX && PT > PTMUMIN && ISOL)
+			if (abs(part.getEta()) < ETAMAX
+			&& part.pT() > PTMUMIN && ISOL)
 				IMUOISO++;
 		}
 	}
