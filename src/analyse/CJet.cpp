@@ -72,6 +72,7 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	const vector<Particle>& parts = irecord.particles();
 	
 	// look for c-jets
+	Int32_t NJETC = 0;
 	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
 		
@@ -125,19 +126,20 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 					}
 				}
 
-				if (DR <= RJC) {
-					// labell  c-jet
+				// labell  c-jet
+				if (JETC >= 0 && DR <= RJC) {
 					// KJET(JETC,2) = 4							// JETC = indeks znalezionego jetu
 					// KJET(JETC,5) = I
-					// NJETC = NJETC + 1						// kolejny cjet znaleziony
+					orecord.Jets[JETC].type = C_JET;
+					NJETC++;
 				}
 			}
 		}
 	}
 
-	// store count in histogram TODO (replace NJETC when cJets was in output record)
-	// histoManager
-	//   ->insert(idhist+11, NJETC);
+	// store count in histogram
+	histoManager
+	  ->insert(idhist+11, NJETC, 1.0);
 	
 	// check partons
 	Int32_t IQUAC = 0, ICJET = 0;
@@ -209,7 +211,7 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			}
 		}
 
-		if (PTREC) {
+		if (PTREC != 0) {
 			histoManager
 				->insert(idhist + 23, DETRMIN, 1.0);
 			histoManager

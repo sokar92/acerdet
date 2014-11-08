@@ -72,6 +72,7 @@ void BJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	const vector<Particle>& parts = irecord.particles();
 	
 	// look for b-jets
+	Int32_t NJETB = 0;
 	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
 		
@@ -123,17 +124,20 @@ void BJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 					}
 				}
 
-				if (DR <= RJB) {
-					// label  b-jet
-					// KJET(JETB,2) = 5;
+				// label  b-jet
+				if (JETB >= 0 && DR <= RJB) {
+					// KJET(JETB,2) = 5; // typ = bjet
 					// KJET(JETB,5) = I;
-					// NJETB = NJETB + 1;
+					orecord.Jets[JETB].type = B_JET;
+					NJETB++;
 				}
 			}
 		}
 	}
 
-	// histo_bJets.insert(NJETB);
+	// histogram store
+	histoManager
+		->insert(idhist+11, NJETB, 1.0);
 	
 	// check partons
 	Int32_t IQUAB = 0, IBJET = 0;
