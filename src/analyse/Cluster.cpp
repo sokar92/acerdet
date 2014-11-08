@@ -79,8 +79,6 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 	
 	// Find initiator cell: the one with highest pT of not yet used ones.
 	Real64_t PTLRAT = 1.0 / pow(sinh(ETACLU), 2.0);
-	Real64_t ETA, PHI, PT;
-	Real64_t DPHIA, PHIC;
 
 	// temporary clusters container
 	vector<ClusterData> tempClusters;
@@ -126,8 +124,8 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 			if (cell.status == 0) 
 				continue;
 				
-			DPHIA = abs(cell.phi - orecord.Cells[ICMAX].phi); 
-			PHIC = cell.phi; 
+			Real64_t DPHIA = abs(cell.phi - orecord.Cells[ICMAX].phi); 
+			Real64_t PHIC = cell.phi; 
 
 			if (DPHIA > PI) 
 				PHIC += sign(2.0 * PI, orecord.Cells[ICMAX].phi);
@@ -193,12 +191,8 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 			if (part.status != PS_FINAL)
 				continue;
 			
-			Real64_t DETPHI = 0.0;
-			Real64_t ETA, PHI, PT, PZ;
-			
-			PT = part.pT();
-			PZ = part.pZ();
-			
+			Real64_t PT = part.pT();
+			Real64_t PZ = part.pZ();
 			if (PT * PT <= PTLRAT * PZ * PZ) 
 				continue;
 
@@ -207,6 +201,7 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 			|| part.pdg_id == KFINVS)
 				continue;
 
+			Real64_t DETPHI = 0.0;
 			if (KEYFLD && partProvider.getChargeType(part.pdg_id) != 0) {
 				if (PT < PTMIN)
 					continue;
@@ -215,20 +210,20 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 				DETPHI = CHRG * part.foldPhi();
 			}
 			
-			PT = part.pT();
-			ETA = part.getEta();
-			PHI = saturatePi(part.getPhi() + DETPHI);
-			DPHIA = abs(cluster.phi - PHI);
-
+			Real64_t PHI = saturatePi(part.getPhi() + DETPHI);
+			Real64_t DPHIA = abs(cluster.phi - PHI);
 			if (DPHIA > PI) 
-				DPHIA -= 2 * PI; // dlaczego nie robic tu saturate wszystkie roznice wyjda dodatnie?
+				DPHIA -= 2 * PI;
 
-			if (abs(cluster.eta) < CALOTH && pow(cluster.eta - ETA, 2) + pow(DPHIA,2) > pow(RCONE,2)) continue;
-			if (abs(cluster.eta) > CALOTH && pow(cluster.eta - ETA, 2) + pow(DPHIA,2) > pow(RCONE,2)) continue;
+			if (abs(cluster.eta) < CALOTH
+			&& pow(cluster.eta - part.getEta(), 2) + pow(DPHIA, 2) > pow(RCONE, 2)) continue;
+			
+			if (abs(cluster.eta) > CALOTH
+			&& pow(cluster.eta - part.getEta(), 2) + pow(DPHIA, 2) > pow(RCONE, 2)) continue;
 
-			PTREC += PT;
-			ETAREC += ETA * PT;
-			PHIREC += PHI * PT;
+			PTREC += part.pT();
+			ETAREC += part.getEta() * part.pT();
+			PHIREC += PHI * part.pT();
 		}
 
 		ETAREC /= PTREC;
@@ -255,7 +250,8 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 
 	for (int ICLU=0; ICLU<orecord.Clusters.size(); ICLU++) {
 		const ClusterData& cluster = orecord.Clusters[ICLU];
-		Real64_t PTREC = 0.0, DETR;
+		
+		Real64_t PTREC = 0.0;
 		Real64_t DETRMIN = RCONE;
 
 		// magic: No, here we want to match to cluster only particles outging
@@ -268,41 +264,27 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 			if (parts[i].statusID != 21 || abs(parts[i].pdg_id) > 10) // TODO: boolean method for this condition 
 				continue;
 // OBS: nie dochodzi do tej linijki ani razu
-//printf ("xDebug cluster inside\n");
-			PT = parts[i].pT();
-			ETA = parts[i].getEta(); 
-			PHI = parts[i].getPhi();
-	// to samo ? czemu nie saturate		
-			DPHIA = abs(cluster.phi_rec - PHI); 
+			Real64_t DPHIA = abs(cluster.phi_rec - parts[i].getPhi()); 
 			if (DPHIA > PI) 
-				DPHIA = DPHIA - 2 * PI;
+				DPHIA -= 2 * PI;
 			
-			DETR = sqrt( 
-				pow((ETA - cluster.eta_rec), 2) + 
+			Real64_t DETR = sqrt( 
+				pow(parts[i].getEta() - cluster.eta_rec, 2) + 
 				pow(DPHIA, 2)
 			);
 			
 			if (DETR < DETRMIN) {
-				PTREC = PT;
+				PTREC = parts[i].pT();
 				DETRMIN = DETR;
 			}
 		}
 
 		// fill histograms
 		if (PTREC != 0) {
-//			printf ("xDEBUG %d -> %f\n", IEVENT, PTREC);
 			histoManager
 				->insert(idhist + 23, DETRMIN);
-			
-//			if (DETRMIN < 0.0 || 0.5 < DETRMIN)
-//				printf ("cluster_DETRMIN %f out of range [%f, %f]\n", DETRMIN, 0.0, 0.5); 
-			
 			histoManager
 				->insert(idhist + 24, cluster.pT / PTREC);
-			
-//			double val = cluster.pT / PTREC;
-//			if (val < 0.0 || 2.0 < val)
-//				printf ("cluster_PTREC %f / %f = %f out of range [%f, %f]\n", cluster.pT, PTREC, val, 0.0, 2.0);  
 		}
 	}
 }
