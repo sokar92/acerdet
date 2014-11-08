@@ -85,7 +85,6 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 		const Particle& part = parts[i];
 
 		if (part.status != PS_FINAL)
-//		if (!part.isFinal()) 
 			continue;
 			
 		Real64_t DETPHI = 0.0;
@@ -98,7 +97,7 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 		if (PT * PT <= PTLRAT * PZ * PZ)
 			continue;
 
-		if (part.isNeutrino() // part.type == PT_UNKNOWN (bez sensu ta wartosc)
+		if (part.isNeutrino()
 		|| part.type == PT_MUON
 		|| part.pdg_id == KFINVS)
 			continue;

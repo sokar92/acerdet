@@ -33,32 +33,8 @@ Int32_t Particle::daughtersCount() const {
 	return 0;
 }
 
-//Bool_t Particle::isStable() const {
-//	return 0 < statusID && statusID <= 10;
-//}
-
 Bool_t Particle::isBeam() const {
 	return status == PS_BEAM;
-}
-
-//Bool_t Particle::isDecayed() const {
-	//return status == PS_DECAYED;
-//	return status < 0;
-//}
-
-//Bool_t Particle::isFinal() const {
-	// OLD : return statusID > 31;
-//	return status == 1; // status HepMC = 1
-//}
-
-// to delete, nie mamy dostepu do tablicy z poziomu tej klasy
-Bool_t Particle::isHardProcess() const {
-	// OLD : return abs(statusID) < 29;
-	return true && ( //isFinal() && (
-			true // mother.type == PT_BOSON_Z
-			|| true // mother.type == PT_BOSON_W
-			|| true // mother.type == PT_BOSON_H
-		); 
 }
 
 /*

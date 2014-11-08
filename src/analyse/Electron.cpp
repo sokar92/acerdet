@@ -3,6 +3,7 @@
 using namespace AcerDet::analyse;
 
 #include "../core/Smearing.h"
+#include "../core/Functions.h"
 using namespace AcerDet::core;
 
 Electron::Electron( const Configuration& config, IHistogramManager* histoMng ) :
@@ -77,7 +78,7 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 		const Particle& part = parts[i];
 
 		// pick only final particles
-		if (part.status != PS_FINAL)// || !part.isStable())
+		if (part.status != PS_FINAL)
 			continue;
 			
 		// analyse electrons
@@ -205,9 +206,9 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 	Int32_t IELE = 0, IELEISO = 0;
 	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
-// to do
+
 		// pick only particles from hard process
-		if (!part.isHardProcess())
+		if (!isHardProcess(parts, i))
 			continue;
 		
 		if (part.type == PT_ELECTRON) {
@@ -216,9 +217,9 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 			PHI = part.getPhi();
 			ENER = 0.0;
 			Bool_t ISOL = true;
-// to do
+
 			for (int j=0; j<parts.size(); ++j) {
-				if (parts[j].isHardProcess()
+				if (isHardProcess(parts, j)
 				&& abs(parts[j].pdg_id) <= 21
 				&& i != j
 				&& !parts[j].isNeutrino()) 

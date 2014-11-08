@@ -3,6 +3,7 @@
 using namespace AcerDet::analyse;
 
 #include "../core/Smearing.h"
+#include "../core/Functions.h"
 using namespace AcerDet::core;
 
 Muon::Muon( const Configuration& config, IHistogramManager* histoMng ) :
@@ -74,12 +75,11 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	// look for isolated muons, sort clusters common
 	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
-//printf ("partMuon [%d]\n", i);
-		if (part.status != PS_FINAL)// || !part.isStable()) 
+
+		if (part.status != PS_FINAL)
 			continue;
 
 		if (part.type == PT_MUON) {
-// printf ("Muon [%d]\n", i);
 			Real64_t ETA, PHI, PT, DDR;
 
 			// analyse not decayed muons
@@ -176,8 +176,8 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	Int32_t IMUO = 0, IMUOISO = 0;
 	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
-// uzyj metody globalnej		
-		if (!part.isHardProcess()) // TO CHECK!!
+	
+		if (!isHardProcess(parts, i))
 			continue;
 		
 		if (part.type == PT_MUON) {
@@ -186,9 +186,9 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			Real64_t PHI = part.getPhi();
 			Real64_t ENER = 0.0;
 			Bool_t ISOL = true;
-// to do
+
 			for (int j=0; j<parts.size(); ++j) {
-				if (parts[j].isHardProcess()
+				if (isHardProcess(parts, j)
 				&& abs(parts[j].pdg_id) <= 21
 				&& i != j
 				&& !parts[j].isNeutrino()) 

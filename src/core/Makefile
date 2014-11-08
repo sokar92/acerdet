@@ -7,7 +7,8 @@ OBJECTS= Smearing.o \
 	JetData.o \
 	PartData.o \
 	Particle.o \
-	ParticleDataProvider.o
+	ParticleDataProvider.o \
+	Functions.o
 
 all: $(OBJECTS)
 

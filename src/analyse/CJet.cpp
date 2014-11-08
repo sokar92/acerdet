@@ -1,7 +1,9 @@
 #include "CJet.h"
 #include <cstdio>
-
 using namespace AcerDet::analyse;
+
+#include "../core/Functions.h"
+using namespace AcerDet::core;
 
 CJet::CJet( const Configuration& config, IHistogramManager *histoMng ) :
 	ETJET	( config.Jet.MinEnergy ),
@@ -59,11 +61,12 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			->registerHistogram(idhist+24, "CJet: pTcjet/pTcquark", 50, 0.0,  2.0);
 	}
 
-	// variables
-	Real64_t PT, PHI, ETA, DR, DDR, DETR, DPHIA, DETRMIN, PTREC;
-
+	// do not use this algorithm
 	if (!KEYBCL)
 		return;
+
+	// variables
+	Real64_t PT, PHI, ETA, DR, DDR, DETR, DPHIA, DETRMIN, PTREC;
 
 	// new event to compute
 	IEVENT++;
@@ -75,7 +78,8 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
 		
-		if (part.type == PT_CJET && part.status == PS_FINAL) {
+		if (part.status == PS_FINAL 
+		&& part.type == PT_CJET) {
 			// if there is a c-quark found before hadronization
 			// if there are still jets
 			if (!orecord.Jets.empty()) {
@@ -85,7 +89,7 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 				// and this c-quark is the last one in the FSR cascade
 				if (part.hasDaughter()) {
 					for (int j=part.daughters.first; j<=part.daughters.second; ++j) {
-						if (parts[j].type == PT_CJET) 
+						if (parts[j-1].type == PT_CJET) 
 							CJET = false;
 					}
 				}
@@ -146,7 +150,8 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	for (int i=6; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
 		
-		if (part.isHardProcess() && part.type == PT_CJET) {
+		if (isHardProcess(parts, i) 
+		&& part.type == PT_CJET) {
 			PT = part.pT();
 			ETA = part.getEta(); 
 			PHI = part.getPhi();
@@ -191,7 +196,8 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			for (int j=6; j<parts.size(); ++j) {
 				const Particle& part = parts[j];
 				
-				if (part.isHardProcess() || part.type != PT_CJET) 
+				if (isHardProcess(parts, j) 
+				|| part.type != PT_CJET) 
 					continue;
 				
 				PT = part.pT();

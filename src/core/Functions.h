@@ -5,7 +5,9 @@
 
 #include "Typedefs.h"
 #include "Consts.h"
+#include "Particle.h"
 
+#include <vector>
 #include <algorithm>
 using namespace std;
 
@@ -82,6 +84,12 @@ namespace AcerDet {
 			
 			return radius(x,y);
 		}
+		
+		/*
+		 * Check if given particle is a hard process praticle
+		 * Returns true if particle is final and has mother from set {23,24,25}
+		 */
+		Bool_t isHardProcess(const vector<Particle>& parts, int i);
 	}
 }
 

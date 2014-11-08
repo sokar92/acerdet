@@ -95,27 +95,14 @@ namespace AcerDet {
 			Int32_t daughtersCount() const;
 
 			/*
-			 * Check if particle is stable
-			 */
-			//Bool_t isStable() const;
-
-			/*
 			 * Check if particle is beam
 			 */
 			Bool_t isBeam() const;
-
-			/*
-			 * Check if particle has decayed status
-			 */
-			//Bool_t isDecayed() const;
 			
 			/*
 			 * Type Check
 			 */
 			Bool_t isNeutrino() const;
-			
-			//Bool_t isFinal() const;
-			Bool_t isHardProcess() const;
 
 			/*
 			* Print basic informations about particle

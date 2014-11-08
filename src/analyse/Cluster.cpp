@@ -202,7 +202,7 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 			if (PT * PT <= PTLRAT * PZ * PZ) 
 				continue;
 
-			if (part.isNeutrino() // part.type == PT_UNKNOWN
+			if (part.isNeutrino()
 			|| part.type == PT_MUON
 			|| part.pdg_id == KFINVS)
 				continue;
@@ -265,8 +265,8 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
         // ERW: somehow coded into new flag PT_OutHardProcess
 		for (int i=6; i<parts.size(); i++) { 
 // OBS: 21 smiedzi!  jaki tu warunek
-		//	if (parts[i].statusID != 21 || abs(parts[i].typeID) > 10) // TODO: boolean method for this condition 
-		//		continue;
+			if (parts[i].statusID != 21 || abs(parts[i].pdg_id) > 10) // TODO: boolean method for this condition 
+				continue;
 // OBS: nie dochodzi do tej linijki ani razu
 //printf ("xDebug cluster inside\n");
 			PT = parts[i].pT();
@@ -289,7 +289,6 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		}
 
 		// fill histograms
-// OBS: wszystkie ptrec sa rowne 0 dlatego histogramy puste!
 		if (PTREC != 0) {
 //			printf ("xDEBUG %d -> %f\n", IEVENT, PTREC);
 			histoManager
