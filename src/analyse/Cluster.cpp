@@ -201,18 +201,17 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 			
 			if (PT * PT <= PTLRAT * PZ * PZ) 
 				continue;
- 
-			if (part.type == PT_UNKNOWN
-			|| part.isNeutrino()
+
+			if (part.isNeutrino() // part.type == PT_UNKNOWN
 			|| part.type == PT_MUON
-			|| part.type == KFINVS)
+			|| part.pdg_id == KFINVS)
 				continue;
 
-			if (KEYFLD && partProvider.getChargeType(part.typeID) != 0) {
+			if (KEYFLD && partProvider.getChargeType(part.pdg_id) != 0) {
 				if (PT < PTMIN)
 					continue;
 
-				Real64_t CHRG = partProvider.getCharge(part.typeID) / 3.0;
+				Real64_t CHRG = partProvider.getCharge(part.pdg_id) / 3.0;
 				DETPHI = CHRG * part.foldPhi();
 			}
 			

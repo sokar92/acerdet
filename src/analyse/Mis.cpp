@@ -177,9 +177,9 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	Real64_t PXXNUES = 0.0;
 	Real64_t PYYNUES = 0.0;
 	for (int i=0; i<parts.size(); ++i) {
-		if (!parts[i].isFinal())
+		if (parts[i].status != PS_FINAL)
 			continue;
-		if (parts[i].isNeutrino() || abs(parts[i].typeID) == KFINVS) {
+		if (parts[i].isNeutrino() || abs(parts[i].pdg_id) == KFINVS) {
 			PXXNUES += parts[i].pX();
 			PYYNUES += parts[i].pY();
 		}

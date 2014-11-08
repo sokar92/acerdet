@@ -75,11 +75,11 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
 //printf ("partMuon [%d]\n", i);
-		if (!part.status != PS_FINAL)// || !part.isStable()) 
+		if (part.status != PS_FINAL)// || !part.isStable()) 
 			continue;
 
 		if (part.type == PT_MUON) {
-printf ("Muon [%d]\n", i);
+// printf ("Muon [%d]\n", i);
 			Real64_t ETA, PHI, PT, DDR;
 
 			// analyse not decayed muons
@@ -176,7 +176,7 @@ printf ("Muon [%d]\n", i);
 	Int32_t IMUO = 0, IMUOISO = 0;
 	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
-		
+// uzyj metody globalnej		
 		if (!part.isHardProcess()) // TO CHECK!!
 			continue;
 		
@@ -186,10 +186,10 @@ printf ("Muon [%d]\n", i);
 			Real64_t PHI = part.getPhi();
 			Real64_t ENER = 0.0;
 			Bool_t ISOL = true;
-			
+// to do
 			for (int j=0; j<parts.size(); ++j) {
 				if (parts[j].isHardProcess()
-				&& abs(parts[j].typeID) <= 21
+				&& abs(parts[j].pdg_id) <= 21
 				&& i != j
 				&& !parts[j].isNeutrino()) 
 				{

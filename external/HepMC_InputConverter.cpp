@@ -17,6 +17,9 @@ ParticleType HepMC_InputConverter::getParticleType(int code) {
 	if (code == -15 || code == 15) return PT_TAU;
 	if (code == -16 || code == 16) return PT_NEUTRINO_TAU;
 	if (code == -22 || code == 22) return PT_PHOTON;
+	if (code == 23) return PT_BOSON_Z;
+	if (code == 24) return PT_BOSON_W;
+	if (code == 25) return PT_BOSON_H;
 	
 	return PT_UNKNOWN;
 }
@@ -82,7 +85,7 @@ InputRecord HepMC_InputConverter::convert( const GenEvent& event ) {
 		
 		// type (named & id)
 		part.type = getParticleType(gpart->pdg_id());
-		part.typeID = gpart->pdg_id();
+		part.pdg_id = gpart->pdg_id();
 		
 		// momentum as Vector4
 		part.momentum = vec4(gpart->momentum());
@@ -93,7 +96,7 @@ InputRecord HepMC_InputConverter::convert( const GenEvent& event ) {
 		}
 		
 		parts.push_back(part);
-		cout << part; // to delete in release!
+		//cout << part; // to delete in release!
 	}
 	
 	return InputRecord(parts);

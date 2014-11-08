@@ -69,7 +69,7 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
 		
-		if (part.isFinal() && part.type == PT_TAU) {
+		if (part.status == PS_FINAL && part.type == PT_TAU) {
 			// if there are still jets
 			if (!orecord.Jets.empty()) {
 				Bool_t TAUJET = true;
@@ -80,10 +80,10 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 					continue;
 				
 				for (int j=part.daughters.first; j<=part.daughters.second; ++j) {
-					if (abs(parts[j].typeID) == 11 || abs(parts[j].typeID) == 13)
+					if (parts[j].type == PT_ELECTRON
+					|| parts[j].type == PT_MUON)
 						TAUJET = false;
-					// TODO uzyj enumow do typow
-					if (abs(parts[j].typeID) == 16)
+					if (parts[j].type == PT_NEUTRINO_TAU)
 						IN = j;
 				}
 				

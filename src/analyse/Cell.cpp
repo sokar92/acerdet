@@ -84,7 +84,8 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
 
-		if (part.status != PS_FINAL) 
+		if (part.status != PS_FINAL)
+//		if (!part.isFinal()) 
 			continue;
 			
 		Real64_t DETPHI = 0.0;
@@ -93,20 +94,20 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 		PT = part.pT();
 		PZ = part.pZ();
 		
+		// pt^2 <= coef * pz^2
 		if (PT * PT <= PTLRAT * PZ * PZ)
 			continue;
-		
-		if (part.type == PT_UNKNOWN
-		|| part.isNeutrino()
+
+		if (part.isNeutrino() // part.type == PT_UNKNOWN (bez sensu ta wartosc)
 		|| part.type == PT_MUON
-		|| part.type == KFINVS)
+		|| part.pdg_id == KFINVS)
 			continue;
 
-		if (KEYFLD && partProvider.getChargeType(part.typeID) != 0) {
+		if (KEYFLD && partProvider.getChargeType(part.pdg_id) != 0) {
 			if (part.pT() < PTMIN)
 				continue;
 				
-			Real64_t CHRG = partProvider.getCharge(part.typeID) / 3.0;
+			Real64_t CHRG = partProvider.getCharge(part.pdg_id) / 3.0;
 			DETPHI = CHRG * part.foldPhi();
 		}
 		

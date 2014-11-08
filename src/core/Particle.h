@@ -32,19 +32,27 @@ namespace AcerDet {
 		  Type of particle - self descriptive
 		*/
 		enum ParticleType {
-			PT_UNKNOWN = 0, /*!< detailed description  */
-			PT_JET,	/*!< detailed description  */			//
-			PT_BJET, /*!< detailed description  */			// 5
-			PT_CJET, /*!< detailed description  */			// 4
-			PT_CELL, /*!< detailed description  */			//
-			PT_CLUSTER, /*!< detailed description  */		//
-			PT_MUON, /*!< detailed description  */			// 13
-			PT_ELECTRON, /*!< detailed description  */		// 11
-			PT_PHOTON, /*!< detailed description  */		// 22 (gamma)
-			PT_TAU,	 /*!< detailed description  */			// 15
-			PT_NEUTRINO_ELE, /*!< detailed description  */	// 12
-			PT_NEUTRINO_MUO, /*!< detailed description  */	// 14
-			PT_NEUTRINO_TAU /*!< detailed description  */	// 16
+			PT_UNKNOWN = 0,	/*!< detailed description  */
+			
+			PT_JET,			/*!< detailed description  */
+			PT_BJET,		/*!< detailed description  */	// 5
+			PT_CJET,		/*!< detailed description  */	// 4
+			
+			PT_CELL,		/*!< detailed description  */
+			PT_CLUSTER,		/*!< detailed description  */
+			
+			PT_MUON,		/*!< muon */					// 13
+			PT_ELECTRON,	/*!< electron/positron e-/e+ */	// 11
+			PT_PHOTON,		/*!< gamma */					// 22 (gamma)
+			PT_TAU,			/*!< tau */						// 15
+			
+			PT_NEUTRINO_ELE, /*!< electron neutrino */		// 12
+			PT_NEUTRINO_MUO, /*!< muon neutrino */			// 14
+			PT_NEUTRINO_TAU, /*!< tau neutrion */			// 16
+			
+			PT_BOSON_Z, /*!< Z0 boson */					// 23
+			PT_BOSON_W, /*!< W+ boson */					// 24
+			PT_BOSON_H  /*!< Higgs boson */					// 25
 		};
 		
 		/*
@@ -52,18 +60,18 @@ namespace AcerDet {
 		 */
 		class Particle {
 		public:
-			ParticleStatus status; /*!< detailed description  */
-			Int32_t statusID; /*!< detailed description  */
+			ParticleStatus status; /*!< particle status converted to enum */
+			Int32_t statusID; /*!< particle status */
 
-			ParticleType type; /*!< detailed description  */
-			Int32_t typeID; /*!< detailed description  */
+			ParticleType type; /*!< pdg_id converted to enum */
+			Int32_t pdg_id; /*!< pdg_id */
 			
-			Vector4f momentum; /*!< detailed description  */
-			Vector4f production; /*!< detailed description  */
+			Vector4f momentum; /*!< momentum */
+			Vector4f production; /*!< production vertex if exists */
 
-			Int32_t barcode; /*!< detailed description  */
-			Int32_t mother; /*!< detailed description  */
-			pair<Int32_t,Int32_t> daughters; /*!< detailed description  */
+			Int32_t barcode; /*!< particle barcode (id in sequence [1...n]) */
+			Int32_t mother; /*!< mother barcode if exists, -1 otherwise */
+			pair<Int32_t,Int32_t> daughters; /*!< pair of daughter barcodes, <-1,-1> otherwise */
 
 			/*
 			 * Default ctor
@@ -99,14 +107,14 @@ namespace AcerDet {
 			/*
 			 * Check if particle has decayed status
 			 */
-			Bool_t isDecayed() const;
+			//Bool_t isDecayed() const;
 			
 			/*
 			 * Type Check
 			 */
 			Bool_t isNeutrino() const;
 			
-			Bool_t isFinal() const;
+			//Bool_t isFinal() const;
 			Bool_t isHardProcess() const;
 
 			/*
@@ -115,7 +123,7 @@ namespace AcerDet {
 			friend ostream& operator << (ostream& str, const Particle& p) {
 				str << "Particle:" << endl;
 				str << "\tBarcode: " << p.barcode << endl;
-				str << "\tType: " << p.getTypeName() << "(" << p.typeID << ")" << endl;
+				str << "\tType: " << p.getTypeName() << "(" << p.pdg_id << ")" << endl;
 				str << "\tStatus: " << p.getStatusName() << "(" << p.statusID << ")" << endl;
 				str << "\tMomentum (px,py,pz,e) = " << p.momentum << endl;
 				str << "\tProduction (x,y,z,t) = " << p.production << endl;

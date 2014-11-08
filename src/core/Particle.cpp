@@ -5,14 +5,14 @@ using namespace AcerDet::core;
 #define ParticleNull (-1)
 
 Particle::Particle() : 
-	status(PS_NULL), 
-	statusID(-1),
-	type(PT_UNKNOWN),
-	typeID(0),
-	momentum(),
-	production(),
-	barcode(-1), mother(-1), 
-	daughters(make_pair(-1,-1)) 
+	status (PS_NULL), 
+	statusID (-1),
+	type (PT_UNKNOWN),
+	pdg_id (0),
+	momentum (),
+	production (),
+	barcode (-1), mother (-1), 
+	daughters (make_pair(-1,-1)) 
 {}
 
 /*
@@ -41,24 +41,33 @@ Bool_t Particle::isBeam() const {
 	return status == PS_BEAM;
 }
 
-Bool_t Particle::isDecayed() const {
+//Bool_t Particle::isDecayed() const {
 	//return status == PS_DECAYED;
-	return status < 0;
-}
+//	return status < 0;
+//}
 
-Bool_t Particle::isFinal() const {
-	return statusID > 31;
-}
+//Bool_t Particle::isFinal() const {
+	// OLD : return statusID > 31;
+//	return status == 1; // status HepMC = 1
+//}
 
+// to delete, nie mamy dostepu do tablicy z poziomu tej klasy
 Bool_t Particle::isHardProcess() const {
-	return abs(statusID) < 29; // dodac czy matka tez
+	// OLD : return abs(statusID) < 29;
+	return true && ( //isFinal() && (
+			true // mother.type == PT_BOSON_Z
+			|| true // mother.type == PT_BOSON_W
+			|| true // mother.type == PT_BOSON_H
+		); 
 }
 
 /*
  * Type Check
  */
 Bool_t Particle::isNeutrino() const {
-	return type == PT_NEUTRINO_ELE || type == PT_NEUTRINO_MUO || type == PT_NEUTRINO_TAU;
+	return type == PT_NEUTRINO_ELE
+		|| type == PT_NEUTRINO_MUO
+		|| type == PT_NEUTRINO_TAU;
 }
 
 /*

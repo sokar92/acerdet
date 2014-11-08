@@ -77,8 +77,7 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
 	
-		if (!part.isFinal() 
-		//|| !part.isStable()
+		if (part.status != PS_FINAL //|| !part.isStable()
 		|| part.pT() == 0) 
 			continue;
 		
@@ -208,7 +207,8 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 	Int32_t IPHO = 0, IPHOISO = 0;
 	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
-		
+		// uzyj metody globalnej
+// to do
 		if (!part.isHardProcess())
 			continue;
 		
@@ -218,10 +218,10 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 			PHI = part.getPhi();
 			ENER = 0.0;
 			Bool_t ISOL = true;
-			
+// to do			
 			for (int j=0; j<parts.size(); ++j) {
 				if (parts[j].isHardProcess()
-				&& abs(parts[j].typeID) <= 21
+				&& abs(parts[j].pdg_id) <= 21
 				&& i != j
 				&& !parts[j].isNeutrino()) 
 				{

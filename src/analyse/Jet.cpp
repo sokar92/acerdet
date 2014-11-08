@@ -220,12 +220,12 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 				continue;
 
 			Real64_t DETPHI = 0.0;
-			if (KEYFLD && partProvider.getChargeType(part.typeID) != 0) {
+			if (KEYFLD && partProvider.getChargeType(part.pdg_id) != 0) {
 				PT = part.pT();
 				if (PT < PTMIN) 
 					continue;
 
-				CHRG = partProvider.getCharge(part.typeID) / 3.0;
+				CHRG = partProvider.getCharge(part.pdg_id) / 3.0;
 				DETPHI = CHRG * part.foldPhi();
 			}
 
@@ -273,7 +273,7 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 		for (int j=6; j<parts.size(); ++j) {
 			const Particle& part = parts[j];
 			 
-			if (part.statusID != 21 || abs(part.typeID) > 10) 
+			if (part.statusID != 21 || abs(part.pdg_id) > 10) 
 				continue;
 
 			PT = part.pT();
