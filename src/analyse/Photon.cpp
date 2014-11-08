@@ -64,9 +64,6 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 		histoManager
 			->registerHistogram(idhist+31, "Photon: photon multiplicity HARD+ISOL", 10, 0.0, 10.0);
 	}
-
-	// variables
-	Real64_t PT, ETA, PHI, ENER, JPT, JETA, JPHI, DDR, PTCRU, ENE, EDEP;
 		
 	// new event to compute
 	IEVENT++;
@@ -84,43 +81,40 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 		
 		// analyse photons
 		if (part.type == PT_PHOTON) {
+
 			Bool_t ISOL = true;
-			Int32_t LCLU = -1;
-			
-			PT = part.pT();
-			ETA = part.getEta();
-			PHI = part.getPhi();
-			PTCRU = PT;
 			
 			// apply smearing
+			Real64_t PT = part.pT();
 			if (KEYSME) {
-				ENE = parts[i].e();
-				if (ENE <= 0.0) 
+				if (parts[i].e() <= 0.0) 
 					continue;
 						
 				Particle pPho = part;
-				pPho.momentum *= (1.0 + Smearing::forPhoton(ENE));
+				pPho.momentum *= (1.0 + Smearing::forPhoton(parts[i].e()));
 				PT = pPho.pT();
-				ENE = pPho.e();
 			}
 
-			if (PT < PTLMIN || abs(ETA) > ETAMAX) 
+			if (PT < PTLMIN
+			|| abs(part.getEta()) > ETAMAX) 
 				continue;
 
 			// mark photon-cluster
 			Real64_t DR = 100.0;
+			Int32_t LCLU = -1;
+
 			for (int j=0; j<orecord.Clusters.size(); ++j) {
 				const ClusterData& cluster = orecord.Clusters[j];
 				
-				DDR = sqrt(
-					pow(ETA - cluster.eta_rec, 2) +
-					pow(PHI - cluster.phi_rec, 2)
+				Real64_t DDR = sqrt(
+					pow(part.getEta() - cluster.eta_rec, 2) +
+					pow(part.getPhi() - cluster.phi_rec, 2)
 				);
 				
-				if (abs(PHI - cluster.phi_rec) > PI)
+				if (abs(part.getPhi() - cluster.phi_rec) > PI)
 					DDR = sqrt(
-						pow(ETA - cluster.eta_rec, 2) + 
-						pow(abs(PHI - cluster.phi_rec) - 2*PI, 2)
+						pow(part.getEta() - cluster.eta_rec, 2) + 
+						pow(abs(part.getPhi() - cluster.phi_rec) - 2*PI, 2)
 					);
 					
 				if (DDR < DR) {
@@ -134,20 +128,19 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 				
 			// check if photon  isolated from clusters
 			for (int j=0; j<orecord.Clusters.size(); ++j) {
-				if (j == LCLU) {
-					DDR = 100.0;
-				} else {
+				Real64_t DDR = 100.0;
+				if (j != LCLU) {
 					const ClusterData& cluster = orecord.Clusters[j];
 					
 					DDR = sqrt(
-						pow(ETA - cluster.eta_rec, 2) + 
-						pow(PHI - cluster.phi_rec, 2)
+						pow(part.getEta() - cluster.eta_rec, 2) + 
+						pow(part.getPhi() - cluster.phi_rec, 2)
 					);
 					
-					if (abs(PHI - cluster.phi_rec) > PI)
+					if (abs(part.getPhi() - cluster.phi_rec) > PI)
 						DDR = sqrt(
-							pow(ETA - cluster.eta_rec, 2) + 
-							pow(abs(PHI - cluster.phi_rec) - 2*PI, 2)
+							pow(part.getEta() - cluster.eta_rec, 2) + 
+							pow(abs(part.getPhi() - cluster.phi_rec) - 2*PI, 2)
 						);
 				}
 
@@ -160,15 +153,15 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 			for (int j=0; j<orecord.Cells.size(); ++j) {
 				const CellData& cell = orecord.Cells[j];
 				
-				DDR = sqrt(
-					pow(ETA - cell.eta, 2) + 
-					pow(PHI - cell.phi, 2)
+				Real64_t DDR = sqrt(
+					pow(part.getEta() - cell.eta, 2) + 
+					pow(part.getPhi() - cell.phi, 2)
 				);
 				
-				if (abs(PHI - cell.phi) > PI)
+				if (abs(part.getPhi() - cell.phi) > PI)
 					DDR = sqrt(
-						pow(ETA - cell.eta, 2) + 
-						pow(abs(PHI - cell.phi) - 2*PI, 2)
+						pow(part.getEta() - cell.eta, 2) + 
+						pow(abs(part.getPhi() - cell.phi) - 2*PI, 2)
 					);
 					
 				if (DDR < RDEP) 
@@ -187,10 +180,14 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 				PartData newParton;
 				newParton.status = part.statusID;
 				newParton.num = i;
-				newParton.motherStatus = parts[part.mother].statusID;
-				newParton.eta = ETA;
-				newParton.phi = PHI;
-				newParton.pT = PT;
+				if (part.hasMother()) {
+					newParton.motherStatus = parts[part.mother-1].statusID;
+				} else {
+					newParton.motherStatus = -1;
+				}
+				newParton.eta = part.getEta();
+				newParton.phi = part.getPhi();
+				newParton.pT  = PT;
 				
 				orecord.Electrons.push_back( newParton );
 			}
@@ -212,11 +209,9 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 		if (!isHardProcess(parts, i))
 			continue;
 		
-		if (part.type == PT_PHOTON) {
-			PT = part.pT(); 
-			ETA = part.getEta();
-			PHI = part.getPhi();
-			ENER = 0.0;
+		if (part.type == PT_PHOTON) { 
+			
+			Real64_t ENER = 0.0;
 			Bool_t ISOL = true;
 
 			for (int j=0; j<parts.size(); ++j) {
@@ -224,37 +219,37 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 				&& abs(parts[j].pdg_id) <= 21
 				&& i != j
 				&& !parts[j].isNeutrino()) 
-				{
-					JPT = parts[j].pT(); 
-					JETA = parts[j].getEta();
-					JPHI = parts[j].getPhi();
-					
-					DDR = sqrt(
-						pow(ETA - JETA, 2) + 
-						pow(JPHI - PHI, 2)
+				{ 
+					Real64_t DDR = sqrt(
+						pow(part.getEta() - parts[j].getEta(), 2) + 
+						pow(part.getPhi() - parts[j].getPhi(), 2)
 					);
 					
-					if (abs(JPHI - PHI) > PI)
+					if (abs(part.getPhi() - parts[j].getPhi()) > PI)
 						DDR = sqrt(
-							pow(ETA - JETA, 2) + 
-							pow(abs(JPHI - PHI) - 2*PI, 2)
+							pow(part.getEta() - parts[j].getEta(), 2) + 
+							pow(abs(part.getPhi() - parts[j].getPhi()) - 2*PI, 2)
 						);
 
-					if (DDR < RISOLJ && JPT > ETCLU) 
+					if (DDR < RISOLJ
+					&& parts[j].pT() > ETCLU) 
 						ISOL = false;
 
-					if (DDR < RDEP && JPT < ETCLU) 
-						ENER += JPT;
+					if (DDR < RDEP
+					&& parts[j].pT() < ETCLU) 
+						ENER += parts[j].pT();
 				}
 			}
 
 			if (ENER > EDMAX)
 				ISOL = false;
 
-			if (abs(ETA) < ETAMAX && PT > PTLMIN)
+			if (abs(part.getEta()) < ETAMAX
+			&& part.pT() > PTLMIN)
 				IPHO++;
 
-			if (abs(ETA) < ETAMAX && PT > PTLMIN && ISOL)
+			if (abs(part.getEta()) < ETAMAX
+			&& part.pT() > PTLMIN && ISOL)
 				IPHOISO++;
 		}
 	}
