@@ -48,7 +48,7 @@ void BJet::printInfo() const {
 
 void BJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
 	
-	Int32_t idhist = 900 + KEYHID;
+	Int32_t idhist = 700 + KEYHID;
 	if (!histoRegistered) {
 		histoRegistered = true;
 		histoManager
@@ -137,7 +137,7 @@ void BJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	
 	// check partons
 	Int32_t IQUAB = 0, IBJET = 0;
-	for (int i=6; i<=parts.size(); ++i) {
+	for (int i=6; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
 		
 		if (isHardProcess(parts, i)
