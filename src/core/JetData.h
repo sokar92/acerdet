@@ -8,6 +8,13 @@
 
 namespace AcerDet {
 	namespace core {
+		
+		enum JetType {
+			UNKNOWN = 0,
+			C_JET = 4,
+			B_JET = 5
+		};
+			
 		class JetData {
 		public:
 			/*
@@ -28,11 +35,7 @@ namespace AcerDet {
 			 * 4 - eT
 			 */
 			
-			enum JetType {
-				UNKNOWN = 0,
-				C_JET = 4,
-				B_JET = 5
-			} type; /*!< A type of jet (if recognised) */
+			JetType type; /*!< A type of jet (if recognised) */
 			
 			Real64_t eta; /*!< eta (inherited from ?) */
 			Real64_t phi; /*!< phi (inherited from ?) */

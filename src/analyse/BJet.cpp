@@ -1,7 +1,9 @@
 #include "BJet.h"
 #include <cstdio>
-
 using namespace AcerDet::analyse;
+
+#include "../core/Functions.h"
+using namespace AcerDet::core;
 
 BJet::BJet( const Configuration& config, IHistogramManager *histoMng ) :
 	ETJET	( config.Jet.MinEnergy ),
@@ -16,7 +18,7 @@ BJet::BJet( const Configuration& config, IHistogramManager *histoMng ) :
 
 	IEVENT	( 0 ),
 
-	histoManager(histoMng),
+	histoManager( histoMng ),
 	histoRegistered( false )
 {}
 
@@ -45,89 +47,88 @@ void BJet::printInfo() const {
 }
 
 void BJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
+	
+	Int32_t idhist = 900 + KEYHID;
+	if (!histoRegistered) {
+		histoRegistered = true;
+		histoManager
+			->registerHistogram(idhist+11, "BJet: b-jets multiplicity", 10, 0.0, 10.0);
+		histoManager
+			->registerHistogram(idhist+21, "BJet: b-quarks HARD multiplicity", 10, 0.0, 10.0);
+		histoManager
+			->registerHistogram(idhist+23, "BJet: delta r bjet-cquark", 50, 0.0,  5.0);
+		histoManager
+			->registerHistogram(idhist+24, "BJet: pTbjet/pTbquark", 50, 0.0,  2.0);
+	}
+	
+	// do not use this algorithm
 	if (!KEYBCL)
 		return;
-
-	// variables
-	Real64_t PT, ETA, PHI, DR, DDR, DETR, DPHIA, DETRMIN, PTREC, CHRG;
 
 	// new event to compute
 	IEVENT++;
 
 	// reference to particles container
 	const vector<Particle>& parts = irecord.particles();
-
-	// find last position with '21' status
-	Int32_t last21 = -1;
-	//Int32_t NSTOP = 0, NSTART = 1;
-	for (int i=0; i<parts.size(); ++i) {
-		if (parts[i].statusID == 21) {
-		//	NSTOP = i-1;
-		//	NSTART = i;
-			last21 = i;
-		}
-	}
 	
-	// look for c-jets
-	for (int i=last21+1; i<parts.size(); ++i) {
+	// look for b-jets
+	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
 		
-		if (part.type == PT_BJET
-		&& part.statusID != 21) {
+		if (part.status == PS_FINAL
+		&& part.type == PT_BJET) {
 			// if there is a b-quark found before hadronization
 			// if there are still jets
 			if (!orecord.Jets.empty()) {
+				
 				Bool_t BJET = true;
-				Int32_t JETB = -1;
 				
 				// and this b-quark is the last one in the FSR cascade
 				if (part.hasDaughter()) {
 					for (int j=part.daughters.first; j<=part.daughters.second; ++j) {
-						if (parts[j].type == PT_BJET)
+						if (parts[j-1].type == PT_BJET)
 							BJET = false;
 					}
 				}
 
 				if (!BJET) 
 					continue;
-
-				PT = part.pT(); 
-				if (PT < PTBMIN) 
+ 
+				if (part.pT() < PTBMIN) 
 					continue;
 
-				ETA = part.getEta();
-				if (abs(ETA) > ETBMAX)
+				if (abs(part.getEta()) > ETBMAX)
 					continue;
-			
-				PHI = part.getPhi();
 				
 				// mark b-jet
-				DR = 100.0;
+				Real64_t DR = 100.0;
+				Int32_t JETB = -1;
+				
 				for (int j=0; j<orecord.Jets.size(); ++j) {
-					DDR = sqrt(
-						pow(ETA - orecord.Jets[j].eta_rec, 2) +
-						pow(PHI - orecord.Jets[j].phi_rec, 2)
+					
+					Real64_t DDR = sqrt(
+						pow(part.getEta() - orecord.Jets[j].eta_rec, 2) +
+						pow(part.getPhi() - orecord.Jets[j].phi_rec, 2)
 					);
 					
-					if (abs(PHI - orecord.Jets[j].phi_rec) > PI )
+					if (abs(part.getPhi() - orecord.Jets[j].phi_rec) > PI )
 						DDR = sqrt(
-							pow(ETA - orecord.Jets[j].eta_rec, 2) + 
-							pow(abs(PHI - orecord.Jets[j].phi_rec) - 2*PI, 2)
+							pow(part.getEta() - orecord.Jets[j].eta_rec, 2) + 
+							pow(abs(part.getPhi() - orecord.Jets[j].phi_rec) - 2*PI, 2)
 						);
 						
-					if (DDR < DR) 
+					if (DDR < DR) { 
 						JETB = j;
-						
-					DR = min(DDR,DR);
+						DR = DDR;
+					}
 				}
 
-				if (DR > RJB)
-					continue;
-					
-				// label  b-jet
-				// KJET(JETB,2) = 5;
-				// KJET(JETB,5) = I;
-				// NJETB = NJETB + 1;
+				if (DR <= RJB) {
+					// label  b-jet
+					// KJET(JETB,2) = 5;
+					// KJET(JETB,5) = I;
+					// NJETB = NJETB + 1;
+				}
 			}
 		}
 	}
@@ -136,80 +137,79 @@ void BJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	
 	// check partons
 	Int32_t IQUAB = 0, IBJET = 0;
-	for (int i=6; i<=last21; ++i) {								// 7? -> barcode = numery czastek w zdarzeniu
+	for (int i=6; i<=parts.size(); ++i) {
 		const Particle& part = parts[i];
 		
-		if (part.type == PT_BJET) {
-			PT = part.pT();
-			ETA = part.getEta();
-			PHI = part.getPhi();
+		if (isHardProcess(parts, i)
+		&& part.type == PT_BJET) {
 
-			if (abs(ETA) < ETBMAX && PT > ETJET) {
+			if (abs(part.getEta()) < ETBMAX
+			&& part.pT() > ETJET) {
+				
 				IQUAB++;
-				DR = 18.0;
+				Real64_t DR = 18.0;
 
 				for (int j=0; j<orecord.Jets.size(); ++j) {
-					if (orecord.Jets[j].type == PT_BJET) {
-						DDR = sqrt(
-							pow(ETA - orecord.Jets[j].eta_rec, 2) +
-							pow(PHI - orecord.Jets[j].phi_rec, 2)
+					if (orecord.Jets[j].type == B_JET) {
+						
+						Real64_t DDR = sqrt(
+							pow(part.getEta() - orecord.Jets[j].eta_rec, 2) +
+							pow(part.getPhi() - orecord.Jets[j].phi_rec, 2)
 						);
 						
-						if (abs(PHI - orecord.Jets[j].phi_rec) > PI)
+						if (abs(part.getPhi() - orecord.Jets[j].phi_rec) > PI)
 							DDR = sqrt(
-								pow(ETA - orecord.Jets[j].eta_rec, 2) +
-								pow(abs(PHI - orecord.Jets[j].phi_rec) - 2*PI, 2)
+								pow(part.getEta() - orecord.Jets[j].eta_rec, 2) +
+								pow(abs(part.getPhi() - orecord.Jets[j].phi_rec) - 2*PI, 2)
 							);
 						
-						if (DDR < DR) 
-							IBJET = j;
-							
-						if (DDR < DR) 
+						if (DDR < DR) {
+							IBJET = j; 
 							DR = DDR;
+						}
 					}
 				}
 			}
 		}
 	}
 
-	// store count of b-quarks in histogram
-	// histo_bQuarks.insert(IQUAB);
+	// fill histogram
+	histoManager
+		->insert(idhist+21, IQUAB );
 	
 	for (int i=0; i<orecord.Jets.size(); ++i) {
-		PTREC = 0;
-		DETRMIN = RCONE;
+		Real64_t PTREC = 0.0;
+		Real64_t DETRMIN = RCONE;
 
-		if (orecord.Jets[i].type == 5) {
+		if (orecord.Jets[i].type == B_JET) {
 			for (int j=6; j<parts.size(); ++j) {
 				const Particle& part = parts[j];
 				
-				if (part.type != PT_BJET
-				&& part.statusID != 21)
+				if (isHardProcess(parts, j)
+				|| part.type != PT_BJET)   // sprawdz czy ma byc || czy &&
 					continue;
 
-				PT = part.pT();
-				ETA = part.getEta();
-				PHI = part.getPhi();
-				DPHIA = abs(orecord.Jets[i].phi_rec - PHI); 
-
+				Real64_t DPHIA = abs(part.getPhi() - orecord.Jets[i].phi_rec); 
 				if (DPHIA > PI) 
 					DPHIA -= 2*PI;
 
-				DETR = sqrt(
-					pow(ETA - orecord.Jets[i].eta_rec, 2) +
+				Real64_t DETR = sqrt(
+					pow(part.getEta() - orecord.Jets[i].eta_rec, 2) +
 					pow(DPHIA, 2)
 				);
 				
-				if(DETR < DETRMIN) {
-					PTREC = PT;
+				if (DETR < DETRMIN) {
+					PTREC = part.pT();
 					DETRMIN = DETR;
 				}
 			}
 		}
 
 		if (PTREC != 0) {
-		//	histo_delta.insert(DETRMIN);
-		//	histo_pT.insert(orecord.Jets[i].pT (PJET(IJET,5)) / PTREC);
+			histoManager
+				->insert(idhist + 23, DETRMIN, 1.0);
+			histoManager
+				->insert(idhist + 24, orecord.Jets[i].pT / PTREC, 1.0);
 		}
 	}
 }

@@ -65,9 +65,6 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	if (!KEYBCL)
 		return;
 
-	// variables
-	Real64_t PT, PHI, ETA, DR, DDR, DETR, DPHIA, DETRMIN, PTREC;
-
 	// new event to compute
 	IEVENT++;
 
@@ -83,8 +80,8 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			// if there is a c-quark found before hadronization
 			// if there are still jets
 			if (!orecord.Jets.empty()) {
+				
 				Bool_t CJET = true;
-				Int32_t JETC = -1;
 				
 				// and this c-quark is the last one in the FSR cascade
 				if (part.hasDaughter()) {
@@ -97,46 +94,43 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 				if (!CJET) 
 					continue;
 
-				PT = part.pT();
-				if (PT < PTCMIN) 
+				if (part.pT() < PTCMIN) 
 					continue;
-
-				ETA = part.getEta(); 
-				if (abs(ETA) > ETCMAX)
+ 
+				if (abs(part.getEta()) > ETCMAX)
 					continue;
-
-				PHI = part.getPhi();
 				
 				// mark c-jet
-				DR = 100.0;
+				Real64_t DR = 100.0;
+				Int32_t JETC = -1;
+				
 				for (int j=0; j<orecord.Jets.size(); ++j) {
-					if (orecord.Jets[j].type != PT_BJET) {
-						DDR = sqrt(
-							pow(ETA - orecord.Jets[j].eta_rec, 2) +
-							pow(PHI - orecord.Jets[j].phi_rec, 2)
+					if (orecord.Jets[j].type != B_JET) {
+						
+						Real64_t DDR = sqrt(
+							pow(part.getEta() - orecord.Jets[j].eta_rec, 2) +
+							pow(part.getPhi() - orecord.Jets[j].phi_rec, 2)
 						);
 						
-						if (abs(PHI - orecord.Jets[j].phi_rec) > PI)
+						if (abs(part.getPhi() - orecord.Jets[j].phi_rec) > PI)
 							DDR = sqrt(
-								pow(ETA - orecord.Jets[j].eta_rec, 2) +
-								pow(abs(PHI - orecord.Jets[j].phi_rec) - 2*PI, 2)
+								pow(part.getEta() - orecord.Jets[j].eta_rec, 2) +
+								pow(abs(part.getPhi() - orecord.Jets[j].phi_rec) - 2*PI, 2)
 							);
 
-						if (DDR < DR) 
+						if (DDR < DR) { 
 							JETC = j;
-						
-						DR = min(DDR,DR);
+							DR = DDR;
+						}
 					}
 				}
 
-				if (DR > RJC) {
-					continue;
+				if (DR <= RJC) {
+					// labell  c-jet
+					// KJET(JETC,2) = 4							// JETC = indeks znalezionego jetu
+					// KJET(JETC,5) = I
+					// NJETC = NJETC + 1						// kolejny cjet znaleziony
 				}
-
-				// labell  c-jet
-				// KJET(JETC,2) = 4							// JETC = indeks znalezionego jetu
-				// KJET(JETC,5) = I
-				// NJETC = NJETC + 1						// kolejny cjet znaleziony
 			}
 		}
 	}
@@ -151,33 +145,32 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 		const Particle& part = parts[i];
 		
 		if (isHardProcess(parts, i) 
-		&& part.type == PT_CJET) {
-			PT = part.pT();
-			ETA = part.getEta(); 
-			PHI = part.getPhi();
+		&& part.type == PT_CJET) { 
 
-			if (abs(ETA) < ETCMAX && PT > ETJET) {
+			if (abs(part.getEta()) < ETCMAX
+			&& part.pT() > ETJET) {
+				
 				IQUAC++;
-				DR = 18.0;
-
+				Real64_t DR = 18.0;
+				
 				for (int j=0; j<orecord.Jets.size(); ++j) {
-					if (orecord.Jets[j].type == PT_CJET) {  // skoro iterujemy sie po CJetach to po co sprawdzac to jeszcze raz
-						DDR = sqrt(
-							pow(ETA - orecord.Jets[j].eta_rec, 2) +
-							pow(PHI - orecord.Jets[j].phi_rec, 2)
+					if (orecord.Jets[j].type == C_JET) {
+						
+						Real64_t DDR = sqrt(
+							pow(part.getEta() - orecord.Jets[j].eta_rec, 2) +
+							pow(part.getPhi() - orecord.Jets[j].phi_rec, 2)
 						);
 													
-						if (abs(PHI - orecord.Jets[j].phi_rec) > PI)
+						if (abs(part.getPhi() - orecord.Jets[j].phi_rec) > PI)
 							DDR = sqrt(
-								pow(ETA - orecord.Jets[j].eta_rec, 2) +
-								pow(abs(PHI - orecord.Jets[j].phi_rec) - 2*PI, 2)
+								pow(part.getEta() - orecord.Jets[j].eta_rec, 2) +
+								pow(abs(part.getPhi() - orecord.Jets[j].phi_rec) - 2*PI, 2)
 							);
 							
-						if (DDR < DR) 
+						if (DDR < DR) { 
 							ICJET = j;
-							
-						if (DDR < DR) 
 							DR = DDR;
+						}
 					}
 				}
 			}
@@ -189,35 +182,30 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 		->insert(idhist+21, IQUAC );
 
 	for (int i=0; i<orecord.Jets.size(); ++i) {
-		PTREC = 0;
-		DETRMIN = RCONE;
+		Real64_t PTREC = 0.0;
+		Real64_t DETRMIN = RCONE;
 
-		if (orecord.Jets[i].type == PT_CJET) {
+		if (orecord.Jets[i].type == C_JET) {
 			for (int j=6; j<parts.size(); ++j) {
 				const Particle& part = parts[j];
 				
 				if (isHardProcess(parts, j) 
 				|| part.type != PT_CJET) 
 					continue;
-				
-				PT = part.pT();
-				ETA = part.getEta();
-				PHI = part.getPhi();
 
-				DPHIA = abs(orecord.Jets[i].phi - PHI); 
+				Real64_t DPHIA = abs(part.getPhi() - orecord.Jets[i].phi); // phi czy phi_rec
 				if (DPHIA > PI) 
 					DPHIA -= 2*PI;
 
-				DETR = sqrt(
-					pow(ETA - orecord.Jets[i].eta , 2) +
+				Real64_t DETR = sqrt(
+					pow(part.getEta() - orecord.Jets[i].eta , 2) + // eta czy eta_rec
 					pow(DPHIA, 2)
 				);
 				
-				if (DETR > DETRMIN) 
-					continue;
-
-				PTREC = PT;
-				DETRMIN = DETR;
+				if (DETR < DETRMIN) {
+					PTREC = part.pT();
+					DETRMIN = DETR;
+				}
 			}
 		}
 

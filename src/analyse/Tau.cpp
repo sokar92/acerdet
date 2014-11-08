@@ -16,7 +16,7 @@ Tau::Tau( const Configuration& config, IHistogramManager* histoMng ) :
 
 	IEVENT	( 0 ),
 	
-	histoManager(histoMng),
+	histoManager( histoMng ),
 	histoRegistered( false )
 {}
 
@@ -55,9 +55,6 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 			->registerHistogram(idhist+21, "Tau: taus multiplicity", 10, 0.0, 10.0);
 	}
 
-	// variables
-	Real64_t PT, ETA, PHI, JETTAU, IN;
-
  	// new event to compute
 	IEVENT++;
 
@@ -69,55 +66,60 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
 		
-		if (part.status == PS_FINAL && part.type == PT_TAU) {
+		if (part.status == PS_FINAL
+		&& part.type == PT_TAU) {
+
 			// if there are still jets
 			if (!orecord.Jets.empty()) {
 				Bool_t TAUJET = true;
 				
 				// choose only hadronic tau-decay
-				IN = -1;
 				if (!part.hasDaughter())
 					continue;
-				
+					
+				Int32_t IN = -1;
 				for (int j=part.daughters.first; j<=part.daughters.second; ++j) {
-					if (parts[j].type == PT_ELECTRON
-					|| parts[j].type == PT_MUON)
+					
+					// daughter is e or m
+					if (parts[j-1].type == PT_ELECTRON
+					|| parts[j-1].type == PT_MUON)
 						TAUJET = false;
-					if (parts[j].type == PT_NEUTRINO_TAU)
-						IN = j;
+					
+					// daughter is tau neutrino
+					if (parts[j-1].type == PT_NEUTRINO_TAU)
+						IN = j-1;
 				}
 				
+				// there is no tau neutrino in particle daughters set
 				if (IN < 0)
 					continue;
 				
 				Particle tmpPart = part;
 				tmpPart.momentum -= parts[IN].momentum;
-
-				PT = tmpPart.pT(); 
-				if (PT < PTTAU) 
+ 
+				if (tmpPart.pT() < PTTAU) 
 					TAUJET = false;
 				
-				ETA = tmpPart.getEta();
-				if (abs(ETA) > ETATAU) 
+				if (abs(tmpPart.getEta()) > ETATAU) 
 					TAUJET = false;
 
-				PHI = tmpPart.getPhi();
 				if (TAUJET) 
 					NTAU++;
 				
 				// mark tau-jet
 				Real64_t DR = 100.0;
+				Int32_t JETTAU = -1;
 				for (int j=0; j<orecord.Jets.size(); ++j) {
 					
 					Real64_t DDR = sqrt(
-						pow(ETA - orecord.Jets[j].eta_rec, 2) +
-						pow(PHI - orecord.Jets[j].phi_rec, 2)
+						pow(tmpPart.getEta() - orecord.Jets[j].eta_rec, 2) +
+						pow(tmpPart.getPhi() - orecord.Jets[j].phi_rec, 2)
 					);
 					
-					if (abs(PHI - orecord.Jets[j].phi_rec) > PI)
+					if (abs(tmpPart.getPhi() - orecord.Jets[j].phi_rec) > PI)
 						DDR = sqrt(
-							pow(ETA - orecord.Jets[j].eta_rec, 2) +
-							pow(abs(PHI - orecord.Jets[j].phi_rec) - 2*PI, 2)
+							pow(tmpPart.getEta() - orecord.Jets[j].eta_rec, 2) +
+							pow(abs(tmpPart.getPhi() - orecord.Jets[j].phi_rec) - 2*PI, 2)
 						);
 
 					if (DDR < DR) {
@@ -128,23 +130,23 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 				
 				if (DR > RJTAU) {
 					TAUJET = false;
-					JETTAU = 0;
+					JETTAU = -1;
 				}
 				
 				if (TAUJET
-				&& abs(orecord.Jets[JETTAU].eta_rec) < 2.5    // why not CONST ?
-				&& PT / orecord.Jets[JETTAU].pT > PTFRAC) {
+				&& abs(orecord.Jets[JETTAU].eta_rec) < 2.5 ) {
+	// PT jest unitialised			&& PT / orecord.Jets[JETTAU].pT > PTFRAC) {
 					// KJET(JETTAU,2) = K(I,2); // ?
-					// NJETTAU++;
+					NJETTAU++;
 				}
 			}
 		}
 	}
 
 	histoManager
-		->insert(idhist+11,  NJETTAU);
+		->insert(idhist+11, NJETTAU);
 	histoManager
-		->insert(idhist+21,  NTAU);
+		->insert(idhist+21, NTAU);
 }
 
 void Tau::printResults() const {
@@ -158,6 +160,4 @@ void Tau::printResults() const {
 	printf ("**********************************\n");
 	
 	printf (" Analysed records: %d\n", IEVENT);
-	//histo_jets.print( true );
-	//histo_taus.print( true );
 }
