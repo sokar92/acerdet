@@ -105,7 +105,15 @@ int main( int argc, char **argv ) {
 	}
 
 	acerDet.printResults();
-	acerDet.storeHistograms( "myFile.root" );
+	
+	char inputname[1000] = "";
+	sprintf( inputname, argv[1] );
+	
+	char outputname[1000] = "";
+	strcat( outputname, inputname );
+	strcat( outputname, ".root" );
+
+	acerDet.storeHistograms( outputname );
 
 	delete pdpFactory;
 	delete histoManager;
