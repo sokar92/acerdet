@@ -189,7 +189,7 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 				newParton.phi = part.getPhi();
 				newParton.pT  = PT;
 				
-				orecord.Electrons.push_back( newParton );
+				orecord.Photons.push_back( newParton );
 			}
 		}
 	}

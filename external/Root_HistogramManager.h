@@ -21,7 +21,7 @@ namespace AcerDet {
 			
 			void insert( Int32_t id, Real64_t value, Real64_t weigth );
 			
-			void storeHistograms( const string& file );
+			void storeHistograms();
 		};
 
 	}

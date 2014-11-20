@@ -26,7 +26,7 @@ namespace AcerDet {
 				
 			virtual void insert( Int32_t id, Real64_t value, Real64_t weight = 1.0) = 0;
 			
-			virtual void storeHistograms( const string& file ) = 0;
+			virtual void storeHistograms() = 0;
 		};
 
 	}

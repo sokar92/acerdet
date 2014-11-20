@@ -125,6 +125,6 @@ void AcerDET::printResults() const {
 	analyse_Tau			->printResults();
 }
 
-void AcerDET::storeHistograms( const string& file ) {
-	histos->storeHistograms(file);
+void AcerDET::storeHistograms() {
+	histos->storeHistograms();
 }

@@ -5,10 +5,12 @@ include $(RELATIVE_PATH)/external.inc
 HEPMC_CONVERTER= HepMC_InputConverter
 PYTHIA_PROVIDER= Pythia8_ParticleDataProviderFactory
 ROOT_HISTOGRAM= Root_HistogramManager
+ROOT_NTUPLE= Root_NTupleManager
 
 OBJECTS= $(HEPMC_CONVERTER).o \
 	$(PYTHIA_PROVIDER).o \
-	$(ROOT_HISTOGRAM).o
+	$(ROOT_HISTOGRAM).o \
+	$(ROOT_NTUPLE).o
 
 LIB= AcerDetExternals
 EXT_LIBS= $(PWD)/libHistoManager/libLibHistoManager
@@ -29,6 +31,9 @@ $(PYTHIA_PROVIDER).o : $(PYTHIA_PROVIDER).cpp
 	$(CC) $(CFLAGS) -c $< -o $@ $(PYTHIAINCLUDE)
 
 $(ROOT_HISTOGRAM).o : $(ROOT_HISTOGRAM).cpp
+	$(CC) $(CFLAGS) -c $< -o $@ $(ROOTINCLUDE)
+
+$(ROOT_NTUPLE).o : $(ROOT_NTUPLE).cpp
 	$(CC) $(CFLAGS) -c $< -o $@ $(ROOTINCLUDE)
 
 compile_acerDetLib:

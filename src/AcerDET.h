@@ -66,7 +66,7 @@ namespace AcerDet {
 		
 		void printResults() const;
 		
-		void storeHistograms( const string& file );
+		void storeHistograms();
 	};
 
 }

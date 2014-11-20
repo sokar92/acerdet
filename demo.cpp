@@ -19,6 +19,10 @@ using namespace AcerDet::io;
 #include "external/Pythia8_ParticleDataProviderFactory.h"
 #include "external/Root_HistogramManager.h"
 
+#include <TROOT.h>
+#include <TChain.h>
+#include <TFile.h>
+
 // ----------------------
 // -- Dummy Database ----
 // ----------------------
@@ -112,8 +116,11 @@ int main( int argc, char **argv ) {
 	char outputname[1000] = "";
 	strcat( outputname, inputname );
 	strcat( outputname, ".root" );
+	
+	TFile scanMiniTreeFile( outputname, "recreate" );
+	scanMiniTreeFile.cd();
 
-	acerDet.storeHistograms( outputname );
+	acerDet.storeHistograms();
 
 	delete pdpFactory;
 	delete histoManager;
