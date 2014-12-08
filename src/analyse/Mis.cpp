@@ -131,6 +131,8 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 		SUMET	+= pho.pT;
     }
     
+    // PXXCALO PYYCALO
+    
     // store pT in histo
     Real64_t ETREC = sqrt( pow(PXREC, 2) + pow(PYREC, 2) );
     histoManager
@@ -162,11 +164,12 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	
 	PXSUM += PXREC;
 	PYSUM += PYREC;
-	
+	// PXSUM PYSUM
 	Real64_t ETSUM = sqrt( pow(PXSUM, 2) + pow(PYSUM, 2) );
 	histoManager
 	  ->insert(idhist+12, ETSUM );
 	
+	//PXXMISS, PYYMISS
 	Real64_t PXXMISS = -PXSUM;
 	Real64_t PYYMISS = -PYSUM; // ? po co
 	Real64_t PTMISS = sqrt( pow(PXXMISS, 2) + pow(PYYMISS, 2) );
@@ -188,6 +191,7 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 		}
 		
 	}
+	//PXXNUES, PYYNUES
 	
 	Real64_t PTNUES = sqrt( pow(PXXNUES, 2) + pow(PYYNUES, 2) );
 	histoManager

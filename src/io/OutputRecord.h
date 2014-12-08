@@ -23,6 +23,7 @@ namespace AcerDet {
 			vector<PartData> Photons; /*!< detailed description  */
 			
 			vector<JetData> Jets; /*!< detailed description  */
+			// vector<MissData> Miss; /*!< detailed description  */
 			
 			OutputRecord();
 			
