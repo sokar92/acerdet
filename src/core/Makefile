@@ -6,6 +6,7 @@ OBJECTS= Smearing.o \
 	ClusterData.o \
 	JetData.o \
 	PartData.o \
+	MisData.o \
 	Particle.o \
 	ParticleDataProvider.o \
 	Functions.o

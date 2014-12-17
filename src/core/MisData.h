@@ -15,9 +15,9 @@ namespace AcerDet {
 			Real64_t PXXCALO, PYYCALO;
 			Real64_t SUMET;
 			
-			MisData() :
-				PXREC (0.0), PYREC (0.0), PXSUM (0.0), PYSUM(0.0),
-				PXXCALO (0.0), PYYCALO (0.0), SUMET(0.0);
+			MisData();
+			
+			void clear();
 		};
 	}
 }

@@ -15,4 +15,5 @@ void OutputRecord::clear() {
 	vector<PartData>().swap(Photons);
 	
 	vector<JetData>().swap(Jets);
+	Miss.clear();
 }

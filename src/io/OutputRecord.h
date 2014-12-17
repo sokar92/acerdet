@@ -6,6 +6,7 @@
 #include "../core/ClusterData.h"
 #include "../core/JetData.h"
 #include "../core/PartData.h"
+#include "../core/MisData.h"
 using namespace AcerDet::core;
 
 namespace AcerDet {
@@ -23,7 +24,7 @@ namespace AcerDet {
 			vector<PartData> Photons; /*!< detailed description  */
 			
 			vector<JetData> Jets; /*!< detailed description  */
-			// vector<MissData> Miss; /*!< detailed description  */
+			MisData Miss; /*!< detailed description  */
 			
 			OutputRecord();
 			
