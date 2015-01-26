@@ -75,13 +75,14 @@ void BJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	Int32_t NJETB = 0;
 	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
-		
-		if (part.status == PS_FINAL
+if (part.type == PT_BJET) printf ("Status: %d -> st_id %d\n", part.status, part.statusID);		
+		if (part.status == PS_CASCADE_QUARK //abs(part.statusID) >= 30//part.status == PS_DECAYED
 		&& part.type == PT_BJET) {
+printf ("\nFound B-quark\n");
 			// if there is a b-quark found before hadronization
 			// if there are still jets
 			if (!orecord.Jets.empty()) {
-				
+printf ("Not empty record\n");				
 				Bool_t BJET = true;
 				
 				// and this b-quark is the last one in the FSR cascade
@@ -94,13 +95,13 @@ void BJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 
 				if (!BJET) 
 					continue;
- 
+ printf ("Is b-jet\n");
 				if (part.pT() < PTBMIN) 
 					continue;
 
 				if (abs(part.getEta()) > ETBMAX)
 					continue;
-				
+printf ("Matches conditions\n");				
 				// mark b-jet
 				Real64_t DR = 100.0;
 				Int32_t JETB = -1;
@@ -130,6 +131,7 @@ void BJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 					// KJET(JETB,5) = I;
 					orecord.Jets[JETB].type = B_JET;
 					NJETB++;
+					printf ("NJETB++\n");
 				}
 			}
 		}
@@ -144,7 +146,7 @@ void BJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	for (int i=6; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
 		
-		if (isHardProcess(parts, i)
+		if (part.status == PS_HP_QUARK //isHardProcess(parts, i)
 		&& part.type == PT_BJET) {
 
 			if (abs(part.getEta()) < ETBMAX

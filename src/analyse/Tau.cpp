@@ -66,20 +66,21 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
 		
-		if (part.status == PS_FINAL
+		if (part.status == PS_DECAYED
 		&& part.type == PT_TAU) {
-
+printf ("\nIve found it!\n");
 			// if there are still jets
 			if (!orecord.Jets.empty()) {
+printf ("Jest jet\n");
 				Bool_t TAUJET = true;
 				
 				// choose only hadronic tau-decay
 				if (!part.hasDaughter())
 					continue;
-					
+printf ("Ma corki [%d, %d]\n", part.daughters.first, part.daughters.second);					
 				Int32_t IN = -1;
 				for (int j=part.daughters.first; j<=part.daughters.second; ++j) {
-					
+printf (" -> pdg_id = %d type = %d\n", parts[j-1].pdg_id, parts[j-1].type);		
 					// daughter is e or m
 					if (parts[j-1].type == PT_ELECTRON
 					|| parts[j-1].type == PT_MUON)
@@ -93,9 +94,9 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 				// there is no tau neutrino in particle daughters set
 				if (IN < 0)
 					continue;
-				
+printf ("Jest hadronowy rozpad tau w corkach\n");
 				Particle tmpPart = part;
-				tmpPart.momentum -= parts[IN].momentum;
+				tmpPart.momentum -= parts[IN].momentum;  // tau - neutrino_tau
  
 				if (tmpPart.pT() < PTTAU) 
 					TAUJET = false;
@@ -124,7 +125,7 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 
 					if (DDR < DR) {
 						JETTAU = j;
-						DDR = DR;
+						DR = DDR;
 					}
 				}
 				

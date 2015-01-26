@@ -18,6 +18,7 @@ using namespace AcerDet::io;
 #include "external/HepMC_InputConverter.h"
 #include "external/Pythia8_ParticleDataProviderFactory.h"
 #include "external/Root_HistogramManager.h"
+#include "external/Root_NTupleManager.h"
 
 #include <TROOT.h>
 #include <TChain.h>
@@ -73,12 +74,14 @@ int main( int argc, char **argv ) {
 		new external::Pythia8_ParticleDataProviderFactory();
 	IHistogramManager *histoManager =
 		new external::Root_HistogramManager();
+	external::Root_NTupleManager nTuple;
 	
 	AcerDET acerDet(
 		configuration,
 		pdpFactory,
 		histoManager 
 	);
+	nTuple.init();
 	acerDet.printInfo();
 
 	DbDummy db;
@@ -96,15 +99,15 @@ int main( int argc, char **argv ) {
 
 		GenEvent *hepmc = new GenEvent();
 		toHepMC.fill_next_event( event, hepmc );
-		printf (" ---- PRINTING --- \n");
-		hepmc->print();
+//		printf (" ---- PRINTING --- \n");
+//		hepmc->print();
 
-		acerDet.analyseRecord(
-			external::HepMC_InputConverter::convert( *hepmc ),
-			oRec
-		);
+		InputRecord iRec = external::HepMC_InputConverter::convert( *hepmc );
+		acerDet.analyseRecord(iRec, oRec);
 
 		db.store(oRec);
+		nTuple.fill(iRec, oRec, 1.0); // 1.0 by default - to change
+		
 		delete hepmc;
 	}
 
@@ -121,6 +124,7 @@ int main( int argc, char **argv ) {
 	scanMiniTreeFile.cd();
 
 	acerDet.storeHistograms();
+	nTuple.write();
 
 	delete pdpFactory;
 	delete histoManager;

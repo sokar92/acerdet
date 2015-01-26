@@ -5,7 +5,16 @@ using namespace AcerDet::external;
 #include "../src/core/Functions.h"
 using namespace AcerDet::core;
 
+Root_NTupleManager::Root_NTupleManager() : 
+	n_part_px(new std::vector<float>())
+{}
+
+Root_NTupleManager::~Root_NTupleManager() {
+	delete n_part_px;
+}
+
 void Root_NTupleManager::init() {
+	printf ("NTuple: init\n");
 	ntuple = new TTree("ACDTree", "ACDTree");
 
   ntuple->Branch("ProcessID",          &n_ProcessID);
@@ -58,7 +67,7 @@ void Root_NTupleManager::fill(
 	const OutputRecord& orecord,
 	Real64_t weigth
 ) {
-	n_part_px.clear();
+	n_part_px->clear();
 	n_part_py.clear();
 	n_part_pz.clear();
 	n_part_E.clear();
@@ -76,7 +85,7 @@ void Root_NTupleManager::fill(
 		Real64_t pz = parts[j].pT() * sinh(parts[j].getEta());
 		Real64_t E  = parts[j].pT() * cosh(parts[j].getEta());
 		
-		n_part_px.push_back(px);
+		n_part_px->push_back(px);
 		n_part_py.push_back(py);
 		n_part_pz.push_back(pz);
 		n_part_E.push_back(E);
@@ -159,10 +168,12 @@ void Root_NTupleManager::fill(
 	}
 	n_jet_n = orecord.Jets.size(); 
 
+	printf ("NTuple: Fill\n");
 	//filling ntuple
 	ntuple->Fill();
 }
 
 void Root_NTupleManager::write() {
+	printf ("NTuple: write\n");
 	ntuple->Write();
 }

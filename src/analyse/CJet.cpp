@@ -76,7 +76,7 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
 		
-		if (part.status == PS_FINAL 
+		if (part.status == PS_CASCADE_QUARK //part.status == PS_DECAYED 
 		&& part.type == PT_CJET) {
 			// if there is a c-quark found before hadronization
 			// if there are still jets

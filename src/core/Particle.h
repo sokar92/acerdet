@@ -25,7 +25,9 @@ namespace AcerDet {
 			PS_BEAM, /*!< detailed description  */
 			PS_FINAL, /*!< detailed description  */
 			PS_DECAYED, /*!< detailed description  */
-			PS_HISTORY /*!< detailed description  */
+			PS_HISTORY, /*!< detailed description  */
+			PS_CASCADE_QUARK, /*!< b or c quark not from hard process */
+			PS_HP_QUARK /*!< b or c quark from hard process */
 		};
 		
 		/*
