@@ -16,43 +16,57 @@ using namespace AcerDet::io;
 namespace AcerDet {
 	namespace analyse {
 
-		//! Title
+		//! Missing energy analyse algorithm class
 		/*!
-		 * Detailed description
+		 * An algorithm for collecting missing energy.
 		 */
 		class Mis {
 		private:
-			Real64_t PTMUMIN; /*!< detailed description  */
-			Real64_t ETAMAX; /*!< detailed description  */
-			Real64_t ETCELL; /*!< detailed description  */
-			Real64_t CALOTH; /*!< detailed description  */
+			Real64_t PTMUMIN; /*!< see Configuration */
+			Real64_t ETAMAX;  /*!< see Configuration */
+			Real64_t ETCELL;  /*!< see Configuration */
+			Real64_t CALOTH;  /*!< see Configuration */
 			
-			Int32_t KEYHID; /*!< detailed description  */
-			Bool_t KEYSME; /*!< detailed description  */
-			Int32_t KFINVS; /*!< detailed description  */
+			Int32_t KEYHID;   /*!< see Configuration */
+			Bool_t KEYSME;    /*!< see Configuration */
+			Int32_t KFINVS;   /*!< see Configuration */
 			
-			Int32_t IEVENT; /*!< detailed description  */
+			Int32_t IEVENT;   /*!< Number of events computed by Mis algorithm. */
 			
-			IHistogramManager *histoManager; /*!< detailed description  */
-			Bool_t histoRegistered; /*!< detailed description  */
+			IHistogramManager *histoManager; /*!< A pointer to global histogram manager. */
+			Bool_t histoRegistered;          /*!< Indicates whether histograms are already registered and might be used now. */
 		
 		public:
-			Mis( const Configuration&, IHistogramManager* );
+			
+			/** Constructor.
+			 * Creates new instance of Missing energy analyse algorithm.
+			 * \param conf AcerDET initial Configuration
+			 * \param histMgr a global instance of IHistogramManager
+			 */
+			Mis( const Configuration& conf, IHistogramManager* histMgr );
+			
+			/**
+			 * Destructor.
+			 */
 			~Mis();
 			
-			//! Print information about Mis algorithm class to standard output
+			/**
+			 * Print information about Missing energy algorithm class to standard output.
+			 */
 			void printInfo() const;
 			
-			//! Analyse input record
+			//! Analyse input record in order to find missing energy.
 			/*!
-			 * \param input <input data desc>
-			 * \param output <output data desc>
+			 * \param input record.
+			 * \param output record.
 			 */
 			void analyseRecord(
 				const io::InputRecord& input,
 				io::OutputRecord& output );
 			
-			//! Print Mis algorithm execution results to standard output
+			/**
+			 * Print Missing energy algorithm execution results to standard output.
+			 */
 			void printResults() const;
 		};
 

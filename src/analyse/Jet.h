@@ -17,50 +17,64 @@ using namespace AcerDet::io;
 namespace AcerDet {
 	namespace analyse {
 
-		//! Title
+		//! Jet analyse algorithm class
 		/*!
-		 * Detailed description
+		 * An algorithm for Jet reconstruction.
 		 */
 		class Jet {
 		private:
-			Real64_t ETJET; /*!< detailed description  */
-			Real64_t ETAJET; /*!< detailed description  */
-			Real64_t RCONE; /*!< detailed description  */
-			Real64_t PTMIN; /*!< detailed description  */
-			Real64_t CALOTH; /*!< detailed description  */
+			Real64_t ETJET;   /*!< see Configuration */
+			Real64_t ETAJET;  /*!< see Configuration */
+			Real64_t RCONE;   /*!< see Configuration */
+			Real64_t PTMIN;   /*!< see Configuration */
+			Real64_t CALOTH;  /*!< see Configuration */
 
-			Int32_t KEYHID; /*!< detailed description  */
-			Bool_t KEYSME; /*!< detailed description  */
-			Bool_t KEYFLD; /*!< detailed description  */
-			Int32_t KFINVS; /*!< detailed description  */
+			Int32_t KEYHID;   /*!< see Configuration */
+			Bool_t KEYSME;    /*!< see Configuration */
+			Bool_t KEYFLD;    /*!< see Configuration */
+			Int32_t KFINVS;   /*!< see Configuration */
 
-			Int32_t IEVENT; /*!< detailed description  */
+			Int32_t IEVENT;   /*!< Number of events computed by Jet algorithm. */
 			
-			IHistogramManager *histoManager; /*!< detailed description  */
-			Bool_t histoRegistered; /*!< detailed description  */
-			const ParticleDataProvider& partProvider; /*!< detailed description  */
+			IHistogramManager *histoManager;          /*!< A pointer to global histogram manager. */
+			Bool_t histoRegistered;                   /*!< Indicates whether histograms are already registered and might be used now. */
+			const ParticleDataProvider& partProvider; /*!< External provider for particle properties such as charge or name. */
 			
 		public:
+			
+			/** Constructor.
+			 * Creates new instance of Jet analyse algorithm.
+			 * \param conf AcerDET initial Configuration
+			 * \param histMgr a global instance of IHistogramManager
+			 * \param partData a global instance of IParticleDataProvider
+			 */
 			Jet(
-				const Configuration&,
-				IHistogramManager*,
-				const ParticleDataProvider& );
+				const Configuration& conf,
+				IHistogramManager* histMgr,
+				const ParticleDataProvider& partData );
 
+			/**
+			 * Destructor.
+			 */
 			~Jet();
 			
-			//! Print information about Jet algorithm class to standard output
+			/**
+			 * Print information about Jet algorithm class to standard output.
+			 */
 			void printInfo() const;
 			
-			//! Analyse input record and find jets
+			//! Analyse input record and find jets.
 			/*!
-			 * \param input <input data desc>
-			 * \param output <output data desc>
+			 * \param input record.
+			 * \param output record.
 			 */
 			void analyseRecord(
 				const io::InputRecord& input,
 				io::OutputRecord& output );
 			
-			//! Print Jet algorithm execution results to standard output
+			/**
+			 * Print Jet algorithm execution results to standard output.
+			 */
 			void printResults() const;
 		};
 

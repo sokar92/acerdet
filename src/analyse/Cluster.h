@@ -17,51 +17,66 @@ using namespace AcerDet::io;
 namespace AcerDet {
 	namespace analyse {
 
-		//! Title
+		//! Cluster analyse algorithm class
 		/*!
-		 * Detailed description
+		 * An algorithm for grouping cells into clusters.
 		 */
 		class Cluster {
 		private:
-			Real64_t ETCLU; /*!< detailed description  */
-			Real64_t RCONE; /*!< detailed description  */
-			Real64_t ETACLU; /*!< detailed description  */
-			Real64_t ETINI; /*!< detailed description  */
+			Real64_t ETCLU;  /*!< see Configuration */
+			Real64_t RCONE;  /*!< see Configuration */
+			Real64_t ETACLU; /*!< see Configuration */
+			Real64_t ETINI;  /*!< see Configuration */
 			
-			Real64_t PTMIN; /*!< detailed description  */
-			Real64_t CALOTH; /*!< detailed description  */
+			Real64_t PTMIN;  /*!< see Configuration */
+			Real64_t CALOTH; /*!< see Configuration */
 			
-			Int32_t KEYHID; /*!< detailed description  */
-			Bool_t KEYFLD; /*!< detailed description  */
-			Int32_t KFINVS; /*!< detailed description  */
+			Int32_t KEYHID;  /*!< see Configuration */
+			Bool_t KEYFLD;   /*!< see Configuration */
+			Int32_t KFINVS;  /*!< see Configuration */
 			
-			Int32_t IEVENT; /*!< detailed description  */
+			Int32_t IEVENT;  /*!< Number of events computed by Cluster algorithm. */
 			
-			IHistogramManager *histoManager; /*!< detailed description  */
-			Bool_t histoRegistered; /*!< detailed description  */
-			const ParticleDataProvider& partProvider; /*!< detailed description  */
+			IHistogramManager *histoManager;          /*!< A pointer to global histogram manager. */
+			Bool_t histoRegistered;                   /*!< Indicates whether histograms are already registered and might be used now. */
+			const ParticleDataProvider& partProvider; /*!< External provider for particle properties such as charge or name. */
 
 		public:
+		
+			/**
+			 * Constructor.
+			 * Creates new instance of Cell analyse algorithm.
+			 * \param conf AcerDET initial Configuration
+			 * \param histoMgr a global instance of IHistogramManager
+			 * \param partData a global instance of IParticleDataProvider
+			 */
 			Cluster(
-				const Configuration&,
-				IHistogramManager*,
-				const ParticleDataProvider& );
+				const Configuration& conf,
+				IHistogramManager* histoMgr,
+				const ParticleDataProvider& partData );
 
+			/**
+			 * Destructor.
+			 */
 			~Cluster();
 			
-			//! Print information about Cluster algorithm class to standard output
+			/**
+			 * Print information about Cluster algorithm class to standard output.
+			 */
 			void printInfo() const;
 			
-			//! Analyse input record and group cells into clusters
+			//! Analyse input record and group cells into clusters.
 			/*!
-			 * \param input <input data desc>
-			 * \param output <output data desc>
+			 * \param input record.
+			 * \param output record.
 			 */
 			void analyseRecord(
 				const io::InputRecord& input,
 				io::OutputRecord& output );
 
-			//! Print Cluster algorithm execution results to standard output
+			/**
+			 * Print Cluster algorithm execution results to standard output.
+			 */
 			void printResults() const;
 		};
 

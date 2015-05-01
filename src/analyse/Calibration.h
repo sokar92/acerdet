@@ -12,30 +12,42 @@ using namespace AcerDet::conf;
 namespace AcerDet {
 	namespace analyse {
 
-		//! Title
+		//! Analyse calibration
 		/*!
-		 * Detailed description
+		 * Calibration
 		 */
 		class Calibration {
 		private:
-			Real64_t RCONE; /*!< detailed description  */
+			Real64_t RCONE; /*!< see Configuration */
 			
-			Int32_t KEYHID; /*!< detailed description  */
-			Bool_t KEYCAL; /*!< detailed description  */
+			Int32_t KEYHID; /*!< see Configuration */
+			Bool_t KEYCAL;  /*!< see Configuration */
 			
-			Int32_t IEVENT; /*!< detailed description  */
-			Int32_t IDENT; /*!< detailed description  */
+			Int32_t IEVENT; /*!< see Configuration */
+			Int32_t IDENT;  /*!< see Configuration */
+			
 		public:
+			
+			/**
+			 * Constructor.
+			 * Creates new instance of Calibration.
+			 * \param conf AcerDET initial Configuration
+			 */
 			Calibration( const Configuration& );
+			
+			/**
+			 * Destructor.
+			 */
 			~Calibration();
 			
-			//! Print information about Calibration algorithm class to standard output
+			/**
+			 * Print information about Calibration algorithm class to standard output.
+			 */
 			void printInfo() const;
 			
-			//! Analyse input record
 			/*!
-			 * \param input <input data desc>
-			 * \param output <output data desc>
+			 * \param input record.
+			 * \param output record.
 			 */
 			void analyseRecord(
 				const io::InputRecord& input,

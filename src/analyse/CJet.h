@@ -16,43 +16,58 @@ using namespace AcerDet::io;
 namespace AcerDet {
 	namespace analyse {
 
-		//! Title
+		//! CJet analyse algorithm class
 		/*!
-		 * Detailed description
-		 */
+		 * An algorithm recognising Jets as CJets.
+		 */	
 		class CJet {
 		private:
-			Real64_t ETJET; /*!< detailed description  */
-			Real64_t RCONE; /*!< detailed description  */
-			Real64_t PTCMIN; /*!< detailed description  */
-			Real64_t ETCMAX; /*!< detailed description  */
-			Real64_t RJC; /*!< detailed description  */
+			Real64_t ETJET;  /*!< see Configuration */
+			Real64_t RCONE;  /*!< see Configuration */
+			Real64_t PTCMIN; /*!< see Configuration */
+			Real64_t ETCMAX; /*!< see Configuration */
+			Real64_t RJC;    /*!< see Configuration */
 
-			Int32_t KEYHID; /*!< detailed description  */
-			Bool_t KEYBCL; /*!< detailed description  */
+			Int32_t KEYHID;  /*!< see Configuration */
+			Bool_t KEYBCL;   /*!< see Configuration */
 
-			Int32_t IEVENT; /*!< detailed description  */
+			Int32_t IEVENT;  /*!< Number of events computed by CJet algorithm. */
 
-			IHistogramManager *histoManager; /*!< detailed description  */
-			Bool_t histoRegistered; /*!< detailed description  */
+			IHistogramManager *histoManager; /*!< A pointer to global histogram manager. */
+			Bool_t histoRegistered;          /*!< Indicates whether histograms are already registered and might be used now. */
 			
 		public:
-			CJet( const Configuration&, IHistogramManager* );
+			
+			/**
+			 * Constructor.
+			 * Creates new instance of CJet analyse algorithm.
+			 * \param conf AcerDET initial Configuration
+			 * \param hist a global instance of IHistogramManager
+			 */
+			CJet( const Configuration& conf, IHistogramManager* hist );
+			
+			/**
+			 * Destructor.
+			 */
 			~CJet();
 
-			//! Print information about CJet algorithm class to standard output
+			/**
+			 * Print information about CJet algorithm class to standard output.
+			 */
 			void printInfo() const;
 			
-			//! Analyse input record and find c-jets
+			//! Analyse input record and find c-jets.
 			/*!
-			 * \param input <input data desc>
-			 * \param output <output data desc>
+			 * \param input record.
+			 * \param output record.
 			 */
 			void analyseRecord(
 				const io::InputRecord& input,
 				io::OutputRecord& output );
 
-			//! Print CJet algorithm execution results to standard output
+			/**
+			 * Print CJet algorithm execution results to standard output.
+			 */
 			void printResults() const;
 		};
 

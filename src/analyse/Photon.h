@@ -16,46 +16,60 @@ using namespace AcerDet::io;
 namespace AcerDet {
 	namespace analyse {
 
-		//! Title
+		//! Photon analyse algorithm class
 		/*!
-		 * Detailed description
+		 * An algorithm for Photon reconstruction.
 		 */
 		class Photon {
 		private:
-			Real64_t ETCLU; /*!< detailed description  */
-			Real64_t RCONE; /*!< detailed description  */
-			Real64_t PTLMIN; /*!< detailed description  */
-			Real64_t ETAMAX; /*!< detailed description  */
-			Real64_t RJE; /*!< detailed description  */
-			Real64_t RISOLJ; /*!< detailed description  */
-			Real64_t RDEP; /*!< detailed description  */
-			Real64_t EDMAX; /*!< detailed description  */
+			Real64_t ETCLU;  /*!< see Configuration */
+			Real64_t RCONE;  /*!< see Configuration */
+			Real64_t PTLMIN; /*!< see Configuration */
+			Real64_t ETAMAX; /*!< see Configuration */
+			Real64_t RJE;    /*!< see Configuration */
+			Real64_t RISOLJ; /*!< see Configuration */
+			Real64_t RDEP;   /*!< see Configuration */
+			Real64_t EDMAX;  /*!< see Configuration */
 
-			Int32_t KEYHID; /*!< detailed description  */
-			Bool_t KEYSME; /*!< detailed description  */
+			Int32_t KEYHID;  /*!< see Configuration */
+			Bool_t KEYSME;   /*!< see Configuration */
 
-			Int32_t IEVENT; /*!< detailed description  */
+			Int32_t IEVENT;  /*!< Number of events computed by Photon algorithm. */
 			
-			IHistogramManager *histoManager; /*!< detailed description  */
-			Bool_t histoRegistered; /*!< detailed description  */
+			IHistogramManager *histoManager; /*!< A pointer to global histogram manager. */
+			Bool_t histoRegistered;          /*!< Indicates whether histograms are already registered and might be used now. */
 
 		public:
-			Photon( const Configuration&, IHistogramManager* );
+			
+			/** Constructor.
+			 * Creates new instance of Photon analyse algorithm.
+			 * \param conf AcerDET initial Configuration
+			 * \param histMgr a global instance of IHistogramManager
+			 */
+			Photon( const Configuration& conf, IHistogramManager* histMgr );
+			
+			/**
+			 * Destructor.
+			 */
 			~Photon();
 
-			//! Print information about Photon algorithm class to standard output
+			/**
+			 * Print information about Photon algorithm class to standard output.
+			 */
 			void printInfo() const;
 			
-			//! Analyse input record and find photons
+			//! Analyse input record and find photons.
 			/*!
-			 * \param input <input data desc>
-			 * \param output <output data desc>
+			 * \param input record.
+			 * \param output record.
 			 */
 			void analyseRecord(
 				const io::InputRecord& input,
 				io::OutputRecord& output );
 			
-			//! Print Photon algorithm execution results to standard output
+			/**
+			 * Print Photon algorithm execution results to standard output.
+			 */
 			void printResults() const;
 		};
 		

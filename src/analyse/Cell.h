@@ -17,58 +17,66 @@ using namespace AcerDet::io;
 namespace AcerDet {
 	namespace analyse {
 
-		//! Cell algorithm class
+		//! Cell analyse algorithm class
 		/*!
 		 * An algorithm for grouping particles into cells.
 		 */
 		class Cell {
 		private:
-			Real64_t ETACEL; /*!< detailed description  */
-			Real64_t PTMIN; /*!< detailed description  */
-			Real64_t ETTHR; /*!< detailed description  */
-			Real64_t CALOTH; /*!< detailed description  */
-			Real64_t DBETA; /*!< detailed description  */
-			Real64_t DBPHI; /*!< detailed description  */
+			Real64_t ETACEL; /*!< see Configuration */
+			Real64_t PTMIN;  /*!< see Configuration */
+			Real64_t ETTHR;  /*!< see Configuration */
+			Real64_t CALOTH; /*!< see Configuration */
+			Real64_t DBETA;  /*!< see Configuration */
+			Real64_t DBPHI;  /*!< see Configuration */
 			
 			Int32_t KEYHID; /*!< Histogram unique id */
-			Bool_t  KEYFLD; /*!< Should cell mathcing algorithm use folding? */
-			Int32_t KFINVS; /*!< Should cell matching algorithm care about invisible particles?  */
+			Bool_t  KEYFLD; /*!< see Configuration */
+			Int32_t KFINVS; /*!< see Configuration */
 			
-			Int32_t IEVENT; /*!< Number of events computed by this class */
+			Int32_t IEVENT; /*!< Number of events computed by Cell algorithm. */
 			
-			IHistogramManager *histoManager; /*!< Histogram manager instance */
-			Bool_t histoRegistered; /*!< Histogram manager initialization state true if initialized false otherwise */
+			IHistogramManager *histoManager;          /*!< A pointer to global histogram manager. */
+			Bool_t histoRegistered;                   /*!< Indicates whether histograms are already registered and might be used now. */
 
-			const ParticleDataProvider& partProvider; /*!< External provider for particle properties such as charge or name */
+			const ParticleDataProvider& partProvider; /*!< External provider for particle properties such as charge or name. */
 			
 		public:
-			/** A constructor
-			 * \param configuration global AcerDET configuration
-			 * \param histogramManager histogram manager instance
-			 * \param particleData provider of external particle data (such as charge and name) 
+		
+			/**
+			 * Constructor.
+			 * Creates new instance of Cell analyse algorithm.
+			 * \param conf AcerDET initial Configuration
+			 * \param histMgr a global instance of IHistogramManager
+			 * \param partData a global instance of IParticleDataProvider
 			 */
 			Cell( 
-				const Configuration& configuration,
-				IHistogramManager* histogramManager,
-				const ParticleDataProvider& particleData );
+				const Configuration& conf,
+				IHistogramManager* histMgr,
+				const ParticleDataProvider& partData );
 
-			/** A destructor
+			/**
+			 * Destructor.
 			 */
 			~Cell();
 			
-			//! Print information about Cell algorithm class to standard output
+			/**
+			 * Print information about Cell algorithm class to standard output.
+			 */
 			void printInfo() const;
 			
-			//! Analyse input record group cells
+			//! Analyse input record and group cells.
 			/*!
-			 * \param input <input data desc>
-			 * \param output <output data desc>
+			 * \param input record.
+			 * \param output record.
 			 */
 			void analyseRecord(
 				const InputRecord& input,
 				OutputRecord& output ); 
 			
-			//! Print Cell algorithm execution results to standard output
+			/**
+			 * Print Cell algorithm execution results to standard output.
+			 */
 			void printResults() const;
 		};
 

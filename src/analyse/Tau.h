@@ -16,42 +16,56 @@ using namespace AcerDet::io;
 namespace AcerDet {
 	namespace analyse {
 
-		//! Title
+		//! Tau analyse algorithm class
 		/*!
-		 * Detailed description
+		 * An algorithm for Tau reconstruction.
 		 */
 		class Tau {
 		private:
-			Real64_t ETJET; /*!< detailed description  */
-			Real64_t PTTAU; /*!< detailed description  */
-			Real64_t ETATAU; /*!< detailed description  */
-			Real64_t RJTAU; /*!< detailed description  */
-			Real64_t PTFRAC; /*!< detailed description  */
+			Real64_t ETJET;  /*!< see Configuration */
+			Real64_t PTTAU;  /*!< see Configuration */
+			Real64_t ETATAU; /*!< see Configuration */
+			Real64_t RJTAU;  /*!< see Configuration */
+			Real64_t PTFRAC; /*!< see Configuration */
 
-			Int32_t KEYHID; /*!< detailed description  */
-			Bool_t KEYTAU; /*!< detailed description  */
+			Int32_t KEYHID;  /*!< see Configuration */
+			Bool_t KEYTAU;   /*!< see Configuration */
 
-			Int32_t IEVENT; /*!< detailed description  */
+			Int32_t IEVENT;  /*!< Number of events computed by Tau algorithm. */
 
-			IHistogramManager *histoManager; /*!< detailed description  */
-			Bool_t histoRegistered; /*!< detailed description  */
+			IHistogramManager *histoManager;  /*!< A pointer to global histogram manager. */
+			Bool_t histoRegistered;           /*!< Indicates whether histograms are already registered and might be used now. */
 		public:
-			Tau( const Configuration&, IHistogramManager* );
+			
+			/** Constructor.
+			 * Creates new instance of Tau analyse algorithm.
+			 * \param conf AcerDET initial Configuration
+			 * \param histMgr a global instance of IHistogramManager
+			 */
+			Tau( const Configuration& conf, IHistogramManager* histMgr );
+			
+			/**
+			 * Destructor.
+			 */
 			~Tau();
 
-			//! Print information about Tau algorithm class to standard output
+			/**
+			 * Print information about Tau algorithm class to standard output.
+			 */
 			void printInfo() const;
 			
-			//! Analyse input record and find taus
+			//! Analyse input record and find taus.
 			/*!
-			 * \param input <input data desc>
-			 * \param output <output data desc>
+			 * \param input record.
+			 * \param output record.
 			 */
 			void analyseRecord(
 				const io::InputRecord& input,
 				io::OutputRecord& output );
 
-			//! Print Tau algorithm execution results to standard output
+			/**
+			 * Print Tau algorithm execution results to standard output.
+			 */
 			void printResults() const;
 		};
 		
