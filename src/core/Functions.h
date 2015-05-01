@@ -14,8 +14,10 @@ using namespace std;
 namespace AcerDet {
 	namespace core {
 		
-		/*
-		 * Saturates given angle to [-pi,pi] range
+		/**
+		 * Saturates given angle to range [-pi,pi].
+		 * \param angle angle in radians
+		 * \return equivalent angle to given but in range [-pi, pi].
 		 */
 		template<typename T>
 		inline T saturatePi(T angle) {
@@ -24,22 +26,24 @@ namespace AcerDet {
 				res = angle - 2.0 * PI;
 			if (angle < -PI)
 				res = angle + 2.0 * PI;
-			return res; //angle;
+			return res;
 		}
 		
-		/*
-		 * Compute radius from given coordinates
+		/**
+		 * Compute radius from given coordinates in XY plane.
+		 * \param x coordinate
+		 * \param y coordinate
+		 * \return vector radius (distance from (0,0) to (x,y)).
 		 */
 		template<typename T>
 		inline T radius(T x, T y) {
 			return (T)sqrt(x*x + y*y);
 		}
 		
-		/*
+		/**
 		 * Signum function
-		 * Return -1 if value is less than zero
-		 * +1 if value us greater than zero
-		 * 0 otherwise
+		 * \param val value
+		 * \return -1 if value is less than zero, +1 if value us greater than zero, 0 otherwise
 		 */
 		template<typename T>
 		T sgn(T val) {
@@ -48,9 +52,9 @@ namespace AcerDet {
 			return (T)(0);
 		}
 		
-		/*
+		/**
 		 * Return first value with the sign of second
-		 * result = |arg1| * sgn(arg2)
+		 * \return |arg1| * sgn(arg2)
 		 */
 		template<typename T, typename Q>
 		T sign(T val, Q coef) {
@@ -58,9 +62,11 @@ namespace AcerDet {
 			return (T)(abs(val) * sg);
 		}
 		
-		/*
-		 * Returns angle from given coordinates
-		 * in range [-PI,PI]
+		/**
+		 * Computes angle from given coordinates in range [-PI,PI]
+		 * \param x coordinate
+		 * \param y coordinate
+		 * \return (x,y) vector angle in XY plane saturated to range [-pi,pi].
 		 */
 		template<typename T>
 		T angle(T x, T y) {
@@ -85,9 +91,11 @@ namespace AcerDet {
 			return radius(x,y);
 		}
 		
-		/*
-		 * Check if given particle is a hard process praticle
-		 * Returns true if particle is final and has mother from set {23,24,25}
+		/**
+		 * Check if given particle is a hard process praticle.
+		 * \param parts list of particles from event.
+		 * \param i index of particle to check.
+		 * \returns true if particle is final and has mother from set {23,24,25}.
 		 */
 		Bool_t isHardProcess(const vector<Particle>& parts, int i);
 	}
