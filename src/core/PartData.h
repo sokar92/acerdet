@@ -8,6 +8,10 @@
 
 namespace AcerDet {
 	namespace core {
+		
+		/**
+		 * Internal AcerDET representation of parton.
+		 */
 		class PartData {
 		public:
 			/*
@@ -28,20 +32,34 @@ namespace AcerDet {
 			 * 4 - pT
 			 */
 			
-			Int32_t num; /*!< particle unique id (sequential number in event) */
-			Int32_t barcode; /*!< particle barcode */
-			Int32_t motherStatus; /*!< status of mother particle (if exists) */
-			Int32_t status; /*!< particle status */
-			Real64_t eta; /*!< eta */
-			Real64_t phi; /*!< phi */
-			Real64_t pT; /*!< energy */
+			Int32_t num;          /*!< Parton unique number in event (sequential). */
+			Int32_t barcode;      /*!< Parton barcode. */
+			Int32_t motherStatus; /*!< Parton mother's status (if mother exists). */
+			Int32_t status;       /*!< Parton status (not converted). */
+			Real64_t eta;         /*!< Parton eta angle. */
+			Real64_t phi;         /*!< Parton phi angle. */
+			Real64_t pT;          /*!< Parton energy. */
 			
+			/**
+			 * Default constructor.
+			 * \return new structure describing parton in AcerDET.
+			 */
 			PartData();
 			
-			static void sortBy_pT(vector<PartData>&);
+			/**
+			 * Sorts a list of partons by energy.
+			 * \param vec a vector of partons to be sorted.
+			 */
+			static void sortBy_pT(vector<PartData>& vec);
 			
 		private:
-			static bool comparator_pT(const PartData&, const PartData&);
+		
+			/**
+			 * Parton comparator.
+			 * \param l first parton to compare.
+			 * \param r second parton to compare.
+			 */
+			static bool comparator_pT(const PartData& l, const PartData& r);
 		};
 	}
 }
