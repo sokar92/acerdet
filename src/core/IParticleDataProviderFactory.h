@@ -9,11 +9,17 @@ namespace AcerDet {
 	namespace core {
 		
 		/**
-		 * Interface for external ParticleDataProvider factory.
+		 * Abstract interface describing contracts for any external implementation of particle data provider
+		 * supported by AcerDET.
 		 */
 		class IParticleDataProviderFactory {
 		public:
+		
+			/**
+			 * Virtual destructor.
+			 */
 			virtual ~IParticleDataProviderFactory() {}
+			
 			/**
 			 * Create new ParticleDataProvider.
 			 * Has to be implemented in subclass.
