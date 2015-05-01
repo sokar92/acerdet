@@ -9,41 +9,169 @@
 namespace AcerDet {
 	namespace core {
 
+		/**
+		 * A 3-Vector.
+		 * Composition of 3 independent coordinates.
+		 */
 		template<typename T>
 		class Vector3 {
 		public:
-			T x; /*!< detailed description  */
-			T y; /*!< detailed description  */
-			T z; /*!< detailed description  */
+			T x; /*!< 3-vector first (X) coordinate. */
+			T y; /*!< 3-vector second (Y) coordinate. */
+			T z; /*!< 3-vector third (Z) coordinate. */
 
+			/**
+			 * Default constructor.
+			 * \return a zero 3-vector [0,0,0].
+			 */
 			Vector3() : x(0), y(0), z(0) {};
+			
+			/**
+			 * Creates a new 3-vector with a given coordinates.
+			 * \param x first cooridinate of new 3-vector.
+			 * \param y second cooridinate of new 3-vector.
+			 * \param z third cooridinate of new 3-vector.
+			 * \return new four-vector [x,y,z].
+			 */
 			Vector3(T X, T Y, T Z) : x(X), y(Y), z(Z) {}
 
+			/**
+			 * Negation operator.
+			 * Converts 3-vector [x,y,z] to 3-vector [-x,-y,-z].
+			 * \return negated 3-vector.
+			 */
 			Vector3<T>& operator - ();
-			Vector3<T>& operator += (const Vector3<T>&);
-			Vector3<T>& operator -= (const Vector3<T>&);
-			Vector3<T>& operator *= (T);
-			Vector3<T>& operator /= (T);
-
-			Vector3<T> operator + (const Vector3<T>&);
-			Vector3<T> operator - (const Vector3<T>&);
-			Vector3<T> operator * (T);
-			Vector3<T> operator / (T);
 			
-			Bool_t operator == (const Vector3<T>&);
-			Bool_t operator != (const Vector3<T>&); 
+			/**
+			 * Adds a given 3-vector by coordinates to current 3-vector.
+			 * \param v 3-vector to be added to current one.
+			 * \return 3-vector being a sum of current 3-vector and the given one.
+			 */
+			Vector3<T>& operator += (const Vector3<T>& v);
+			
+			/**
+			 * Substracts a given 3-vector by coordinates from current 3-vector.
+			 * \param v 3-vector to be substracted from current one.
+			 * \return 3-vector being result of substraction 3-vector v from current one.
+			 */
+			Vector3<T>& operator -= (const Vector3<T>& v);
+			
+			/**
+			 * Multiplies current 3-vector by coordinates by given scalar value c.
+			 * \param c a skalar value.
+			 * \return current 3-vector multiplied by scalar value.
+			 */
+			Vector3<T>& operator *= (T c);
+			
+			/**
+			 * Divides current 3-vector by coordinates by given scalar value c.
+			 * Causes error when dividing by zero.
+			 * \param a skalar non-zero value.
+			 * \return current 3-vector divided by scalar value.
+			 */
+			Vector3<T>& operator /= (T c);
 
+			/**
+			 * Adds a given 3-vector by coordinates to current 3-vector.
+			 * \param v 3-vector to be added to current one.
+			 * \return 3-vector being a sum of current 3-vector and the given one.
+			 */
+			Vector3<T> operator + (const Vector3<T>& v);
+			
+			/**
+			 * Substracts a given 3-vector by coordinates from current 3-vector.
+			 * \param v 3-vector to be substracted from current one.
+			 * \return 3-vector being result of substraction 3-vector v from current one.
+			 */
+			Vector3<T> operator - (const Vector3<T>& v);
+			
+			/**
+			 * Multiplies current 3-vector by coordinates by given scalar value c.
+			 * \param c a skalar value.
+			 * \return current 3-vector multiplied by scalar value.
+			 */
+			Vector3<T> operator * (T c);
+			
+			/**
+			 * Divides current 3-vector by coordinates by given scalar value c.
+			 * Causes error when dividing by zero.
+			 * \param a skalar non-zero value.
+			 * \return current 3-vector divided by scalar value.
+			 */
+			Vector3<T> operator / (T c);
+			
+			/**
+			 * Equality operator.
+			 * \param v 3-vector to compare with.
+			 * \return true if 3-vectors are equal (in respect to they coordinates), false otherwise.
+			 */
+			Bool_t operator == (const Vector3<T>& v);
+			
+			/**
+			 * Inequality operator.
+			 * \param v 3-vector to compare with.
+			 * \return false if 3-vectors are equal (in respect to they coordinates), true otherwise.
+			 */
+			Bool_t operator != (const Vector3<T>& v); 
+
+			/**
+			 * Computes length (in Euklidian sense) of current 3-vector.
+			 * \return Length of current 3-vector. ( sqrt(x*x + y*y + z*z) )
+			 */
 			inline T length() const;
 			
+			/**
+			 * Normalizes current 3-vector.
+			 * After normalization length of current vector is 1.
+			 * \throw error when zero 3-vector.
+			 */
 			Vector3<T>& normalize ();
+			
+			/**
+			 * Normalizes current 3-vector.
+			 * Length of returned 3-vector is 1.
+			 * \throw error when zero 3-vector.
+			 * \return normalized form of current 3-vector.
+			 */
 			Vector3<T> getNormalized () const;
 
-			inline T dotProduct (const Vector3<T>&) const;
-			inline Vector3<T> crossProduct (const Vector3<T>&) const;
+			/**
+			 * Computes dot product between current 3-vector and given one.
+			 * \param v second argument of dot product (first is current 3-vector).
+			 * \return dot product as a scalar value.
+			 */
+			inline T dotProduct (const Vector3<T>& v) const;
+			
+			/**
+			 * Computes cross product between current 3-vector and given one.
+			 * \param v second argument of cross product (first is current 3-vector).
+			 * \return cross product as new 3-vector perpendicular to current and given one.
+			 */
+			inline Vector3<T> crossProduct (const Vector3<T>& v) const;
 
-			inline T angle (const Vector3<T>&) const;
+			/**
+			 * Computes angle (in radians) between current vector and given one.
+			 * \param v 3-vector as second arm of the angle.
+			 * \return angle in radians between current 3-vector and v.
+			 */
+			inline T angle (const Vector3<T>& v) const;
+			
+			/**
+			 * Computes angle (in radians) between current 3-vector and OX axis.
+			 * \return angle in radians between current 3-vector and OX axis.
+			 */
 			inline T angleOX () const;
+			
+			/**
+			 * Computes angle (in radians) between current 3-vector and OY axis.
+			 * \return angle in radians between current 3-vector and OY axis.
+			 */
 			inline T angleOY () const;
+			
+			/**
+			 * Computes angle (in radians) between current 3-vector and OZ axis.
+			 * \return angle in radians between current 3-vector and OZ axis.
+			 */
 			inline T angleOZ () const;
 		};
 
