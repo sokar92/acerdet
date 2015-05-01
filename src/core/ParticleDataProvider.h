@@ -12,6 +12,10 @@ using namespace std;
 namespace AcerDet {
 	namespace core {
 
+		/**
+		 * A mapping between particle PDGid and it's data.
+		 * Record data contains information about particle charge and name.
+		 */
 		class ParticleDataProvider {
 		private:
 
