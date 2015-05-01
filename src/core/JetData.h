@@ -9,12 +9,18 @@
 namespace AcerDet {
 	namespace core {
 		
+		/**
+		 * Type of partons jet.
+		 */
 		enum JetType {
-			UNKNOWN = 0,
-			C_JET = 4,
-			B_JET = 5
+			UNKNOWN = 0,  /*!< Jet not classified as b-jet or c-jet yet. */
+			C_JET = 4,    /*!< Jet classified as c-jet. */
+			B_JET = 5     /*!< Jet classified as b-jet. */
 		};
 			
+		/**
+		 * AcerDET internal representation of Jet.
+		 */
 		class JetData {
 		public:
 			/*
@@ -35,20 +41,37 @@ namespace AcerDet {
 			 * 4 - eT
 			 */
 			
-			JetType type; /*!< A type of jet (if recognised) */
+			JetType type;     /*!< A type of jet (if recognised) */
 			
-			Real64_t eta; /*!< eta (inherited from ?) */
-			Real64_t phi; /*!< phi (inherited from ?) */
-			Real64_t eta_rec; /*!< custom accumulated eta (inherited from ?) */
-			Real64_t phi_rec; /*!< custom accumulated phi (inherited from ?) */
-			Real64_t pT; /*!< accumulated energy */
+			Real64_t eta;     /*!< Jet eta angle. */
+			Real64_t phi;     /*!< Jet phi angle. */
+			Real64_t eta_rec; /*!< Custom total accumulated eta angle. */
+			Real64_t phi_rec; /*!< Custom total accumulated phi angle. */
+			Real64_t pT;      /*!< Total energy accumulated in jet. */
 			
+			/**
+			 * Default constructior.
+			 * \return new structure describing jet.
+			 */
 			JetData();
 			
+			/**
+			 * Checks whethear current jet is a b-jet.
+			 * \return true if current jet is a b-jet, false otherwise.
+			 */
 			Bool_t isBJet() const;
+			
+			/**
+			 * Checks whethear current jet is a c-jet.
+			 * \return true if current jet is a c-jet, false otherwise.
+			 */
 			Bool_t isCJet() const;
 			
-			static void sortBy_pT(vector<JetData>&);
+			/**
+			 * Sorts a list of jets by accumulated energy.
+			 * \param v list of jets to sort.
+			 */
+			static void sortBy_pT(vector<JetData>& v);
 			
 		private:
 			static bool comparator_pT(const JetData&, const JetData&);

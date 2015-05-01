@@ -8,6 +8,10 @@
 
 namespace AcerDet {
 	namespace core {
+		
+		/**
+		 * AcerDET internal representation of detector accumulation basic unit - Cell.
+		 */
 		class CellData {
 		public:
 			/*
@@ -27,16 +31,24 @@ namespace AcerDet {
 			 * 3 -
 			 * 4 - pT
 			 */
-			Int32_t cellID; /*!< unique cell id describing it's position in detector */
-			Int32_t status; /*!< cell status */
-			Int32_t hits; /*!< number of energy peeks contained by this cell */
-			Real64_t eta; /*!< eta */
-			Real64_t phi; /*!< phi */
-			Real64_t pT; /*!< energy accumulated by cell */
+			Int32_t cellID;  /*!< Unique cell id describing it's position in detector. (is computable from eta and phi). */
+			Int32_t status;  /*!< Cell status. */
+			Int32_t hits;    /*!< Number of energy peeks contained in this cell. */
+			Real64_t eta;    /*!< Cell eta coordinate in detector. */
+			Real64_t phi;    /*!< Cell phi coordinate in detector. */
+			Real64_t pT;     /*!< Total energy accumulated in Cell. */
 			
+			/**
+			 * Default constructor.
+			 * \return new structure describing a cell in detector.
+			 */
 			CellData();
 			
-			static void sortBy_pT(vector<CellData>&);
+			/**
+			 * Sorst a list of cells by accumulated energy.
+			 * \param v list of cells to sort.
+			 */
+			static void sortBy_pT(vector<CellData>& v);
 		
 		private:
 			static bool comparator_pT(const CellData&, const CellData&);
