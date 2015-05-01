@@ -9,6 +9,7 @@
 namespace AcerDet {
 	namespace core {
 		
+		//! Internal AcerDET representation of parton.
 		/**
 		 * Internal AcerDET representation of parton.
 		 */

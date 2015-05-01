@@ -10,6 +10,7 @@
 namespace AcerDet {
 	namespace core {
 		
+		//! Utility class with methods for energy smearing computation.
 		/**
 		 * Utility class with methods for energy smearing computation.
 		 */

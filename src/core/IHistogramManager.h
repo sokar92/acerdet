@@ -11,6 +11,7 @@ using namespace std;
 namespace AcerDet {
 	namespace core {
 		
+		//! Abstract interface describing contracts for any external implementation of histogram manager supported by AcerDET.
 		/**
 		 * Abstract interface describing contracts for any external implementation of histogram manager
 		 * supported by AcerDET.

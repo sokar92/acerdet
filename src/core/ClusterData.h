@@ -9,6 +9,7 @@
 namespace AcerDet {
 	namespace core {
 		
+		//! AcerDET internal representation of detector cell grouping unit - Cluster.
 		/**
 		 * AcerDET internal representation of detector cell grouping unit - Cluster.
 		 */

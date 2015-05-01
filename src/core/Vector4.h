@@ -10,6 +10,7 @@ using namespace std;
 namespace AcerDet {
 	namespace core {
 
+		//! A FourVector.
 		/**
 		 * A FourVector.
 		 * Composition of 3-Vector and e/t as it's fourth coordinate.

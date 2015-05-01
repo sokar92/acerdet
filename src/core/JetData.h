@@ -9,6 +9,7 @@
 namespace AcerDet {
 	namespace core {
 		
+		//! Type of partons jet.
 		/**
 		 * Type of partons jet.
 		 */
@@ -17,7 +18,8 @@ namespace AcerDet {
 			C_JET = 4,    /*!< Jet classified as c-jet. */
 			B_JET = 5     /*!< Jet classified as b-jet. */
 		};
-			
+		
+		//! AcerDET internal representation of Jet.
 		/**
 		 * AcerDET internal representation of Jet.
 		 */

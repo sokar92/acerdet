@@ -9,6 +9,7 @@
 namespace AcerDet {
 	namespace core {
 		
+		//! AcerDET internal representation of missing energy.
 		/**
 		 * AcerDET internal representation of missing energy.
 		 */

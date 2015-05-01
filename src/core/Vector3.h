@@ -9,6 +9,7 @@
 namespace AcerDet {
 	namespace core {
 
+		//! A 3-Vector.
 		/**
 		 * A 3-Vector.
 		 * Composition of 3 independent coordinates.

@@ -9,6 +9,7 @@
 namespace AcerDet {
 	namespace core {
 		
+		//! AcerDET internal representation of detector accumulation basic unit - Cell.
 		/**
 		 * AcerDET internal representation of detector accumulation basic unit - Cell.
 		 */

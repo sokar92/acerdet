@@ -17,6 +17,7 @@ using namespace std;
 namespace AcerDet {
 	namespace core {
 		
+		//! A current state of particle
 		/**
 		  A current state of particle
 		*/
@@ -30,6 +31,7 @@ namespace AcerDet {
 			PS_HP_QUARK       /*!< b or c quark from hard process. */
 		};
 		
+		//! Type of particle
 		/**
 		  Type of particle
 		*/
@@ -57,6 +59,7 @@ namespace AcerDet {
 			PT_BOSON_H       /* 25 */  /*!< Higgs boson. */
 		};
 		
+		//! Common class representing partons.
 		/**
 		 * Common class representing partons.
 		 * Stores it's type, status, four-vectors representing momentum and production vertex (if exists), mother and daughters ids.

@@ -8,6 +8,7 @@
 namespace AcerDet {
 	namespace core {
 		
+		//! Abstract interface describing contracts for any external implementation of particle data provider supported by AcerDET.
 		/**
 		 * Abstract interface describing contracts for any external implementation of particle data provider
 		 * supported by AcerDET.
