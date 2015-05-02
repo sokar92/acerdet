@@ -9,9 +9,15 @@ using namespace AcerDet::core;
 namespace AcerDet {
 	namespace external {
 		
+		//! Pythia8 specialization of AcerDET core::IParticleDataProvider
 		class Pythia8_ParticleDataProviderFactory 
 			: public IParticleDataProviderFactory {
 		public:
+		
+			/**
+			 * Creates new ParticleDataProvider instance.
+			 * \result new ParticleDataProvider instance.
+			 */
 			ParticleDataProvider create();
 		};
 

@@ -36,36 +36,70 @@
 
 namespace AcerDet {
 
+	//! Main AcerDET class.
+	/**
+	 * Program for reconstruction, analyse and storing events statistics from MonteCarlo event generators.
+	 */
 	class AcerDET {
 	private:
-		core::IHistogramManager	*histos;
-		Bool_t					histos_initialized;
-		core::ParticleDataProvider partProvider;
+		core::IHistogramManager     *histos;            /*!< A global instance of core::IHistogramManager. */
+		Bool_t                      histos_initialized; /*!< Indicates whether global instance of core::IHistogramManager is already initialized. */
+		core::ParticleDataProvider  partProvider;       /*!< A global instance of core::IParticleDataProvider. */
 		
-		analyse::BJet			*analyse_BJet;
-		analyse::Calibration	*analyse_Calibration;
-		analyse::Cell			*analyse_Cell;
-		analyse::CJet			*analyse_CJet;
-		analyse::Cluster		*analyse_Cluster;
-		analyse::Electron		*analyse_Electron;
-		analyse::Jet			*analyse_Jet;
-		analyse::Mis			*analyse_Mis;
-		analyse::Muon			*analyse_Muon;
-		analyse::Photon			*analyse_Photon;
-		analyse::Tau			*analyse_Tau;
+		analyse::BJet          *analyse_BJet;        /*!< An instance of algorithm for reconstructing b-jets. */
+		analyse::Calibration   *analyse_Calibration; /*!< An instance of AcerDET detector calibration. */
+		analyse::Cell          *analyse_Cell;        /*!< An instance of algorithm for cells construction. */
+		analyse::CJet          *analyse_CJet;        /*!< An instance of algorithm for reconstructing c-jets. */
+		analyse::Cluster       *analyse_Cluster;     /*!< An instance of algorithm for clusters construction. */
+		analyse::Electron      *analyse_Electron;    /*!< An instance of algorithm for reconstructing electrons. */
+		analyse::Jet           *analyse_Jet;         /*!< An instance of algorithm for reconstructing jets. */
+		analyse::Mis           *analyse_Mis;         /*!< An instance of algorithm for accumulating missing energy. */
+		analyse::Muon          *analyse_Muon;        /*!< An instance of algorithm for reconstructing muons. */
+		analyse::Photon        *analyse_Photon;      /*!< An instance of algorithm for reconstructing photons. */
+		analyse::Tau           *analyse_Tau;         /*!< An instance of algorithm for reconstructing taus. */
+		
 	public:
+	
+		/**
+		 * Constructor.
+		 * Creates a new instance of AcerDET analyzer.
+		 * \param conf AcerDET configuration/
+		 * \param part instance of global particle data provider.
+		 * \param hist instance of global histogram manager.
+		 */
 		AcerDET(
-			const conf::Configuration&,
-			core::IParticleDataProviderFactory*,
-			core::IHistogramManager* );
+			const conf::Configuration& conf,
+			core::IParticleDataProviderFactory* part,
+			core::IHistogramManager* hist );
+			
+		/**
+		 * Destructor.
+		 * Performs cleanup.
+		 */
 		~AcerDET();
 		
+		/**
+		 * Prints out AcerDET basic informations and configuration.
+		 */
 		void printInfo() const;
 		
-		void analyseRecord( const io::InputRecord&, io::OutputRecord& );
+		/**
+		 * Analyse single event.
+		 * \param inp input record describing random event.
+		 * \param out output record to store analyse results in.
+		 */
+		void analyseRecord( const io::InputRecord& inp, io::OutputRecord& out );
 		
+		/**
+		 * Prints out event analyse statistics.
+		 * Foreach analyse algorithm prints it's statistics.
+		 */
 		void printResults() const;
 		
+		/**
+		 * Stores all histograms in hard drive.
+		 * For ROOT framework requires opened ROOT file before execution.
+		 */
 		void storeHistograms();
 	};
 
