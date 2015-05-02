@@ -20,14 +20,14 @@ namespace AcerDet {
 			 * A set of commonly used parameters.
 			 */
 			struct _Flag {
-				int HistogramId;       /*!< detailed description  */
-				bool Smearing;         /*!< Should AcerDET use energy smearing? */
-				bool BField;           /*!< detailed description  */
-				int SusyParticle;      /*!< PDGid of SUSY particle. */
+				int HistogramId;       /*!< id for histograms */
+				bool Smearing;         /*!< mearing on = 1, off = 0 */
+				bool BField;           /*!< B-field on = 1, off = 0 */
+				int SusyParticle;      /*!< code for SUSY LSP particle */
 
-				bool BCJetsLabeling;	/*!< Should AcerDET label b-jets and c-jets? */
-				bool TauJetsLabeling;	/*!< Should AcerDET label tau jets? */
-				bool JetCalibration;	/*!< Should AcerDET use calibration for jets? */
+				bool BCJetsLabeling;	/*!< b-jets and c-jets labeling on = 1, off = 0 */
+				bool TauJetsLabeling;	/*!< tau-jets labeling on = 1, off = 0 */
+				bool JetCalibration;	/*!< jet calibration  on = 1, off = 0 */
 
 				/**
 				 * Default constructor.
@@ -54,10 +54,10 @@ namespace AcerDet {
 			 * A set of parameters used by analyse::Cell algorithm.
 			 */
 			struct _Cell {
-				double RapidityCoverage;  /*!< detailed description  */
-				double MinpT;             /*!< Minimal particle energy to treat it as interesting object. */
-				double MinEt;             /*!< Minimal energy to mark parton as a Cell. */
-				double EtaTransition;     /*!< detailed description  */
+				double RapidityCoverage;  /*!< rapidity coverage */
+				double MinpT;             /*!< min p_T for B-field */
+				double MinEt;             /*!< min E_T for cell */
+				double EtaTransition;     /*!< Eta transition in cells granularity.  */
 				double GranularityEta;    /*!< Cell eta coordinate granularity. */
 				double GranularityPhi;    /*!< Cell phi coordinate granularity. */
 
@@ -86,10 +86,10 @@ namespace AcerDet {
 			 * A set of parameters used by analyse::Cluster algorithm.
 			 */
 			struct _Cluster {
-				double RapidityCoverage;  /*!< detailed description  */
-				double ConeR;             /*!< detailed description  */
-				double MinEt;             /*!< detailed description  */
-				double MinEtInit;         /*!< detailed description  */
+				double RapidityCoverage;  /*!< rapidity coverage */
+				double ConeR;             /*!< cone R for clustering */
+				double MinEt;             /*!< minimum E_T for cluster */
+				double MinEtInit;         /*!< min E_T for cluster initiator */
 
 				/**
 				 * Default constructor.
@@ -116,11 +116,11 @@ namespace AcerDet {
 			 * A set of parameters used by analyse::Muon algorithm.
 			 */
 			struct _Muon {
-				double MinMomenta;  /*!< detailed description  */
-				double MaxEta;      /*!< detailed description  */
-				double MinIsolRlj;  /*!< detailed description  */
-				double ConeR;       /*!< detailed description  */
-				double MaxEnergy;   /*!< detailed description  */
+				double MinMomenta;  /*!< minimum muon-momenta to be detected */
+				double MaxEta;      /*!< maximum muon eta to be detected */
+				double MinIsolRlj;  /*!< min R_lj for muon-isolation */
+				double ConeR;       /*!< R_cone for energy deposition */
+				double MaxEnergy;   /*!< max energy deposition for isol */
 
 				/**
 				 * Default constructor.
@@ -147,12 +147,12 @@ namespace AcerDet {
 			 * A set of parameters used by analyse::Photon algorithm.
 			 */
 			struct _Photon {
-				double MinMomenta;  /*!< detailed description  */
-				double MaxEta;      /*!< detailed description  */
-				double MinJetsRlj;  /*!< detailed description  */
-				double MinIsolRlj;  /*!< detailed description  */
-				double ConeR;       /*!< detailed description  */
-				double MaxEnergy;   /*!< detailed description  */
+				double MinMomenta;  /*!< minimum photon-momenta to be isol */
+				double MaxEta;      /*!< maximum photon eta to be isol */
+				double MinJetsRlj;  /*!< min R_lj for photon-jet */
+				double MinIsolRlj;  /*!< min R_lj for photon-isolation */
+				double ConeR;       /*!< R_cone for energy deposition */
+				double MaxEnergy;   /*!< max energy deposition for isol */
 
 				/**
 				 * Default constructor.
@@ -179,12 +179,12 @@ namespace AcerDet {
 			 * A set of parameters used by analyse::Electron algorithm.
 			 */
 			struct _Electron {
-				double MinMomenta;  /*!< detailed description  */
-				double MaxEta;      /*!< detailed description  */
-				double MinJetsRlj;  /*!< detailed description  */
-				double MinIsolRlj;  /*!< detailed description  */
-				double ConeR;       /*!< detailed description  */
-				double MaxEnergy;   /*!< detailed description  */
+				double MinMomenta;  /*!< minimum electron-momenta to be isol */
+				double MaxEta;      /*!< maximum electron eta to be isol */
+				double MinJetsRlj;  /*!< min R_lj for electron-jet */
+				double MinIsolRlj;  /*!< min R_lj for electron-isolation */
+				double ConeR;       /*!< R_cone for energy deposition */
+				double MaxEnergy;   /*!< max energy deposition for isol */
 
 				/**
 				 * Default constructor.
@@ -211,8 +211,8 @@ namespace AcerDet {
 			 * A set of parameters used by analyse::Jet algorithm.
 			 */
 			struct _Jet {
-				double RapidityCoverage;  /*!< detailed description  */
-				double MinEnergy;         /*!< detailed description  */
+				double RapidityCoverage;  /*!< rapidity coverage for jets */
+				double MinEnergy;         /*!< jets energy_min threshold */
 
 				/**
 				 * Default constructor.
@@ -239,9 +239,9 @@ namespace AcerDet {
 			 * A set of parameters used by analyse::BJet algorithm.
 			 */
 			struct _BJet {
-				double MinMomenta;  /*!< detailed description  */
-				double MaxEta;      /*!< detailed description  */
-				double MaxRbj;      /*!< detailed description  */
+				double MinMomenta;  /*!< minimum b-quark pT (after FSR) momenta for b-jet label */
+				double MaxEta;      /*!< maximum b-quark eta for b-jet label */
+				double MaxRbj;      /*!< max R_bj for b-jet label */
 
 				/**
 				 * Default constructor.
@@ -268,9 +268,9 @@ namespace AcerDet {
 			 * A set of parameters used by analyse::CJet algorithm.
 			 */
 			struct _CJet {
-				double MinMomenta;  /*!< detailed description  */
-				double MaxEta;      /*!< detailed description  */
-				double MaxRcj;      /*!< detailed description  */
+				double MinMomenta;  /*!< minimum c-quark pT (after FSR) momenta for c-jet label */
+				double MaxEta;      /*!< maximum c-quark eta for c-jet label */
+				double MaxRcj;      /*!< max R_cj for c-jet label */
 
 				/**
 				 * Default constructor.
@@ -297,10 +297,10 @@ namespace AcerDet {
 			 * A set of parameters used by analyse::Tau algorithm.
 			 */
 			struct _Tau {
-				double MinpT;   /*!< detailed description  */
-				double MaxEta;  /*!< detailed description  */
-				double MinR;    /*!< detailed description  */
-				double MaxR;    /*!< detailed description  */
+				double MinpT;   /*!< minimum tau-had pT for tau-jet label */
+				double MaxEta;  /*!< maximum tau-eta for tau-jet label */
+				double MinR;    /*!< min R_tauj for tau-jet */
+				double MaxR;    /*!< max R_tauj for tau-jet */
 
 				/**
 				 * Default constructor.
@@ -327,7 +327,7 @@ namespace AcerDet {
 			 * A set of parameters used by analyse::Mis algorithm.
 			 */
 			struct _Misc {
-				double MinEt;  /*!< detailed description  */
+				double MinEt;  /*!< min E_T for energy in cell to count unused cell */
 
 				/**
 				 * Default constructor.
