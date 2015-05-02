@@ -5,8 +5,6 @@ using namespace AcerDet::external;
 #include "../src/core/Functions.h"
 using namespace AcerDet::core;
 
-#include "Cintex/Cintex.h"
-
 Root_NTupleManager::Root_NTupleManager()
 {}
 
@@ -16,7 +14,6 @@ Root_NTupleManager::~Root_NTupleManager()
 void Root_NTupleManager::init() {
 	
 	/* in order to enable using std::vectors */
-	ROOT::Cintex::Cintex::Enable();
 	gROOT->ProcessLine("#include<vector>");
 	
 	ntuple = new TTree("ACDTree", "ACDTree");

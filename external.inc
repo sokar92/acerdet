@@ -18,4 +18,4 @@ ROOTINCLUDE= -I$(PWD)/$(RELATIVE_PATH)/$(ROOTLOCATION)include
 HEPMCLIBS= -L$(PWD)/$(RELATIVE_PATH)/$(HEPMCLOCATION)lib -lHepMC
 PYTHIALIBS= -L$(PWD)/$(RELATIVE_PATH)/$(PYTHIALOCATION)lib -lpythia8 -llhapdfdummy -lpythia8tohepmc
 
-ROOTLIBS := $(shell root-config --libs) -lCintex
+ROOTLIBS := $(shell root-config --libs)
