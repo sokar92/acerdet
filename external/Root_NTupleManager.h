@@ -3,7 +3,6 @@
 
 #include <TROOT.h>
 #include <TTree.h>
-//#include "TVector.h"
 
 #include "../src/io/OutputRecord.h"
 #include "../src/io/InputRecord.h"
@@ -17,9 +16,9 @@ namespace AcerDet {
 			//ACDtree
 			TTree* ntuple;
 			
-			int n_part_n;
-			std::vector<float> *n_part_px;
-			std::vector<Real32_t> n_part_py;
+			Int32_t n_part_n;
+			vector<Real32_t> n_part_px;
+			vector<Real32_t> n_part_py;
 			vector<Real32_t> n_part_pz;
 			vector<Real32_t> n_part_E;
 			vector<Int32_t> n_part_pdgId;

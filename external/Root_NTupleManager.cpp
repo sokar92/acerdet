@@ -5,61 +5,65 @@ using namespace AcerDet::external;
 #include "../src/core/Functions.h"
 using namespace AcerDet::core;
 
-Root_NTupleManager::Root_NTupleManager() : 
-	n_part_px(new std::vector<float>())
+#include "Cintex/Cintex.h"
+
+Root_NTupleManager::Root_NTupleManager()
 {}
 
-Root_NTupleManager::~Root_NTupleManager() {
-	delete n_part_px;
-}
+Root_NTupleManager::~Root_NTupleManager() 
+{}
 
 void Root_NTupleManager::init() {
-	printf ("NTuple: init\n");
+	
+	/* in order to enable using std::vectors */
+	ROOT::Cintex::Cintex::Enable();
+	gROOT->ProcessLine("#include<vector>");
+	
 	ntuple = new TTree("ACDTree", "ACDTree");
+	
+	ntuple->Branch("ProcessID",          &n_ProcessID);
+	
+	ntuple->Branch("part_n",             &n_part_n);
+	ntuple->Branch("part_pdgId",         &n_part_pdgId);
+	ntuple->Branch("part_px",            &n_part_px);
+	ntuple->Branch("part_py",            &n_part_py);
+	ntuple->Branch("part_pz",            &n_part_pz);
+	ntuple->Branch("part_E",             &n_part_E);
 
-  ntuple->Branch("ProcessID",          &n_ProcessID);
+	ntuple->Branch("ele_n",              &n_ele_n);
+	ntuple->Branch("ele_pdgId",          &n_ele_pdgId);
+	ntuple->Branch("ele_px",             &n_ele_px);
+	ntuple->Branch("ele_py",             &n_ele_py);
+	ntuple->Branch("ele_pz",             &n_ele_pz);
+	ntuple->Branch("ele_E",              &n_ele_E);
 
-  ntuple->Branch("part_n",             &n_part_n);
-  ntuple->Branch("part_pdgId",         &n_part_pdgId);
-  ntuple->Branch("part_px",            &n_part_px);
-  ntuple->Branch("part_py",            &n_part_py);
-  ntuple->Branch("part_pz",            &n_part_pz);
-  ntuple->Branch("part_E",             &n_part_E);
+	ntuple->Branch("muo_n",              &n_muo_n);
+	ntuple->Branch("muo_pdgId",          &n_muo_pdgId);
+	ntuple->Branch("muo_px",             &n_muo_px);
+	ntuple->Branch("muo_py",             &n_muo_py);
+	ntuple->Branch("muo_pz",             &n_muo_pz);
+	ntuple->Branch("muo_E",              &n_muo_E);
 
-  ntuple->Branch("ele_n",              &n_ele_n);
-  ntuple->Branch("ele_pdgId",          &n_ele_pdgId);
-  ntuple->Branch("ele_px",             &n_ele_px);
-  ntuple->Branch("ele_py",             &n_ele_py);
-  ntuple->Branch("ele_pz",             &n_ele_pz);
-  ntuple->Branch("ele_E",              &n_ele_E);
+	ntuple->Branch("pho_n",              &n_pho_n);
+	ntuple->Branch("pho_pdgId",          &n_pho_pdgId);
+	ntuple->Branch("pho_px",             &n_pho_px);
+	ntuple->Branch("pho_py",             &n_pho_py);
+	ntuple->Branch("pho_pz",             &n_pho_pz);
+	ntuple->Branch("pho_E",              &n_pho_E);
 
-  ntuple->Branch("muo_n",              &n_muo_n);
-  ntuple->Branch("muo_pdgId",          &n_muo_pdgId);
-  ntuple->Branch("muo_px",             &n_muo_px);
-  ntuple->Branch("muo_py",             &n_muo_py);
-  ntuple->Branch("muo_pz",             &n_muo_pz);
-  ntuple->Branch("muo_E",              &n_muo_E);
+	ntuple->Branch("jet_n",              &n_jet_n);
+	ntuple->Branch("jet_pdgId",          &n_jet_pdgId);
+	ntuple->Branch("jet_px",             &n_jet_px);
+	ntuple->Branch("jet_py",             &n_jet_py);
+	ntuple->Branch("jet_pz",             &n_jet_pz);
+	ntuple->Branch("jet_E",              &n_jet_E);
 
-  ntuple->Branch("pho_n",              &n_pho_n);
-  ntuple->Branch("pho_pdgId",          &n_pho_pdgId);
-  ntuple->Branch("pho_px",             &n_pho_px);
-  ntuple->Branch("pho_py",             &n_pho_py);
-  ntuple->Branch("pho_pz",             &n_pho_pz);
-  ntuple->Branch("pho_E",              &n_pho_E);
-
-  ntuple->Branch("jet_n",              &n_jet_n);
-  ntuple->Branch("jet_pdgId",          &n_jet_pdgId);
-  ntuple->Branch("jet_px",             &n_jet_px);
-  ntuple->Branch("jet_py",             &n_jet_py);
-  ntuple->Branch("jet_pz",             &n_jet_pz);
-  ntuple->Branch("jet_E",              &n_jet_E);
-
-  ntuple->Branch("pxmiss",             &n_pxmiss);
-  ntuple->Branch("pymiss",             &n_pxmiss);
-  ntuple->Branch("pxnue",              &n_pxnue);
-  ntuple->Branch("pynue",              &n_pynue);
-  ntuple->Branch("pxcalo",             &n_pxcalo);
-  ntuple->Branch("pycalo",             &n_pycalo);
+	ntuple->Branch("pxmiss",             &n_pxmiss);
+	ntuple->Branch("pymiss",             &n_pxmiss);
+	ntuple->Branch("pxnue",              &n_pxnue);
+	ntuple->Branch("pynue",              &n_pynue);
+	ntuple->Branch("pxcalo",             &n_pxcalo);
+	ntuple->Branch("pycalo",             &n_pycalo);
 }
 
 void Root_NTupleManager::fill(
@@ -67,7 +71,7 @@ void Root_NTupleManager::fill(
 	const OutputRecord& orecord,
 	Real64_t weigth
 ) {
-	n_part_px->clear();
+	n_part_px.clear();
 	n_part_py.clear();
 	n_part_pz.clear();
 	n_part_E.clear();
@@ -85,7 +89,7 @@ void Root_NTupleManager::fill(
 		Real64_t pz = parts[j].pT() * sinh(parts[j].getEta());
 		Real64_t E  = parts[j].pT() * cosh(parts[j].getEta());
 		
-		n_part_px->push_back(px);
+		n_part_px.push_back(px);
 		n_part_py.push_back(py);
 		n_part_pz.push_back(pz);
 		n_part_E.push_back(E);
@@ -168,12 +172,9 @@ void Root_NTupleManager::fill(
 	}
 	n_jet_n = orecord.Jets.size(); 
 
-	printf ("NTuple: Fill\n");
-	//filling ntuple
 	ntuple->Fill();
 }
 
 void Root_NTupleManager::write() {
-	printf ("NTuple: write\n");
 	ntuple->Write();
 }
