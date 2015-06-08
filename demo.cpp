@@ -71,7 +71,6 @@ int main( int argc, char **argv ) {
 	nTuple.init();
 	acerDet.printInfo();
 
-	DbDummy db;
 	OutputRecord oRec;
 	
 	for( int iEvent = 0; iEvent < events_limit; ++iEvent ) {

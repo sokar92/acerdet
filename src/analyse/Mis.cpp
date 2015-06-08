@@ -143,7 +143,7 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
     // add momenta in cells not used for reconstruction
     for (int i=0; i<orecord.Cells.size(); ++i) {
 		const CellData& cell = orecord.Cells[i];
-		if (cell.state != 0) {
+		if (cell.status != 0) {
 			if (KEYSME) {
 				Real64_t PEI = cell.pT * cosh( cell.eta );
 				Real64_t SIGSME = Smearing::forHadron(PEI, cell.eta, CALOTH);
@@ -204,8 +204,8 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 		pow(PYYNUES, 2)
 	);
 	
-	orecord.Miss.PXNUE = PXNUES;
-	orecord.Miss.PYNUE = PYNUES;
+	orecord.Miss.PXNUE = PXXNUES;
+	orecord.Miss.PYNUE = PYYNUES;
 	
 	histoManager
 	  ->insert(idhist+21, PTNUES );
