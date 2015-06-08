@@ -149,7 +149,7 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 				orecord.Clusters[MUCLU].phi_rec = pClu.getPhi();
 				orecord.Clusters[MUCLU].pT      = pClu.pT();
 
-				// KMUOX(I,5) = 0; ? ze niby co ?
+				orecord.NonisolatedMuons[i].alreadyUsed = true;
 			}
 		}
 	}
@@ -169,10 +169,7 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 			newJet.pT      = cluster.pT;
 			
 			orecord.Jets.push_back( newJet );
-			// TODO move K
-
-			//KJET(NJET,1) = NJET
-			//KCLU(I,5) = 0   // disable converted Cluster
+			orecord.Clusters[i].alreadyUsed = true; // disable converted Cluster
 		}
 	}
 	

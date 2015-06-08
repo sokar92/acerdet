@@ -57,7 +57,9 @@ namespace AcerDet {
 			Real32_t n_pynue;
 			Real32_t n_pxcalo;
 			Real32_t n_pycalo;
+			
 			Int32_t n_ProcessID;
+			Real32_t n_eventWeight;
   
 		public:
 			Root_NTupleManager();
@@ -69,7 +71,7 @@ namespace AcerDet {
 			void fill(
 				const InputRecord& iRec,
 				const OutputRecord& oRec,
-				Real64_t weight );
+				Real64_t weight, Int32_t processId );
 			
 			void write();
 		};

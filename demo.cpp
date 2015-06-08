@@ -24,19 +24,6 @@ using namespace AcerDet::io;
 #include <TChain.h>
 #include <TFile.h>
 
-// ----------------------
-// -- Dummy Database ----
-// ----------------------
-class DbDummy {
-public:
-	void store( const io::OutputRecord& rec ) const {
-//		printf ("DB: storing ...\n");
-//		printf ("\tcells: %d\n", (int)rec.Cells.size());
-//		printf ("\tclusters: %d\n", (int)rec.Clusters.size());
-//		printf ("\n");
-	}
-};
-
 // -----------------------
 // -- clean temp record --
 // -----------------------
@@ -105,8 +92,7 @@ int main( int argc, char **argv ) {
 		InputRecord iRec = external::HepMC_InputConverter::convert( *hepmc );
 		acerDet.analyseRecord(iRec, oRec);
 
-		db.store(oRec);
-		nTuple.fill(iRec, oRec, 1.0); // 1.0 by default - to change
+		nTuple.fill(iRec, oRec, 1.0, 1); // 1.0 by default - to change, 1 = processId
 		
 		delete hepmc;
 	}

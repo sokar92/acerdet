@@ -66,7 +66,7 @@ void Root_NTupleManager::init() {
 void Root_NTupleManager::fill(
 	const InputRecord& irecord,
 	const OutputRecord& orecord,
-	Real64_t weigth
+	Real64_t weight, Int32_t processId
 ) {
 	n_part_px.clear();
 	n_part_py.clear();
@@ -179,6 +179,16 @@ void Root_NTupleManager::fill(
 		n_jet_E.push_back(E);
 	}
 	n_jet_n = orecord.Jets.size(); 
+
+	n_pxmiss = orecord.Miss.PXREC;
+	n_pymiss = orecord.Miss.PXREC;
+	n_pxnue = orecord.Miss.PXNUE;
+	n_pynue = orecord.Miss.PYNUE;
+	n_pxcalo = orecord.Miss.PXXCALO;
+	n_pycalo = orecord.Miss.PYYCALO;
+	
+	n_ProcessID = processId;
+	n_eventWeight = weight;
 
 	ntuple->Fill();
 }

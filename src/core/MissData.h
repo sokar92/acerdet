@@ -15,10 +15,11 @@ namespace AcerDet {
 		 */
 		class MissData {
 		public:
-			Real64_t PXREC, PYREC;
-			Real64_t PXSUM, PYSUM;
-			Real64_t PXXCALO, PYYCALO;
-			Real64_t SUMET;
+			Real64_t PXREC, PYREC;       /*!< From reconstructed objects only. */
+			Real64_t PXSUM, PYSUM;       /*!< From objects and cells. */
+			Real64_t PXXCALO, PYYCALO;   /*!< Only in calorimetry. */
+			Real64_t PXNUE, PYNUE;       /*!< Fom neutrinos. */
+			Real64_t SUMET;              /*!<  */
 			
 			/**
 			 * Default constructor.

@@ -22,6 +22,7 @@ namespace AcerDet {
 			Real64_t eta;         /*!< Object eta angle. */
 			Real64_t phi;         /*!< Object phi angle. */
 			Real64_t pT;          /*!< Object energy. */
+			Bool_t alreadyUsed;   /*!< used for nonisolated muons, flag if added to jets */
 			
 			/**
 			 * Default constructor.

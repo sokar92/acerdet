@@ -15,24 +15,6 @@ namespace AcerDet {
 		 */
 		class ClusterData {
 		public:
-			/*
-			 * K
-			 * 0 -
-			 * 1 -
-			 * 2 - cellID
-			 * 3 - hits
-			 * 4 - status
-			 */
-			
-			/*
-			 * P
-			 * 0 - eta
-			 * 1 - phi
-			 * 2 - eta_rec
-			 * 3 - phi_rec 
-			 * 4 - pT
-			 */
-			
 			Int32_t cellID;   /*!< Unique id describing cluster position in detector (inherited from Cell) */
 			Int32_t hits;     /*!< Number of energy peeks accumulated in cluster. */
 			Int32_t status;   /*!< Cluster status. */
@@ -41,6 +23,7 @@ namespace AcerDet {
 			Real64_t eta_rec; /*!< Custom total accumulated eta. */
 			Real64_t phi_rec; /*!< Custom total accumulated phi. */
 			Real64_t pT;      /*!< Total accumulated energy in custer. */
+			Bool_t alreadyUsed; /*!< If used in jet collection. */
 			
 			/**
 			 * Default constructor.

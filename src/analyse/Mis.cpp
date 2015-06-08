@@ -1,7 +1,9 @@
 #include "Mis.h"
 #include <cstdio>
-
 using namespace AcerDet::analyse;
+
+#include "../core/Smearing.h"
+using namespace AcerDet::core;
 
 Mis::Mis( const Configuration& config, IHistogramManager *histoMng ) :
 	PTMUMIN	( config.Muon.MinMomenta ),
@@ -80,51 +82,50 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	// add non-used clusters
 	for (int i=0; i<orecord.Clusters.size(); ++i) {
 		const ClusterData& cluster = orecord.Clusters[i];
-		// if (KCLU(I,5) != 0) { TODO remove unused from vector before
+		if (!cluster.alreadyUsed) {
 			orecord.Miss.PXREC += cluster.pT * cos( cluster.phi_rec );
 			orecord.Miss.PYREC += cluster.pT * sin( cluster.phi_rec );
 			orecord.Miss.PXXCALO += cluster.pT * cos( cluster.phi_rec );
 			orecord.Miss.PYYCALO += cluster.pT * sin( cluster.phi_rec );
 			orecord.Miss.SUMET += cluster.pT;
-		// }
+		}
 	}
 	
 	// add isolated muons
 	for (int i=0; i<orecord.Muons.size(); ++i) {
 		const ObjectData& muon = orecord.Muons[i];
-		orecord.Miss.PXREC += muon.pT * cos( muon.phi ); //_rec );
-		orecord.Miss.PYREC += muon.pT * sin( muon.phi ); //_rec );
+		orecord.Miss.PXREC += muon.pT * cos( muon.phi );
+		orecord.Miss.PYREC += muon.pT * sin( muon.phi );
 	}
 	
 	// add non-isolated muons not added to clusters
 	for (int i=0; i<orecord.NonisolatedMuons.size(); ++i) {
 		const ObjectData& muon = orecord.NonisolatedMuons[i];
-		/* TODO mark used before
-		if (KMUOX(I,5) != 0) {
-			orecord.Miss.PXREC += muon.pT * cos( muon.phi ); //_rec );
-			orecord.Miss.PYREC += muon.pT * sin( muon.phi ); //_rec );
+		if (!muon.alreadyUsed) {
+			orecord.Miss.PXREC += muon.pT * cos( muon.phi );
+			orecord.Miss.PYREC += muon.pT * sin( muon.phi );
 		} else {
 			orecord.Miss.SUMET -= muon.pT;
-		}*/
+		}
 	}
 	
 	// add isolated electrons
 	for (int i=0; i<orecord.Electrons.size(); ++i) {
 		const ObjectData& ele = orecord.Electrons[i];
-		orecord.Miss.PXREC += ele.pT * cos( ele.phi ); //_rec );
-		orecord.Miss.PYREC += ele.pT * sin( ele.phi ); //_rec );
-		orecord.Miss.PXXCALO += ele.pT * cos( ele.phi ); //_rec );
-		orecord.Miss.PYYCALO += ele.pT * sin( ele.phi ); //_rec );
+		orecord.Miss.PXREC += ele.pT * cos( ele.phi );
+		orecord.Miss.PYREC += ele.pT * sin( ele.phi );
+		orecord.Miss.PXXCALO += ele.pT * cos( ele.phi );
+		orecord.Miss.PYYCALO += ele.pT * sin( ele.phi );
 		orecord.Miss.SUMET += ele.pT;
 	}
 	
 	// add isolated photons
 	for (int i=0; i<orecord.Photons.size(); ++i) {
 		const ObjectData& pho = orecord.Photons[i];
-		orecord.Miss.PXREC += pho.pT * cos( pho.phi ); //_rec );
-		orecord.Miss.PYREC += pho.pT * sin( pho.phi ); //_rec );
-		orecord.Miss.PXXCALO += pho.pT * cos( pho.phi ); //_rec );
-		orecord.Miss.PYYCALO += pho.pT * sin( pho.phi ); //_rec );
+		orecord.Miss.PXREC += pho.pT * cos( pho.phi );
+		orecord.Miss.PYREC += pho.pT * sin( pho.phi );
+		orecord.Miss.PXXCALO += pho.pT * cos( pho.phi );
+		orecord.Miss.PYYCALO += pho.pT * sin( pho.phi );
 		orecord.Miss.SUMET += pho.pT;
     }
     
@@ -142,13 +143,12 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
     // add momenta in cells not used for reconstruction
     for (int i=0; i<orecord.Cells.size(); ++i) {
 		const CellData& cell = orecord.Cells[i];
-		/* TODO
 		if (cell.state != 0) {
 			if (KEYSME) {
-				PEI = cell.pT * cosh( cell.eta );
-				SIGSME = RESHAD(PEI, cell.eta, CALOTH, cell.pT, 0.0);
+				Real64_t PEI = cell.pT * cosh( cell.eta );
+				Real64_t SIGSME = Smearing::forHadron(PEI, cell.eta, CALOTH);
 				
-				PSME = PEI * (1.0 + SIGSME) / cosh( cell.eta );
+				Real64_t PSME = PEI * (1.0 + SIGSME) / cosh( cell.eta );
 				if (PSME < ETCELL) 
 					PSME = 0.0;
 					
@@ -158,7 +158,7 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 				orecord.Miss.PYYCALO += PSME * sin( cell.phi );
 				orecord.Miss.SUMET += PSME;
 			}
-		}*/
+		}
 	}
 	
 	orecord.Miss.PXSUM += orecord.Miss.PXREC;
@@ -174,7 +174,7 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	
 	//PXXMISS, PYYMISS
 	Real64_t PXXMISS = -orecord.Miss.PXSUM;
-	Real64_t PYYMISS = -orecord.Miss.PYSUM; // ? po co
+	Real64_t PYYMISS = -orecord.Miss.PYSUM;
 	Real64_t PTMISS = sqrt(
 		pow(PXXMISS, 2) +
 		pow(PYYMISS, 2)
@@ -204,9 +204,11 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 		pow(PYYNUES, 2)
 	);
 	
+	orecord.Miss.PXNUE = PXNUES;
+	orecord.Miss.PYNUE = PYNUES;
+	
 	histoManager
 	  ->insert(idhist+21, PTNUES );
-
 }
 
 void Mis::printResults() const {
