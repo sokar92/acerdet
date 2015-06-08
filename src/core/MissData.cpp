@@ -1,7 +1,7 @@
-#include "MisData.h"
+#include "MissData.h"
 using namespace AcerDet::core;
 
-MisData::MisData() :
+MissData::MissData() :
 	PXREC (0.0),
 	PYREC (0.0),
 	PXSUM (0.0),
@@ -11,7 +11,7 @@ MisData::MisData() :
 	SUMET(0.0)
 {}
 
-void MisData::clear() {
+void MissData::clear() {
 	PXREC = 0.0;
 	PYREC = 0.0;
 	PXSUM = 0.0;

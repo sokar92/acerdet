@@ -1,5 +1,5 @@
-#ifndef _AcerDet_Core_MisData_
-#define _AcerDet_Core_MisData_
+#ifndef _AcerDet_Core_MissData_
+#define _AcerDet_Core_MissData_
 
 #pragma once
 
@@ -13,7 +13,7 @@ namespace AcerDet {
 		/**
 		 * AcerDET internal representation of missing energy.
 		 */
-		class MisData {
+		class MissData {
 		public:
 			Real64_t PXREC, PYREC;
 			Real64_t PXSUM, PYSUM;
@@ -24,7 +24,7 @@ namespace AcerDet {
 			 * Default constructor.
 			 * \return new structure describing missing energy.
 			 */
-			MisData();
+			MissData();
 			
 			/**
 			 * Clears all stored data about missing energy.

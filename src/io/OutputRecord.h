@@ -6,7 +6,7 @@
 #include "../core/ClusterData.h"
 #include "../core/JetData.h"
 #include "../core/ObjectData.h"
-#include "../core/MisData.h"
+#include "../core/MissData.h"
 using namespace AcerDet::core;
 
 namespace AcerDet {
@@ -28,7 +28,7 @@ namespace AcerDet {
 			vector<ObjectData> Photons;          /*!< List of reconstructed photons. */
 			
 			vector<JetData> Jets;              /*!< List of reconstructed Jets (including b-jets and c-jets). */
-			MisData Miss;                      /*!< Missing energy statistics. */
+			MissData Miss;                      /*!< Missing energy statistics. */
 			
 			/**
 			 * Default constructor.

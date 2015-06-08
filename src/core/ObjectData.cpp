@@ -6,9 +6,7 @@ using namespace std;
 
 ObjectData::ObjectData() :
 	num (0),
-	barcode (-1),
-	motherStatus (0),
-	status (0),
+	pdg_id (0),
 	eta (0.0),
 	phi (0.0),
 	pT (0.0)
