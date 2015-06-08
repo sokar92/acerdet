@@ -5,6 +5,7 @@
 
 #include "Typedefs.h"
 #include "StlDefs.h"
+#include "Vector4.h"
 
 namespace AcerDet {
 	namespace core {
@@ -15,28 +16,9 @@ namespace AcerDet {
 		 */
 		class ObjectData {
 		public:
-			/*
-			 * K
-			 * 0 - num
-			 * 1 - status
-			 * 2 - barcode
-			 * 3 - motherStatus
-			 * 4 - 
-			 */
-			
-			/*
-			 * P
-			 * 0 - eta
-			 * 1 - phi
-			 * 2 - eta
-			 * 3 - phi
-			 * 4 - pT
-			 */
-			
 			Int32_t num;          /*!< Object unique number in event (sequential). */
-			Int32_t barcode;      /*!< Object barcode. */
-			Int32_t motherStatus; /*!< Object mother's status (if mother exists). */
-			Int32_t status;       /*!< Object status (not converted). */
+			Int32_t pdg_id;       /*!< Object pdg_id. */
+			Vector4f p;           /*!< Object 4-vector. */
 			Real64_t eta;         /*!< Object eta angle. */
 			Real64_t phi;         /*!< Object phi angle. */
 			Real64_t pT;          /*!< Object energy. */

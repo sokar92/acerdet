@@ -178,19 +178,15 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 				if (LCLU >= 0) 
 					orecord.Clusters.erase(orecord.Clusters.begin() + LCLU);
 
-				ObjectData newParton;
-				newParton.status = part.statusID;
-				newParton.num = i;
-				if (part.hasMother()) {
-					newParton.motherStatus = parts[part.mother-1].statusID;
-				} else {
-					newParton.motherStatus = -1;
-				}
-				newParton.eta = part.getEta();
-				newParton.phi = part.getPhi();
-				newParton.pT  = PT;
+				ObjectData newObject;
+				newObject.num = i;
+				newObject.pdg_id = part.pdg_id;
+				newObject.p = part.momentum;
+				newObject.eta = part.getEta();
+				newObject.phi = part.getPhi();
+				newObject.pT  = PT;
 				
-				orecord.Photons.push_back( newParton );
+				orecord.Photons.push_back( newObject );
 			}
 		}
 	}

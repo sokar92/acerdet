@@ -143,24 +143,20 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			if (EDEP > EDMAX) 
 				ISOL = false;
 			
-			ObjectData newParton;
-			newParton.status = part.statusID;
-			newParton.num = i;
-			if (part.hasMother()) {
-				newParton.motherStatus = parts[part.mother-1].statusID;
-			} else {
-				newParton.motherStatus = -1;
-			}
-			newParton.eta = part.getEta();
-			newParton.phi = part.getPhi();
-			newParton.pT  = PT;
+			ObjectData newObject;
+			newObject.num = i;
+			newObject.pdg_id = part.pdg_id;
+			newObject.p = part.momentum;
+			newObject.eta = part.getEta();
+			newObject.phi = part.getPhi();
+			newObject.pT  = PT;
 			
 			if (ISOL) {
 				// fill /ISOMUO/ with isolated muon
-				orecord.Muons.push_back(newParton);
+				orecord.Muons.push_back(newObject);
 			} else {
 				// fill /NOISOMUO/ with non-isolated muon
-				orecord.NonisolatedMuons.push_back(newParton);
+				orecord.NonisolatedMuons.push_back(newObject);
 			}
 		}
 	}
