@@ -9,7 +9,7 @@ Vector4f vec4(const HepMC::FourVector& v) {
 
 ParticleType HepMC_InputConverter::getParticleType(int code) {
 	if (code == -4 || code == 4) return PT_CJET;
-	if (code == -5 || code == 5) return PT_BJET;
+	if (code == -5 || code == 5) {printf("QQQ\n");return PT_BJET;}
 	if (code == -11 || code == 11) return PT_ELECTRON;
 	if (code == -12 || code == 12) return PT_NEUTRINO_ELE;
 	if (code == -13 || code == 13) return PT_MUON;
