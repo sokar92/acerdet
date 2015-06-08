@@ -177,7 +177,7 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 				if (LCLU >= 0)
 					orecord.Clusters.erase(orecord.Clusters.begin() + LCLU);
 
-				PartData newParton;
+				ObjectData newParton;
 				newParton.status = part.statusID;
 				newParton.num = i;
 				if (part.hasMother()) {
@@ -199,7 +199,7 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 		->insert(idhist + 11,  orecord.Electrons.size() );
 
 	// arrange electrons in falling E_T sequence
-	PartData::sortBy_pT( orecord.Electrons );
+	ObjectData::sortBy_pT( orecord.Electrons );
 
 	Int32_t IELE = 0, IELEISO = 0;
 	for (int i=0; i<parts.size(); ++i) {

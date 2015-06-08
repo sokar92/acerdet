@@ -4,7 +4,6 @@ using namespace AcerDet::analyse;
 
 #include "../core/Smearing.h"
 #include "../core/Functions.h"
-#include "../core/Kinematics.h"
 using namespace AcerDet::core;
 
 Photon::Photon( const Configuration& config, IHistogramManager* histoMng ) :
@@ -64,8 +63,6 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 			->registerHistogram(idhist+21, "Photon: photon multiplicity HARD", 10, 0.0, 10.0);
 		histoManager
 			->registerHistogram(idhist+31, "Photon: photon multiplicity HARD+ISOL", 10, 0.0, 10.0);
-		histoManager
-			->registerHistogram(idhist+41, "Photon: reconstructed mass", 10, 0.0, 10.0);
 	}
 		
 	// new event to compute
@@ -73,10 +70,6 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 
 	// reference to particles container
 	const vector<Particle>& parts = irecord.particles();
-
-	// invariant masses container
-	// vector<Test>& masses;
-	double IMassSum = 0.0;
 
 	// look for isolated electrons, sort clusters common
 	for (int i=0; i<parts.size(); ++i) {
@@ -93,7 +86,6 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 			
 			// apply smearing
 			Real64_t PT = part.pT();
-			double IMass = InvMassCalc(part.momentum, part.momentum); 			//change
 			if (KEYSME) {
 				if (parts[i].e() <= 0.0) 
 					continue;
@@ -101,9 +93,7 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 				Particle pPho = part;
 				pPho.momentum *= (1.0 + Smearing::forPhoton(parts[i].e()));
 				PT = pPho.pT();
-				IMass = InvMassCalc(pPho.momentum, pPho.momentum); 			//change
-			}
-			
+			}			
 			
 
 			if (PT < PTLMIN
@@ -188,7 +178,7 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 				if (LCLU >= 0) 
 					orecord.Clusters.erase(orecord.Clusters.begin() + LCLU);
 
-				PartData newParton;
+				ObjectData newParton;
 				newParton.status = part.statusID;
 				newParton.num = i;
 				if (part.hasMother()) {
@@ -201,7 +191,6 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 				newParton.pT  = PT;
 				
 				orecord.Photons.push_back( newParton );
-				IMassSum += IMass;
 			}
 		}
 	}
@@ -210,13 +199,8 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 	histoManager
 		->insert(idhist+11, orecord.Photons.size() );
 
-	// store invariant mass in histogram
-	// masses.push_back( IMassSum );
-	histoManager
-		->insert(idhist+41, IMassSum );
-
 	// arrange photons in falling E_T sequence
-	PartData::sortBy_pT( orecord.Photons );
+	ObjectData::sortBy_pT( orecord.Photons );
 	
 	// check with partons
 	Int32_t IPHO = 0, IPHOISO = 0;

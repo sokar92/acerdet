@@ -91,14 +91,14 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	
 	// add isolated muons
 	for (int i=0; i<orecord.Muons.size(); ++i) {
-		const PartData& muon = orecord.Muons[i];
+		const ObjectData& muon = orecord.Muons[i];
 		orecord.Miss.PXREC += muon.pT * cos( muon.phi ); //_rec );
 		orecord.Miss.PYREC += muon.pT * sin( muon.phi ); //_rec );
 	}
 	
 	// add non-isolated muons not added to clusters
 	for (int i=0; i<orecord.NonisolatedMuons.size(); ++i) {
-		const PartData& muon = orecord.NonisolatedMuons[i];
+		const ObjectData& muon = orecord.NonisolatedMuons[i];
 		/* TODO mark used before
 		if (KMUOX(I,5) != 0) {
 			orecord.Miss.PXREC += muon.pT * cos( muon.phi ); //_rec );
@@ -110,7 +110,7 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	
 	// add isolated electrons
 	for (int i=0; i<orecord.Electrons.size(); ++i) {
-		const PartData& ele = orecord.Electrons[i];
+		const ObjectData& ele = orecord.Electrons[i];
 		orecord.Miss.PXREC += ele.pT * cos( ele.phi ); //_rec );
 		orecord.Miss.PYREC += ele.pT * sin( ele.phi ); //_rec );
 		orecord.Miss.PXXCALO += ele.pT * cos( ele.phi ); //_rec );
@@ -120,7 +120,7 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	
 	// add isolated photons
 	for (int i=0; i<orecord.Photons.size(); ++i) {
-		const PartData& pho = orecord.Photons[i];
+		const ObjectData& pho = orecord.Photons[i];
 		orecord.Miss.PXREC += pho.pT * cos( pho.phi ); //_rec );
 		orecord.Miss.PYREC += pho.pT * sin( pho.phi ); //_rec );
 		orecord.Miss.PXXCALO += pho.pT * cos( pho.phi ); //_rec );

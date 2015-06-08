@@ -104,7 +104,7 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	
 	// add nonisolated muons to jets
 	for (int i=0; i<orecord.NonisolatedMuons.size(); ++i) {
-		const PartData& muon = orecord.NonisolatedMuons[i];
+		const ObjectData& muon = orecord.NonisolatedMuons[i];
 
 		Real64_t DR = 100.0;
 		Int32_t MUCLU = -1;

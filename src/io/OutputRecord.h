@@ -5,7 +5,7 @@
 #include "../core/CellData.h"
 #include "../core/ClusterData.h"
 #include "../core/JetData.h"
-#include "../core/PartData.h"
+#include "../core/ObjectData.h"
 #include "../core/MisData.h"
 using namespace AcerDet::core;
 
@@ -21,11 +21,11 @@ namespace AcerDet {
 			vector<CellData> Cells;            /*!< List of created cells. */
 			vector<ClusterData> Clusters;      /*!< List of created clusters. */
 			
-			vector<PartData> Muons;            /*!< List of reconstructed muons. */
-			vector<PartData> NonisolatedMuons; /*!< List of reconstructed and non-isolated muons. */
+			vector<ObjectData> Muons;            /*!< List of reconstructed muons. */
+			vector<ObjectData> NonisolatedMuons; /*!< List of reconstructed and non-isolated muons. */
 
-			vector<PartData> Electrons;        /*!< List of reconstructed electrons. */
-			vector<PartData> Photons;          /*!< List of reconstructed photons. */
+			vector<ObjectData> Electrons;        /*!< List of reconstructed electrons. */
+			vector<ObjectData> Photons;          /*!< List of reconstructed photons. */
 			
 			vector<JetData> Jets;              /*!< List of reconstructed Jets (including b-jets and c-jets). */
 			MisData Miss;                      /*!< Missing energy statistics. */

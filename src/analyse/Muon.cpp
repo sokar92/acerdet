@@ -143,7 +143,7 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			if (EDEP > EDMAX) 
 				ISOL = false;
 			
-			PartData newParton;
+			ObjectData newParton;
 			newParton.status = part.statusID;
 			newParton.num = i;
 			if (part.hasMother()) {

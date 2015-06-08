@@ -8,11 +8,11 @@ void OutputRecord::clear() {
 	vector<CellData>().swap(Cells);
 	vector<ClusterData>().swap(Clusters);
 	
-	vector<PartData>().swap(Muons);
-	vector<PartData>().swap(NonisolatedMuons);
+	vector<ObjectData>().swap(Muons);
+	vector<ObjectData>().swap(NonisolatedMuons);
 	
-	vector<PartData>().swap(Electrons);
-	vector<PartData>().swap(Photons);
+	vector<ObjectData>().swap(Electrons);
+	vector<ObjectData>().swap(Photons);
 	
 	vector<JetData>().swap(Jets);
 	Miss.clear();

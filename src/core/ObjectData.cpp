@@ -1,10 +1,10 @@
-#include "PartData.h"
+#include "ObjectData.h"
 using namespace AcerDet::core;
 
 #include <algorithm>
 using namespace std;
 
-PartData::PartData() :
+ObjectData::ObjectData() :
 	num (0),
 	barcode (-1),
 	motherStatus (0),
@@ -14,10 +14,10 @@ PartData::PartData() :
 	pT (0.0)
 {}
 
-bool PartData::comparator_pT(const PartData& l, const PartData& r) {
+bool ObjectData::comparator_pT(const ObjectData& l, const ObjectData& r) {
 	return l.pT > r.pT;
 }
 
-void PartData::sortBy_pT(vector<PartData>& vec) {
+void ObjectData::sortBy_pT(vector<ObjectData>& vec) {
 	sort(vec.begin(), vec.end(), comparator_pT);
 }

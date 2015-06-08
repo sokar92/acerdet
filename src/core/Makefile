@@ -5,12 +5,11 @@ OBJECTS= Smearing.o \
 	CellData.o \
 	ClusterData.o \
 	JetData.o \
-	PartData.o \
+	ObjectData.o \
 	MisData.o \
 	Particle.o \
 	ParticleDataProvider.o \
-	Functions.o \
-	Kinematics.o
+	Functions.o
 
 all: $(OBJECTS)
 
