@@ -9,7 +9,8 @@ OBJECTS= Smearing.o \
 	MisData.o \
 	Particle.o \
 	ParticleDataProvider.o \
-	Functions.o
+	Functions.o \
+	Kinematics.o
 
 all: $(OBJECTS)
 

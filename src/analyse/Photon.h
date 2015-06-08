@@ -7,6 +7,7 @@
 using namespace AcerDet::conf;
 
 #include "../core/IHistogramManager.h"
+#include "../core/Kinematics.h"
 using namespace AcerDet::core;
 
 #include "../io/InputRecord.h"

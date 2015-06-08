@@ -77,6 +77,8 @@ void Root_NTupleManager::fill(
 	int count = 0;
 	const vector<Particle>& parts = irecord.particles();
 	for (int j=0; j<parts.size(); ++j) {
+		n_part_pdgId.push_back(parts[j].pdg_id);
+		
 		// pick only particles from hard process
 		if (!isHardProcess(parts, j))
 			continue;
