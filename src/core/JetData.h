@@ -25,24 +25,6 @@ namespace AcerDet {
 		 */
 		class JetData {
 		public:
-			/*
-			 * K
-			 * 0 -
-			 * 1 - type
-			 * 2 - 
-			 * 3 - 
-			 * 4 - 
-			 */
-			
-			/*
-			 * P
-			 * 0 - eta
-			 * 1 - phi
-			 * 2 - eta_rec
-			 * 3 - phi_rec 
-			 * 4 - eT
-			 */
-			
 			JetType type;     /*!< A type of jet (if recognised) */
 			
 			Real64_t eta;     /*!< Jet eta angle. */

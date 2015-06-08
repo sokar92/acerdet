@@ -103,6 +103,8 @@ void Root_NTupleManager::fill(
 	n_pho_pdgId.clear();
 	
 	for (int j=0; j<orecord.Photons.size(); ++j) {
+		n_pho_pdgId.push_back(orecord.Photons[j].pdg_id);
+		
 		Real64_t px = orecord.Photons[j].pT * cos(orecord.Photons[j].phi);
 		Real64_t py = orecord.Photons[j].pT * sin(orecord.Photons[j].phi);
 		Real64_t pz = orecord.Photons[j].pT * sinh(orecord.Photons[j].eta);
@@ -122,6 +124,8 @@ void Root_NTupleManager::fill(
 	n_muo_pdgId.clear();
 	
 	for (int j=0; j<orecord.Muons.size(); ++j) {
+		n_muo_pdgId.push_back(orecord.Muons[j].pdg_id);
+		
 		Real64_t px = orecord.Muons[j].pT * cos(orecord.Muons[j].phi);
 		Real64_t py = orecord.Muons[j].pT * sin(orecord.Muons[j].phi);
 		Real64_t pz = orecord.Muons[j].pT * sinh(orecord.Muons[j].eta);
@@ -141,6 +145,8 @@ void Root_NTupleManager::fill(
 	n_ele_pdgId.clear();
 	
 	for (int j=0; j<orecord.Electrons.size(); ++j) {
+		n_ele_pdgId.push_back(orecord.Electrons[j].pdg_id);
+		
 		Real64_t px = orecord.Electrons[j].pT * cos(orecord.Electrons[j].phi);
 		Real64_t py = orecord.Electrons[j].pT * sin(orecord.Electrons[j].phi);
 		Real64_t pz = orecord.Electrons[j].pT * sinh(orecord.Electrons[j].eta);
@@ -160,10 +166,13 @@ void Root_NTupleManager::fill(
 	n_jet_pdgId.clear();
 	
 	for (int j=0; j<orecord.Jets.size(); ++j) {
+		n_jet_pdgId.push_back(orecord.Jets[j].type);
+		
 		Real64_t px = orecord.Jets[j].pT * cos(orecord.Jets[j].phi);
 		Real64_t py = orecord.Jets[j].pT * sin(orecord.Jets[j].phi);
 		Real64_t pz = orecord.Jets[j].pT * sinh(orecord.Jets[j].eta);
 		Real64_t E  = orecord.Jets[j].pT * cosh(orecord.Jets[j].eta);
+		
 		n_jet_px.push_back(px);
 		n_jet_py.push_back(py);
 		n_jet_pz.push_back(pz);
