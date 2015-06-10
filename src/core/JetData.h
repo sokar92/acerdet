@@ -16,7 +16,8 @@ namespace AcerDet {
 		enum JetType {
 			UNKNOWN = 0,  /*!< Jet not classified as b-jet or c-jet yet. */
 			C_JET = 4,    /*!< Jet classified as c-jet. */
-			B_JET = 5     /*!< Jet classified as b-jet. */
+			B_JET = 5,    /*!< Jet classified as b-jet. */
+			TAU_JET = 15  /*!< Jet classified as tau-jet. */
 		};
 		
 		//! AcerDET internal representation of Jet.

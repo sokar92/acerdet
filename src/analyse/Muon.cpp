@@ -168,6 +168,10 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	histoManager
 		->insert(idhist + 11, orecord.NonisolatedMuons.size(), 1.0 );
 
+	// arrange muons in falling E_T sequence
+	ObjectData::sortBy_pT( orecord.Muons );
+	ObjectData::sortBy_pT( orecord.NonisolatedMuons );
+
 	// cross-check with partons
 	Int32_t IMUO = 0, IMUOISO = 0;
 	for (int i=0; i<parts.size(); ++i) {

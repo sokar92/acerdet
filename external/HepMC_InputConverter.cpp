@@ -9,7 +9,7 @@ Vector4f vec4(const HepMC::FourVector& v) {
 
 ParticleType HepMC_InputConverter::getParticleType(int code) {
 	if (code == -4 || code == 4) return PT_CJET;
-	if (code == -5 || code == 5) {printf("QQQ\n");return PT_BJET;}
+	if (code == -5 || code == 5) return PT_BJET;
 	if (code == -11 || code == 11) return PT_ELECTRON;
 	if (code == -12 || code == 12) return PT_NEUTRINO_ELE;
 	if (code == -13 || code == 13) return PT_MUON;
@@ -25,7 +25,7 @@ ParticleType HepMC_InputConverter::getParticleType(int code) {
 }
 
 ParticleStatus HepMC_InputConverter::getParticleStatus(HepMC::GenParticle* gpart) {
-	if (gpart->is_beam()) return PS_BEAM; 			  // status_code == 4
+	if (gpart->is_beam()) return PS_BEAM; 	     // status_code == 4
 	if (gpart->is_undecayed()) return PS_FINAL;  // status_code == 1 -> final state
 	if (gpart->has_decayed()) return PS_DECAYED; // status_code == 2 -> before hadronization
 	if (gpart->status() == 3) return PS_HISTORY; // documentation line -> history
@@ -77,9 +77,13 @@ InputRecord HepMC_InputConverter::convert( const GenEvent& event ) {
 		
 		// particle tree hierarchy
 		part.barcode = gpart->barcode();
-		HepMC::GenVertex* prod = gpart->production_vertex();//gpart->end_vertex(); //gpart->production_vertex();
+		HepMC::GenVertex* prod = gpart->production_vertex();
 		part.mother = extractMother(prod);
-		part.daughters = make_pair(extractDaughter1(prod), extractDaughter2(prod));
+		HepMC::GenVertex* decay = gpart->end_vertex();
+		part.daughters = make_pair(extractDaughter1(decay), extractDaughter2(decay));
+
+		// check conversion from Pythia8 event record
+		// printf("barcode=%d, mother=%d, daughter1=%d, daughter2=%d\n", part.barcode, part.mother, extractDaughter1(decay), extractDaughter2(decay)); 
 
 		// state (named & id)
 		part.status = getParticleStatus(gpart);
