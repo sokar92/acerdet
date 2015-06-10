@@ -60,24 +60,24 @@ AcerDET::~AcerDET() {
 /*
  * Analyse single InputRecord from event
  */
-void AcerDET::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
-//	printf ("AcerDET: analyse\n");
+void AcerDET::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weigth ) {
+
 	if (!histos_initialized) {
 		histos->init();
 		histos_initialized = true;
 	}
 	
-	analyse_Cell		->analyseRecord( irecord, orecord );
-	analyse_Cluster		->analyseRecord( irecord, orecord );
-	analyse_Muon		->analyseRecord( irecord, orecord );
-	analyse_Electron	->analyseRecord( irecord, orecord );
-	analyse_Photon		->analyseRecord( irecord, orecord );
-	analyse_Jet			->analyseRecord( irecord, orecord );
-	analyse_Mis			->analyseRecord( irecord, orecord );
-	analyse_BJet		->analyseRecord( irecord, orecord );
-	analyse_CJet		->analyseRecord( irecord, orecord );
-	analyse_Tau			->analyseRecord( irecord, orecord );
-	analyse_Calibration	->analyseRecord( irecord, orecord );
+	analyse_Cell		->analyseRecord( irecord, orecord, weigth );
+	analyse_Cluster		->analyseRecord( irecord, orecord, weigth );
+	analyse_Muon		->analyseRecord( irecord, orecord, weigth );
+	analyse_Electron	->analyseRecord( irecord, orecord, weigth );
+	analyse_Photon		->analyseRecord( irecord, orecord, weigth );
+	analyse_Jet			->analyseRecord( irecord, orecord, weigth );
+	analyse_Mis			->analyseRecord( irecord, orecord, weigth );
+	analyse_BJet		->analyseRecord( irecord, orecord, weigth );
+	analyse_CJet		->analyseRecord( irecord, orecord, weigth );
+	analyse_Tau			->analyseRecord( irecord, orecord, weigth );
+	analyse_Calibration	->analyseRecord( irecord, orecord, weigth );
 }
 
 /*

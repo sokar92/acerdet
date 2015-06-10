@@ -53,7 +53,7 @@ void Cluster::printInfo() const {
 	printf ("\n");
 }
 
-void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
+void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weigth ) {
 	
 	Int32_t idhist = 100 + KEYHID;
 	if (!histoRegistered) {

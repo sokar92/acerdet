@@ -69,10 +69,12 @@ namespace AcerDet {
 			/*!
 			 * \param input record.
 			 * \param output record.
+			 * \param weight event weigth.
 			 */
 			void analyseRecord(
 				const InputRecord& input,
-				OutputRecord& output ); 
+				OutputRecord& output,
+				Real64_t weigth ); 
 			
 			/**
 			 * Print Cell algorithm execution results to standard output.

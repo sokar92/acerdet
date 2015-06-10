@@ -87,8 +87,9 @@ namespace AcerDet {
 		 * Analyse single event.
 		 * \param inp input record describing random event.
 		 * \param out output record to store analyse results in.
+		 * \param weigth event ewigth.
 		 */
-		void analyseRecord( const io::InputRecord& inp, io::OutputRecord& out );
+		void analyseRecord( const io::InputRecord& inp, io::OutputRecord& out, Real64_t weigth );
 		
 		/**
 		 * Prints out event analyse statistics.

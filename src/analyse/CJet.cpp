@@ -46,7 +46,7 @@ void CJet::printInfo() const {
 	printf ("\n");
 }
 
-void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
+void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weigth ) {
 	
 	Int32_t idhist = 800 + KEYHID;
 	if (!histoRegistered) {

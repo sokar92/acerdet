@@ -51,7 +51,7 @@ void Jet::printInfo() const {
 	printf ("\n");
 }
 
-void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
+void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weigth ) {
 	
 	Int32_t idhist = 500 + KEYHID;
 	if (!histoRegistered) {

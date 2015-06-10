@@ -45,7 +45,7 @@ void Mis::printInfo() const {
 	printf ("\n");
 }
 
-void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
+void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weigth ) {
 	
 	Int32_t idhist = 600 + KEYHID;
 	if (!histoRegistered) {

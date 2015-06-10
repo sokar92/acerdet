@@ -88,10 +88,13 @@ int main( int argc, char **argv ) {
 //		printf (" ---- PRINTING --- \n");
 //		hepmc->print();
 
-		InputRecord iRec = external::HepMC_InputConverter::convert( *hepmc );
-		acerDet.analyseRecord(iRec, oRec);
+		const Real64_t weigth = 1.0;
+		const Int32_t processId = 1;
 
-		nTuple.fill(iRec, oRec, 1.0, 1); // 1.0 by default - to change, 1 = processId
+		InputRecord iRec = external::HepMC_InputConverter::convert( *hepmc );
+		acerDet.analyseRecord(iRec, oRec, weigth);
+
+		nTuple.fill(iRec, oRec, weigth, processId);
 		
 		delete hepmc;
 	}

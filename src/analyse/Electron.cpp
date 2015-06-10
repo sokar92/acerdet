@@ -51,7 +51,7 @@ void Electron::printInfo() const {
 
 }
 
-void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord ) {
+void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weigth ) {
 	
 	Int32_t idhist = 300 + KEYHID;
 	if (!histoRegistered) {

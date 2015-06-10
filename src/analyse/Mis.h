@@ -59,10 +59,12 @@ namespace AcerDet {
 			/*!
 			 * \param input record.
 			 * \param output record.
+			 * \param weight event weigth.
 			 */
 			void analyseRecord(
 				const io::InputRecord& input,
-				io::OutputRecord& output );
+				io::OutputRecord& output,
+				Real64_t weigth );
 			
 			/**
 			 * Print Missing energy algorithm execution results to standard output.
