@@ -4,6 +4,7 @@
 *.so.*
 *.a
 *.root
+*.inc
 /src/AcerDET
 /src/include
 /src/doc
