@@ -51,7 +51,7 @@ void Electron::printInfo() const {
 
 }
 
-void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weigth ) {
+void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weight ) {
 	
 	Int32_t idhist = 300 + KEYHID;
 	if (!histoRegistered) {
@@ -192,7 +192,7 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 
 	// store count in histogram
 	histoManager
-		->insert(idhist + 11,  orecord.Electrons.size() );
+	  ->insert(idhist + 11,  orecord.Electrons.size(), weight );
 
 	// arrange electrons in falling E_T sequence
 	ObjectData::sortBy_pT( orecord.Electrons );
@@ -201,7 +201,7 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
 
-		// pick only particles from hard process
+		// pick only particles from W, Z, H
 		if (!isHardProcess(parts, i))
 			continue;
 		
@@ -253,10 +253,10 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 	
 	// store in histos
 	histoManager
-  	     ->insert(idhist + 21, IELE, 1.0);
+  	     ->insert(idhist + 21, IELE, weight);
 
 	histoManager
-  	     ->insert(idhist + 31, IELEISO, 1.0);
+  	     ->insert(idhist + 31, IELEISO, weight);
 }
 
 void Electron::printResults() const {
