@@ -82,9 +82,6 @@ InputRecord HepMC_InputConverter::convert( const GenEvent& event ) {
 		HepMC::GenVertex* decay = gpart->end_vertex();
 		part.daughters = make_pair(extractDaughter1(decay), extractDaughter2(decay));
 
-		// check conversion from Pythia8 event record
-		// printf("barcode=%d, mother=%d, daughter1=%d, daughter2=%d\n", part.barcode, part.mother, extractDaughter1(decay), extractDaughter2(decay)); 
-
 		// state (named & id)
 		part.status = getParticleStatus(gpart);
 		part.statusID = gpart->status();
@@ -92,6 +89,10 @@ InputRecord HepMC_InputConverter::convert( const GenEvent& event ) {
 		// type (named & id)
 		part.type = getParticleType(gpart->pdg_id());
 		part.pdg_id = gpart->pdg_id();
+
+		// check conversion from Pythia8 event record
+		//    printf("barcode=%d, status=%d,  pdgid=%d, mother=%d, daughter1=%d, daughter2=%d\n", 
+		//    part.barcode, part.statusID, part.pdg_id, part.mother, extractDaughter1(decay), extractDaughter2(decay)); 
 		
 		// momentum as Vector4
 		part.momentum = vec4(gpart->momentum());

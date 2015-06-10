@@ -12,7 +12,7 @@ Photon::Photon( const Configuration& config, IHistogramManager* histoMng ) :
 
 	PTLMIN	( config.Photon.MinMomenta ),
 	ETAMAX	( config.Photon.MaxEta ),
-	RJE		( config.Photon.MinJetsRlj ),
+	RJE	( config.Photon.MinJetsRlj ),
 	RISOLJ	( config.Photon.MinIsolRlj ),
 	RDEP	( config.Photon.ConeR ),
 	EDMAX	( config.Photon.MaxEnergy ),
@@ -60,9 +60,9 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 		histoManager
 			->registerHistogram(idhist+11, "Photon: photon multiplicity ISOLATED", 10, 0.0, 10.0);
 		histoManager
-			->registerHistogram(idhist+21, "Photon: photon multiplicity HARD", 10, 0.0, 10.0);
+			->registerHistogram(idhist+21, "Photon: photon multiplicity HP", 10, 0.0, 10.0);
 		histoManager
-			->registerHistogram(idhist+31, "Photon: photon multiplicity HARD+ISOL", 10, 0.0, 10.0);
+			->registerHistogram(idhist+31, "Photon: photon multiplicity HP+isol", 10, 0.0, 10.0);
 	}
 		
 	// new event to compute
@@ -193,7 +193,7 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 
 	// store count in histogram
 	histoManager
-		->insert(idhist+11, orecord.Photons.size() );
+	  ->insert(idhist+11, orecord.Photons.size(), weight );
 
 	// arrange photons in falling E_T sequence
 	ObjectData::sortBy_pT( orecord.Photons );
@@ -253,10 +253,10 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 
 	// fill histograms
 	histoManager
-     	->insert(idhist+21, IPHO, 1.0 );
+     	->insert(idhist+21, IPHO, weight );
 	
 	histoManager
-     	->insert(idhist+31, IPHOISO, 1.0 );
+     	->insert(idhist+31, IPHOISO, weight );
 }
 
 void Photon::printResults() const {
