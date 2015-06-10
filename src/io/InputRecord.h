@@ -31,6 +31,13 @@ namespace AcerDet {
 			 * Get list of all particles stored in current input record.
 			 */
 			const vector<Particle>& particles() const;
+			
+			friend ostream& operator << (ostream& str, const InputRecord& iRec) {
+				const vector<Particle>& vec = iRec.particles();
+				for (vector<Particle>::const_iterator it = vec.begin(); it != vec.end(); it++)
+					str << *it;
+				return str;
+			}
 
 		};
 

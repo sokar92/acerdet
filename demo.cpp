@@ -92,6 +92,11 @@ int main( int argc, char **argv ) {
 		const Int32_t processId = 1;
 
 		InputRecord iRec = external::HepMC_InputConverter::convert( *hepmc );
+// wypisz iRec
+		if (iEvent == 0) {
+			cout << iRec;
+		}
+
 		acerDet.analyseRecord(iRec, oRec, weigth);
 
 		nTuple.fill(iRec, oRec, weigth, processId);

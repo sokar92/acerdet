@@ -121,6 +121,8 @@ namespace AcerDet {
 				str << "\tStatus: " << p.getStatusName() << "(" << p.statusID << ")" << endl;
 				str << "\tMomentum (px,py,pz,e) = " << p.momentum << endl;
 				str << "\tProduction (x,y,z,t) = " << p.production << endl;
+				str << "\tMother = " << p.mother << endl;
+				str << "\tDaughters = [" << p.daughters.first << ", " << p.daughters.second << "]" << endl;
 				str << endl;
 				return str;
 			}
