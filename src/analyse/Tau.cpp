@@ -52,7 +52,9 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 		histoManager
 			->registerHistogram(idhist+11, "Tau: tau-jets multiplicity", 10, 0.0, 10.0);
 		histoManager
-			->registerHistogram(idhist+21, "Tau: hadronic taus multiplicity", 10, 0.0, 10.0);
+			->registerHistogram(idhist+21, "Tau: hadronic taus multiplicity HP", 10, 0.0, 10.0);
+		histoManager
+			->registerHistogram(idhist+23, "Tau: delta r tau-jet, tau-had HP", 50, 0.0, 1.0);
 	}
 
  	// new event to compute
@@ -61,23 +63,23 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	// reference to particles container
 	const vector<Particle>& parts = irecord.particles();
 	
-	// look for tau-jets
-	Int32_t NTAU = 0, NJETTAU = 0;
+	// look for tau-jet taggers, if exist mark jets
+	Int32_t NHADTAU = 0, NJETTAU = 0;
 	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
-		
+
 		if (part.status == PS_DECAYED && part.type == PT_TAU) {
-		  // if there are still jets
-		  if (orecord.Jets.empty()) 
-		    continue;
-		  
+		  printf(" accepted as tagger: tau barcode=%4d, status=%4d, statusId=%4d, pdgId=%4d\n", part. barcode, part. barcode,part.status, part.statusID, part.pdg_id);
+
 		  Bool_t TAUJET_tagger = true;
 		  
 		  // choose only hadronic tau-decay
 		  if (!part.hasDaughter())
 		    continue;
+
 		  Int32_t IN = -1;
 		  for (int j=part.daughters.first; j<=part.daughters.second; ++j) {
+		    printf(" tau barcode=%4d daughters: %4d, %4d \n", part. barcode, part.daughters.first, part.daughters.second );
 		    // daughter is e or m
 		    if (parts[j].type == PT_ELECTRON
 			|| parts[j].type == PT_MUON)
@@ -92,6 +94,8 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 		  if (IN < 0)
 		    continue;
 
+		  printf("Hadronic decay =%4d\n",TAUJET_tagger);
+
 		  Particle tmpPart = part;
 		  tmpPart.momentum -= parts[IN].momentum;  // tau - neutrino_tau
 		  
@@ -102,7 +106,9 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 		    TAUJET_tagger = false;
 		  
 		  if (TAUJET_tagger) 
-		    NTAU++;
+		    NHADTAU++;
+
+		  printf("Kinematics =%4d\n",TAUJET_tagger);
 		  
 		  // mark tau-jet
 		  Real64_t DR = 100.0;
@@ -125,13 +131,20 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 		      DR = DDR;
 		    }
 		  }
+
+		  histoManager
+		    ->insert(idhist + 23, DR, 1.0);
+
+		  printf("Jet presence =%4d\n",TAUJET_tagger);
 		  
 		  if (DR > RJTAU) {
 		    TAUJET_tagger = false;
 		    JETTAU = -1;
 		  }
 		  
-		  if (TAUJET_tagger  && abs(orecord.Jets[JETTAU].eta_rec) < 2.5 ) {
+		  printf("Matching cone  =%4d\n",TAUJET_tagger);
+
+		  if (TAUJET_tagger  && abs(orecord.Jets[JETTAU].eta_rec) < ETATAU ) {
 		    orecord.Jets[JETTAU].type = TAU_JET;
 		  }
 		}
@@ -146,7 +159,7 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	histoManager
 		->insert(idhist+11, NJETTAU);
 	histoManager
-		->insert(idhist+21, NTAU);
+		->insert(idhist+21, NHADTAU);
 }
 
 void Tau::printResults() const {

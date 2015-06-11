@@ -105,7 +105,7 @@ string Particle::getStatusName() const {
 	case PS_BEAM: return string("Beam");
 	case PS_FINAL: return string("Final");
 	case PS_DECAYED: return string("Decayed");
-	case PS_HISTORY: return string("Historical");
+	case PS_HISTORY: return string("HardProcessHistory");
 	default: return string("Unknown");
 	}
 }

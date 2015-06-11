@@ -207,8 +207,6 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 		
 		if (part.type == PT_ELECTRON) {  
 
-                printf("accepted: pdgId=%d, barcode=%d, mother=%d\n",parts[i].pdg_id, parts[i].barcode, parts[i].mother); 
-
 			Real64_t ENER = 0.0;
 			Bool_t ISOL = true;
 

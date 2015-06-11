@@ -38,17 +38,18 @@ namespace AcerDet {
 		enum ParticleType {
 			PT_UNKNOWN = 0,            /*!< Unknown Particle type. If this type occurs in some particle check your algorithm! */
 			
-			PT_JET,                    /*!< Parton representing Jet of grouped particles. */
-			PT_BJET,         /* 5 */   /*!< Parton representing a Jet of b particles. */
-			PT_CJET,         /* 4 */   /*!< Parton representing a Jet of c particles. */
+			PT_JET,                    /*!< Parton originating particles grouped into jets. */
+			PT_BJET,         /* 5 */   /*!< Parton b-quark labelling (tagger) b-jet. */
+			PT_CJET,         /* 4 */   /*!< Parton c-quark labelling (tagger) c-jet. */
 			
 			PT_CELL,                   /*!< Grouping parton representing a single Cell in detector. */
 			PT_CLUSTER,                /*!< Grouping parton representing a Cluster aka. collection of consecutive Cells in detector. */
 			
 			PT_MUON,         /* 13 */  /*!< A muon particle. */
 			PT_ELECTRON,     /* 11 */  /*!< An electron or positron (e- / e+). */
-			PT_PHOTON,       /* 22 */  /*!< Nonmassive gamma particle. */
-			PT_TAU,          /* 15 */  /*!< A tau particle. */
+			PT_PHOTON,       /* 22 */  /*!< A photon. */
+			PT_TAU,          /* 15 */  /*!< A tau lepton.*/
+			PT_TopQuark,     /* 6 */   /*!< A top quark. */
 			
 			PT_NEUTRINO_ELE, /* 12 */  /*!< An electron neutrino. */
 			PT_NEUTRINO_MUO, /* 14 */  /*!< A muon neutrino. */
