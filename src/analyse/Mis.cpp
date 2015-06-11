@@ -136,7 +136,7 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	);
     
     histoManager
-		->insert(idhist+11, ETREC );
+      ->insert(idhist+11, ETREC, weight );
     
     // smear cells energy not used for reconstruction
     // remove cells below threshold
@@ -170,7 +170,7 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	);
 	
 	histoManager
-	  ->insert(idhist+12, ETSUM );
+	  ->insert(idhist+12, ETSUM, weight );
 	
 	//PXXMISS, PYYMISS
 	Real64_t PXXMISS = -orecord.Miss.PXSUM;
@@ -181,7 +181,7 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	);
 	
 	histoManager
-	  ->insert(idhist+13, PTMISS );
+	  ->insert(idhist+13, PTMISS, weight );
 	
 	// sum up momenta  of neutrinos 
 	Real64_t PXXNUES = 0.0;
@@ -208,7 +208,7 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	orecord.Miss.PYNUE = PYYNUES;
 	
 	histoManager
-	  ->insert(idhist+21, PTNUES );
+	  ->insert(idhist+21, PTNUES, weight );
 }
 
 void Mis::printResults() const {

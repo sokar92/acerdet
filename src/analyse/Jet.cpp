@@ -175,7 +175,7 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	
 	// histogram NJET
 	histoManager
-	  ->insert( idhist+1, orecord.Jets.size() );
+	  ->insert( idhist+1, orecord.Jets.size(), weight );
 	
 	// arrange jets in falling E_T sequence
 	JetData::sortBy_pT( orecord.Jets );
@@ -236,13 +236,13 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 			       );
 	  
 	  histoManager
-	    ->insert(idhist+11, ETAREC - jet.eta_rec);
+	    ->insert(idhist+11, ETAREC - jet.eta_rec, weight);
 	  histoManager
-	    ->insert(idhist+12, PHIREC - jet.phi_rec);
+	    ->insert(idhist+12, PHIREC - jet.phi_rec, weight);
 	  histoManager
-	    ->insert(idhist+13, DETR);
+	    ->insert(idhist+13, DETR, weight);
 	  histoManager
-	    ->insert(idhist+23, jet.pT / PTREC);
+	    ->insert(idhist+23, jet.pT / PTREC, weight);
 	  
 	}
 	
@@ -276,9 +276,9 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	  
 	  if (PTREC != 0) {
 	    histoManager
-	      ->insert(idhist+14, DETRMIN, 1.0);
+	      ->insert(idhist+14, DETRMIN, weight);
 	    histoManager
-	      ->insert(idhist+24, jet.pT / PTREC, 1.0);
+	      ->insert(idhist+24, jet.pT / PTREC, weight);
 	  }
 	}
 }

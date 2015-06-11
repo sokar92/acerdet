@@ -176,7 +176,7 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 	
 	// fill histogram
 	histoManager
-		->insert(idhist+1, tempClusters.size());
+	  ->insert(idhist+1, tempClusters.size(), weight);
 	
 	// reconstruct baricenter of particles
 	const vector<Particle>& parts = irecord.particles();
@@ -236,16 +236,16 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		
 		// fill  histograms
 		histoManager
-			->insert(idhist + 11, ETAREC - cluster.eta_rec);
+		  ->insert(idhist + 11, ETAREC - cluster.eta_rec, weight);
 		
 		histoManager
-			->insert(idhist + 12, PHIREC - cluster.phi_rec); 
+		  ->insert(idhist + 12, PHIREC - cluster.phi_rec, weight); 
 		
 		histoManager
-			->insert(idhist + 13, DETR);
+		  ->insert(idhist + 13, DETR, weight);
 		
 		histoManager
-			->insert(idhist + 14, cluster.pT / PTREC);			
+		  ->insert(idhist + 14, cluster.pT / PTREC, weight);			
 	}
 
 	for (int ICLU=0; ICLU<orecord.Clusters.size(); ICLU++) {
@@ -282,9 +282,9 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		// fill histograms
 		if (PTREC != 0) {
 			histoManager
-				->insert(idhist + 23, DETRMIN);
+			  ->insert(idhist + 23, DETRMIN, weight);
 			histoManager
-				->insert(idhist + 24, cluster.pT / PTREC);
+			  ->insert(idhist + 24, cluster.pT / PTREC, weight);
 		}
 	}
 }

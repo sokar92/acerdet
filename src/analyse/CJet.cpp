@@ -141,7 +141,7 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	
 	// store count in histogram
 	histoManager
-	  ->insert(idhist+11, NJETC, 1.0);
+	  ->insert(idhist+11, NJETC, weight);
 	
 	// check partons
 	Int32_t IQUAC = 0, ICJET = 0;
@@ -183,7 +183,7 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 
 	// fill histogram
 	histoManager
-	  ->insert(idhist+21, IQUAC );
+	  ->insert(idhist+21, IQUAC, weight );
 	
 	for (int i=0; i<orecord.Jets.size(); ++i) {
 	  Real64_t PTREC = 0.0;
@@ -217,9 +217,9 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	  
 	  if (PTREC != 0) {
 	    histoManager
-	      ->insert(idhist + 23, DETRMIN, 1.0);
+	      ->insert(idhist + 23, DETRMIN, weight);
 	    histoManager
-	      ->insert(idhist + 24, orecord.Jets[i].pT / PTREC, 1.0);
+	      ->insert(idhist + 24, orecord.Jets[i].pT / PTREC, weight);
 	  }
 	}
 }

@@ -133,7 +133,7 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 		  }
 
 		  histoManager
-		    ->insert(idhist + 23, DR, 1.0);
+		    ->insert(idhist + 23, DR, weight);
 
 		  printf("Jet presence =%4d\n",TAUJET_tagger);
 		  
@@ -157,9 +157,9 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 
 
 	histoManager
-		->insert(idhist+11, NJETTAU);
+	  ->insert(idhist+11, NJETTAU, weight);
 	histoManager
-		->insert(idhist+21, NHADTAU);
+	  ->insert(idhist+21, NHADTAU, weight);
 }
 
 void Tau::printResults() const {
