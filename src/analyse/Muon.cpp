@@ -15,7 +15,6 @@ Muon::Muon( const Configuration& config, IHistogramManager* histoMng ) :
 	RISOLJ	( config.Muon.MinIsolRlj ),
 	RDEP	( config.Muon.ConeR ),
 	EDMAX	( config.Muon.MaxEnergy ),
-	PTMUMINT( config.Muon.MinMomenta ),    // PROBLEM!!!
 
 	KEYHID	( config.Flag.HistogramId ),
 	KEYSME	( config.Flag.Smearing ),
@@ -46,12 +45,11 @@ void Muon::printInfo() const {
 	printf ("min R_lj for isolation %lf\n", RISOLJ);
 	printf ("R for energy deposit %lf\n", RDEP);
 	printf ("max E_dep for isolation %lf\n", EDMAX);
-	printf ("min muon p_T unsmea %lf\n", PTMUMINT);
 	printf ("smearing %s\n", KEYSME ? "on" : "off");
 	printf ("\n");
 }
 
-void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weigth ) {
+void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weight ) {
 	
 	Int32_t idhist = 200 + KEYHID;
 	if (!histoRegistered) {
@@ -61,9 +59,9 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 		histoManager
 			->registerHistogram(idhist+11, "Muon: muon multiplicity ISOLATED", 10, 0.0, 10.0);
 		histoManager
-			->registerHistogram(idhist+12, "Muon: muon multiplicity HARD", 10, 0.0, 10.0);
+			->registerHistogram(idhist+12, "Muon: muon multiplicity HP", 10, 0.0, 10.0);
 		histoManager
-			->registerHistogram(idhist+13, "Muon: muon multiplicity HARD+isol", 10, 0.0, 10.0);
+			->registerHistogram(idhist+13, "Muon: muon multiplicity HP+ISOL", 10, 0.0, 10.0);
 	}
 
 	// new event to compute
@@ -85,8 +83,6 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			Bool_t ISOL = true;
 			
 			Real64_t PT = part.pT();
-			if (PT < PTMUMINT) 
-				continue;
 			 
 			if (abs(part.getEta()) > ETAMAX) 
 				continue;  
@@ -142,7 +138,7 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 			
 			if (EDEP > EDMAX) 
 				ISOL = false;
-			
+
 			ObjectData newObject;
 			newObject.num = i;
 			newObject.pdg_id = part.pdg_id;
@@ -163,10 +159,10 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	
 	// call histograms
 	histoManager
-		->insert(idhist + 10, orecord.Muons.size(), 1.0 );
+		->insert(idhist + 10, orecord.NonisolatedMuons.size(), weight );
 		
 	histoManager
-		->insert(idhist + 11, orecord.NonisolatedMuons.size(), 1.0 );
+		->insert(idhist + 11, orecord.Muons.size(), weight );
 
 	// arrange muons in falling E_T sequence
 	ObjectData::sortBy_pT( orecord.Muons );
@@ -227,10 +223,10 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 
 	// fill histogram
 	histoManager
-	    ->insert(idhist + 12,  IMUO, 1.0 );
+	    ->insert(idhist + 12,  IMUO, weight );
 	
 	histoManager
-	    ->insert(idhist + 13,  IMUOISO, 1.0 );
+	    ->insert(idhist + 13,  IMUOISO, weight );
 }
 
 void Muon::printResults() const {
