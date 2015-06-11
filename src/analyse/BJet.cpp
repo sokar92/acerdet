@@ -46,7 +46,7 @@ void BJet::printInfo() const {
 	printf ("\n");
 }
 
-void BJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weigth ) {
+void BJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weight ) {
 	
 	Int32_t idhist = 700 + KEYHID;
 	if (!histoRegistered) {

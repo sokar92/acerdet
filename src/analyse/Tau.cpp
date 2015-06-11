@@ -45,7 +45,7 @@ void Tau::printInfo() const {
 	printf ("\n");
 }
 
-void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weigth ) {
+void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weight ) {
 	Int32_t idhist = 900 + KEYHID;
 	if (!histoRegistered) {
 		histoRegistered = true;

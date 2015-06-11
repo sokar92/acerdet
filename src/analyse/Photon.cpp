@@ -52,7 +52,7 @@ void Photon::printInfo() const {
 
 }
 
-void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weigth ) {
+void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weight ) {
 
 	Int32_t idhist = 400 + KEYHID;
 	if (!histoRegistered) {

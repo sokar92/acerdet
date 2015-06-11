@@ -56,7 +56,7 @@ void Cell::printInfo() const {
 	printf ("\n");
 }
 
-void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weigth ) {
+void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weight ) {
 
 	Int32_t idhist = 0 + KEYHID;
 	if (!histoRegistered) {

@@ -57,11 +57,11 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 	if (!histoRegistered) {
 		histoRegistered = true;
 		histoManager
-			->registerHistogram(idhist+11, "Electron: multiplicity isolated", 10, 0.0, 10.0);
+			->registerHistogram(idhist+11, "Electron: multiplicity ISOLATED", 10, 0.0, 10.0);
 		histoManager
-			->registerHistogram(idhist+21, "Electron: multiplicity hard", 10, 0.0, 10.0);
+			->registerHistogram(idhist+21, "Electron: multiplicity HP", 10, 0.0, 10.0);
 		histoManager
-			->registerHistogram(idhist+31, "Electron: multiplicity isol+hard", 10, 0.0, 10.0);
+			->registerHistogram(idhist+31, "Electron: multiplicity HP+ISOL", 10, 0.0, 10.0);
 	}
 
 	// new event to compute
@@ -85,7 +85,7 @@ void Electron::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& 
 			Real64_t PT = part.pT();
    
 			// apply smearing
-        	Real64_t PTCRU = PT;
+			Real64_t PTCRU = PT;
 			if (KEYSME) {
 				if (part.e() <= 0.0) 
 					continue;
