@@ -33,7 +33,7 @@ void Calibration::printInfo() const {
 	printf ("\n");
 }
 
-void Calibration::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weigth ) {
+void Calibration::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weight ) {
 /*
       IF(KEYCAL.NE.0) THEN
 c histograms initialization

@@ -46,7 +46,7 @@ void CJet::printInfo() const {
 	printf ("\n");
 }
 
-void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weigth ) {
+void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weight ) {
 	
 	Int32_t idhist = 800 + KEYHID;
 	if (!histoRegistered) {
@@ -56,7 +56,7 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 		histoManager
 			->registerHistogram(idhist+21, "CJet: c-quarks HARD multiplicity", 10, 0.0, 10.0);
 		histoManager 
-			->registerHistogram(idhist+23, "CJet: delta r cjet-cquark HARD", 50, 0.0,  5.0);
+			->registerHistogram(idhist+23, "CJet: delta r cjet-cquark HARD", 50, 0.0,  1.0);
 		histoManager
 			->registerHistogram(idhist+24, "CJet: pTcjet/pTcquark HARD", 50, 0.0,  2.0);
 	}
