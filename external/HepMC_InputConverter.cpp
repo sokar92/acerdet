@@ -69,12 +69,20 @@ Int32_t extractDaughter2(HepMC::GenVertex* ptr) {
 
 InputRecord HepMC_InputConverter::convert( const GenEvent& event ) {
 	vector<Particle> parts;
-	
+	int icount =-1;	
 	for( GenEvent::particle_const_iterator iter = event.particles_begin(); iter != event.particles_end(); ++iter ) {
+
 		GenParticle* gpart = *iter;
 		
 		core::Particle part;
-		
+
+		//to synchronize barcode and counter in vector<Particle> load empty particle
+		if(icount<0){
+		  icount++;
+		  part.barcode = icount;
+		  parts.push_back(part);
+
+		}
 		// particle tree hierarchy
 		part.barcode = gpart->barcode();
 		HepMC::GenVertex* prod = gpart->production_vertex();
@@ -82,7 +90,7 @@ InputRecord HepMC_InputConverter::convert( const GenEvent& event ) {
 		HepMC::GenVertex* decay = gpart->end_vertex();
 		part.daughters = make_pair(extractDaughter1(decay), extractDaughter2(decay));
 
-		// state (named & id)
+		// status (named & id)
 		part.status = getParticleStatus(gpart);
 		part.statusID = gpart->status();
 		
@@ -91,8 +99,8 @@ InputRecord HepMC_InputConverter::convert( const GenEvent& event ) {
 		part.pdg_id = gpart->pdg_id();
 
 		// check conversion from Pythia8 event record
-		//    printf("barcode=%d, status=%d,  pdgid=%d, mother=%d, daughter1=%d, daughter2=%d\n", 
-		//    part.barcode, part.statusID, part.pdg_id, part.mother, extractDaughter1(decay), extractDaughter2(decay)); 
+		//		if( icount < 10) printf("barcode=%d, status=%d,  pdgid=%d, mother=%d, daughter1=%d, daughter2=%d\n", 
+		//			part.barcode, part.statusID, part.pdg_id, part.mother, extractDaughter1(decay), extractDaughter2(decay)); 
 		
 		// momentum as Vector4
 		part.momentum = vec4(gpart->momentum());
@@ -103,7 +111,6 @@ InputRecord HepMC_InputConverter::convert( const GenEvent& event ) {
 		}
 		
 		parts.push_back(part);
-		//cout << part; // to delete in release!
 	}
 	
 	return InputRecord(parts);
