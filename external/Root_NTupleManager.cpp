@@ -181,8 +181,8 @@ void Root_NTupleManager::fill(
 	}
 	n_jet_n = orecord.Jets.size(); 
 
-	n_pxmiss = orecord.Miss.PXREC;
-	n_pymiss = orecord.Miss.PXREC;
+	n_pxmiss = - orecord.Miss.PXREC;
+	n_pymiss = - orecord.Miss.PXREC;
 	n_pxnue = orecord.Miss.PXNUE;
 	n_pynue = orecord.Miss.PYNUE;
 	n_pxcalo = orecord.Miss.PXXCALO;
