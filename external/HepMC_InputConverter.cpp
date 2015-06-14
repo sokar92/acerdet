@@ -28,9 +28,8 @@ ParticleStatus HepMC_InputConverter::getParticleStatus(HepMC::GenParticle* gpart
 	if (gpart->is_beam()) return PS_BEAM; 	     // status_code == 4
 	if (gpart->is_undecayed()) return PS_FINAL;  // status_code == 1 -> final state
 	if (gpart->has_decayed()) return PS_DECAYED; // status_code == 2 -> before hadronization
-	if (gpart->status() == 3) return PS_HISTORY; // documentation line -> history
-	if (abs(gpart->status()) >= 30) return PS_CASCADE_QUARK;
-	if (20 <= abs(gpart->status()) && abs(gpart->status()) < 30) return PS_HP_QUARK;
+	if (20 <= abs(gpart->status()) && abs(gpart->status()) < 30) return PS_HISTORY; // documentation line -> history
+	if (abs(gpart->status()) >= 30 && abs(gpart->pdg_id()) < 6) return PS_CASCADE_QUARK;
 	return PS_NULL;
 }
 

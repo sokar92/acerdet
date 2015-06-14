@@ -77,22 +77,23 @@ void Root_NTupleManager::fill(
 	int count = 0;
 	const vector<Particle>& parts = irecord.particles();
 	for (int j=0; j<parts.size(); ++j) {
-		n_part_pdgId.push_back(parts[j].pdg_id);
 		
 		// pick only particles from hard process
-		if (!isHardProcess(parts, j))
-			continue;
-			
-		Real64_t px = parts[j].pT() * cos(parts[j].getPhi());
-		Real64_t py = parts[j].pT() * sin(parts[j].getPhi());
-		Real64_t pz = parts[j].pT() * sinh(parts[j].getEta());
-		Real64_t E  = parts[j].pT() * cosh(parts[j].getEta());
-		
-		n_part_px.push_back(px);
-		n_part_py.push_back(py);
-		n_part_pz.push_back(pz);
-		n_part_E.push_back(E);
-		count++;
+		if ( isHardProcess(parts, j) 
+                    || parts[j].status == PS_BEAM ||  parts[j].status == PS_HISTORY ) {
+
+		  Real64_t px = parts[j].pT() * cos(parts[j].getPhi());
+		  Real64_t py = parts[j].pT() * sin(parts[j].getPhi());
+		  Real64_t pz = parts[j].pT() * sinh(parts[j].getEta());
+		  Real64_t E  = parts[j].pT() * cosh(parts[j].getEta());
+		  
+		  n_part_pdgId.push_back(parts[j].pdg_id);					
+		  n_part_px.push_back(px);
+		  n_part_py.push_back(py);
+		  n_part_pz.push_back(pz);
+		  n_part_E.push_back(E);
+		  count++;
+		}
 	}
 	n_part_n = count;   
 

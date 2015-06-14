@@ -143,8 +143,7 @@ void BJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	for (int i=6; i<parts.size(); ++i) {
 	  const Particle& part = parts[i];
 	  
-	  if (part.status == PS_HP_QUARK //isHardProcess(parts, i)
-	      && part.type == PT_BJET) {
+	  if (part.status == PS_HISTORY && part.type == PT_BJET) {
 	    
 	    if (abs(part.getEta()) < ETBMAX
 		&& part.pT() > ETJET) {

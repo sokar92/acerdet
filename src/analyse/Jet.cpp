@@ -256,7 +256,7 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	  for (int j=6; j<parts.size(); ++j) {
 	    const Particle& part = parts[j];
 	    
-	    if (part.status != PS_HP_QUARK) 
+	    if (part.status != PS_HISTORY) 
 	      continue;
 	    
 	    Real64_t DPHIA = abs(part.getPhi() - jet.phi_rec); 
