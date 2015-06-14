@@ -18,7 +18,7 @@ ParticleType HepMC_InputConverter::getParticleType(int code) {
 	if (code == -16 || code == 16) return PT_NEUTRINO_TAU;
 	if (code == 22) return PT_PHOTON;
 	if (code == 23) return PT_BOSON_Z;
-	if (code == 24) return PT_BOSON_W;
+	if (code == 24 || code == -24 ) return PT_BOSON_W;
 	if (code == 25) return PT_BOSON_H;
 	
 	return PT_UNKNOWN;
