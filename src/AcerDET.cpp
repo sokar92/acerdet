@@ -87,12 +87,12 @@ void AcerDET::printInfo() const {
 	// AcerDET version number and release date
 	printf ("**********************************************************\n");
 	printf ("*                  AcerDET, version: 2.0                 *\n");
-	printf ("*                 Released at: xx.yy.2014                *\n");
+	printf ("*                 Released at: 30.06.2015                *\n");
 	printf ("*                                                        *\n");
 	printf ("*  Simplied event simulation and reconstruction package  *\n");
 	printf ("*                                                        *\n");
-	printf ("*              by E. Richter-Was & P. Mikos              *\n");
-	printf ("*             Institute of Computer Science              *\n");
+	printf ("*           by E. Richter-Was (Institute of Physics)     *\n");
+	printf ("*          and P. Mikos (Theoretical Computer Science)   *\n");
 	printf ("*         Jagiellonian University, Cracow, Poland        *\n");
 	printf ("**********************************************************\n");
 	printf ("\n");
@@ -104,11 +104,11 @@ void AcerDET::printInfo() const {
 	analyse_Muon		->printInfo();
 	analyse_Electron	->printInfo();
 	analyse_Photon		->printInfo();
-	analyse_Jet			->printInfo();
-	analyse_Mis			->printInfo();
+	analyse_Jet		->printInfo();
+	analyse_Mis		->printInfo();
 	analyse_BJet		->printInfo();
 	analyse_CJet		->printInfo();
-	analyse_Tau			->printInfo();
+	analyse_Tau		->printInfo();
 	analyse_Calibration	->printInfo();
 }
 
@@ -118,11 +118,11 @@ void AcerDET::printResults() const {
 	analyse_Muon		->printResults();
 	analyse_Electron	->printResults();
 	analyse_Photon		->printResults();
-	analyse_Jet			->printResults();
-	analyse_Mis			->printResults();
+	analyse_Jet		->printResults();
+	analyse_Mis		->printResults();
 	analyse_BJet		->printResults();
 	analyse_CJet		->printResults();
-	analyse_Tau			->printResults();
+	analyse_Tau	       	->printResults();
 }
 
 void AcerDET::storeHistograms() {
