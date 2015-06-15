@@ -62,7 +62,7 @@ void Photon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& or
 		histoManager
 			->registerHistogram(idhist+21, "Photon: photon multiplicity HP", 10, 0.0, 10.0);
 		histoManager
-			->registerHistogram(idhist+31, "Photon: photon multiplicity HP+isol", 10, 0.0, 10.0);
+			->registerHistogram(idhist+31, "Photon: photon multiplicity HP+ISOL", 10, 0.0, 10.0);
 	}
 		
 	// new event to compute

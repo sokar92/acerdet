@@ -59,9 +59,9 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 		histoManager
 			->registerHistogram(idhist+11, "Muon: muon multiplicity ISOLATED", 10, 0.0, 10.0);
 		histoManager
-			->registerHistogram(idhist+12, "Muon: muon multiplicity HP", 10, 0.0, 10.0);
+			->registerHistogram(idhist+21, "Muon: muon multiplicity HP", 10, 0.0, 10.0);
 		histoManager
-			->registerHistogram(idhist+13, "Muon: muon multiplicity HP+ISOL", 10, 0.0, 10.0);
+			->registerHistogram(idhist+31, "Muon: muon multiplicity HP+ISOL", 10, 0.0, 10.0);
 	}
 
 	// new event to compute
@@ -198,35 +198,33 @@ void Muon::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 							pow(abs(part.getPhi() - parts[j].getPhi()) - 2*PI, 2) 
 						);
 
-					if (DDR < RISOLJ
-					&& parts[j].pT() > ETCLU) 
-						ISOL = false;
+					if (DDR < RISOLJ && parts[j].pT() > ETCLU) 
+					  ISOL = false;
 						
-					if (DDR < RDEP
-					&& parts[j].pT() < ETCLU) 
-						ENER += parts[j].pT();
+					if (DDR < RDEP && parts[j].pT() < ETCLU) 
+					  ENER += parts[j].pT();
 				}
 			}
 
 			if (ENER > EDMAX) 
-				ISOL = false;
+			  ISOL = false;
 				
 			if (abs(part.getEta()) < ETAMAX
-			&& part.pT() > PTMUMIN) 
-				IMUO++;
+                        && part.pT() > PTMUMIN) 
+			  IMUO++;
 				
-			if (abs(part.getEta()) < ETAMAX
-			&& part.pT() > PTMUMIN && ISOL)
-				IMUOISO++;
+			if (abs(part.getEta()) < ETAMAX 
+                        && part.pT() > PTMUMIN && ISOL)
+			  IMUOISO++;
 		}
 	}
 
 	// fill histogram
 	histoManager
-	    ->insert(idhist + 12,  IMUO, weight );
+	    ->insert(idhist + 21,  IMUO, weight );
 	
 	histoManager
-	    ->insert(idhist + 13,  IMUOISO, weight );
+	    ->insert(idhist + 31,  IMUOISO, weight );
 }
 
 void Muon::printResults() const {

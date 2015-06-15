@@ -57,7 +57,7 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 		histoManager
 			->registerHistogram(idhist+13, "Mis: reconstructed pTmiss", 50, 0.0, 200.0);
 		histoManager
-			->registerHistogram(idhist+21, "Mis: reconstructed p_T nu", 50, 0.0, 200.0);
+			->registerHistogram(idhist+21, "Mis: true p_T invisible", 50, 0.0, 200.0);
 	}
 
     // new event to compute

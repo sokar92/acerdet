@@ -52,13 +52,13 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	if (!histoRegistered) {
 		histoRegistered = true;
 		histoManager
-			->registerHistogram(idhist+11, "CJet: c-jets multiplicity", 10, 0.0, 10.0);
+			->registerHistogram(idhist+11, "CJet: c-jets multiplicity"       , 10, 0.0, 10.0);
 		histoManager
-			->registerHistogram(idhist+21, "CJet: c-quarks HARD multiplicity", 10, 0.0, 10.0);
+			->registerHistogram(idhist+21, "CJet: c-quarks HP multiplicity"  , 10, 0.0, 10.0);
 		histoManager 
-			->registerHistogram(idhist+23, "CJet: delta r cjet-cquark HARD", 50, 0.0,  1.0);
+			->registerHistogram(idhist+23, "CJet: delta r cjet-cquark HP"    , 50, 0.0,  1.0);
 		histoManager
-			->registerHistogram(idhist+24, "CJet: pTcjet/pTcquark HARD", 50, 0.0,  2.0);
+			->registerHistogram(idhist+24, "CJet: pTcjet/pTcquark HP"        , 50, 0.0,  2.0);
 	}
 
 	// do not use this algorithm

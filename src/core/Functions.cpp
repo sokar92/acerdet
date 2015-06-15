@@ -8,9 +8,9 @@ Bool_t AcerDet::core::isHardProcess(const vector<Particle>& parts, int i) {
   //	if (parts[i].status != PS_FINAL)
   //		return false;
 
-	// if mother exists should be H, W, or Z boson {23, 24, 25}, top-quarsk or tau lepton
+	// if mother exists should be H, W, or Z boson {23, 24, 25}, top-quarks or tau lepton
 	if (parts[i].hasMother()) {
-		Int32_t mother_index = parts[i].mother - 1;
+		Int32_t mother_index = parts[i].mother;
 		ParticleType mother_type = parts[mother_index].type;
 		return     mother_type == PT_BOSON_Z
 			|| mother_type == PT_BOSON_W

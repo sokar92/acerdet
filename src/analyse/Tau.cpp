@@ -52,9 +52,11 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 		histoManager
 			->registerHistogram(idhist+11, "Tau: tau-jets multiplicity", 10, 0.0, 10.0);
 		histoManager
-			->registerHistogram(idhist+21, "Tau: hadronic taus multiplicity HP", 10, 0.0, 10.0);
+			->registerHistogram(idhist+21, "Tau: tau-had multiplicity ", 10, 0.0, 10.0);
 		histoManager
-			->registerHistogram(idhist+23, "Tau: delta r tau-jet, tau-had HP", 50, 0.0, 1.0);
+			->registerHistogram(idhist+23, "Tau: delta r tau-jet, tau-had ", 50, 0.0, 1.0);
+		histoManager
+			->registerHistogram(idhist+24, "Tau: pTtaujet/pTtau-had ", 50, 0.0, 2.0);
 	}
 
  	// new event to compute
@@ -126,9 +128,6 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 		    }
 		  }
 
-		  histoManager
-		    ->insert(idhist + 23, DR, weight);
-
 		  if (DR > RJTAU) {
 		    TAUJET_tagger = false;
 		    JETTAU = -1;
@@ -136,6 +135,13 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 		  
 		  if (TAUJET_tagger  && abs(orecord.Jets[JETTAU].eta_rec) < ETATAU ) {
 		    orecord.Jets[JETTAU].type = TAU_JET;
+
+		  histoManager
+		    ->insert(idhist + 23, DR, weight);
+
+		  histoManager
+		    ->insert(idhist + 24, orecord.Jets[JETTAU].pT/ tmpPart.pT(), weight);
+
 		  }
 		}
 	}
