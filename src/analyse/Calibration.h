@@ -6,6 +6,7 @@
 #include "../conf/Configuration.h"
 using namespace AcerDet::conf;
 
+#include "../core/IHistogramManager.h"
 #include "../io/InputRecord.h"
 #include "../io/OutputRecord.h"
 
@@ -24,7 +25,9 @@ namespace AcerDet {
 			Bool_t KEYCAL;  /*!< see Configuration */
 			
 			Int32_t IEVENT; /*!< see Configuration */
-			Int32_t IDENT;  /*!< see Configuration */
+			
+			IHistogramManager *histoManager; /*!< A pointer to global histogram manager. */
+			Bool_t histoRegistered;          /*!< Indicates whether histograms are already registered and might be used now. */
 			
 		public:
 			
@@ -33,7 +36,7 @@ namespace AcerDet {
 			 * Creates new instance of Calibration.
 			 * \param conf AcerDET initial Configuration
 			 */
-			Calibration( const Configuration& );
+			Calibration( const Configuration&, IHistogramManager* );
 			
 			/**
 			 * Destructor.
@@ -54,6 +57,11 @@ namespace AcerDet {
 				const io::InputRecord& input,
 				io::OutputRecord& output,
 				Real64_t weight );
+			
+			/**
+			 * Print Calibration algorithm execution results to standard output.
+			 */
+			void printResults() const;
 		};
 
 	}
