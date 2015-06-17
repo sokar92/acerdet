@@ -1,12 +1,13 @@
 1. Update external.inc to set up relative paths to external tools
 
-2. Build whole soultion using single make
-	make
 
-3a. Update path.inc and make source
+2a. Update path.inc and make source
 	source
 
-3b. Or manually set up PYTHIA environment variables (required by demo)
+2b. Or manually set up PYTHIA environment variables (required by demo)
+
+3. Build whole solution using single make
+	make
 
 4. Run demo
-	./demo.exe conf/ee.conf 100
+	./demo.exe conf/pp.XXX.conf 100
