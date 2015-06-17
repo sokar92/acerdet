@@ -58,6 +58,8 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 			->registerHistogram(idhist+13, "Mis: reconstructed pTmiss", 50, 0.0, 200.0);
 		histoManager
 			->registerHistogram(idhist+21, "Mis: true p_T invisible", 50, 0.0, 200.0);
+		histoManager
+			->registerHistogram(idhist+22, "Mis: pT miss (true - reco)/reco ", 50, -1.0, 1.0);
 	}
 
     // new event to compute
@@ -209,6 +211,10 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	
 	histoManager
 	  ->insert(idhist+21, PTNUES, weight );
+	
+	if( PTMISS > 0 )
+	  histoManager
+	  ->insert(idhist+22, (PTNUES - PTMISS)/PTMISS, weight );
 }
 
 void Mis::printResults() const {
