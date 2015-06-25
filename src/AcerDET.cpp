@@ -19,7 +19,7 @@ AcerDET::AcerDET(
 	analyse_BJet =
 		new analyse::BJet( config, histoManager );
 	analyse_Calibration =
-		new analyse::Calibration( config );
+		new analyse::Calibration( config, histoManager );
 	analyse_CJet =
 		new analyse::CJet( config, histoManager );
 	analyse_Cluster =
@@ -55,6 +55,7 @@ AcerDET::~AcerDET() {
 	delete analyse_Muon;
 	delete analyse_Photon;
 	delete analyse_Tau;
+
 }
 
 /*
@@ -72,11 +73,11 @@ void AcerDET::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 	analyse_Muon		->analyseRecord( irecord, orecord, weigth );
 	analyse_Electron	->analyseRecord( irecord, orecord, weigth );
 	analyse_Photon		->analyseRecord( irecord, orecord, weigth );
-	analyse_Jet			->analyseRecord( irecord, orecord, weigth );
-	analyse_Mis			->analyseRecord( irecord, orecord, weigth );
+	analyse_Jet		->analyseRecord( irecord, orecord, weigth );
+	analyse_Mis		->analyseRecord( irecord, orecord, weigth );
 	analyse_BJet		->analyseRecord( irecord, orecord, weigth );
 	analyse_CJet		->analyseRecord( irecord, orecord, weigth );
-	analyse_Tau			->analyseRecord( irecord, orecord, weigth );
+	analyse_Tau		->analyseRecord( irecord, orecord, weigth );
 	analyse_Calibration	->analyseRecord( irecord, orecord, weigth );
 }
 
@@ -87,12 +88,12 @@ void AcerDET::printInfo() const {
 	// AcerDET version number and release date
 	printf ("**********************************************************\n");
 	printf ("*                  AcerDET, version: 2.0                 *\n");
-	printf ("*                 Released at: xx.yy.2014                *\n");
+	printf ("*                 Released at: 30.06.2015                *\n");
 	printf ("*                                                        *\n");
 	printf ("*  Simplied event simulation and reconstruction package  *\n");
 	printf ("*                                                        *\n");
-	printf ("*              by E. Richter-Was & P. Mikos              *\n");
-	printf ("*             Institute of Computer Science              *\n");
+	printf ("*           by E. Richter-Was (Institute of Physics)     *\n");
+	printf ("*          and P. Mikos (Theoretical Computer Science)   *\n");
 	printf ("*         Jagiellonian University, Cracow, Poland        *\n");
 	printf ("**********************************************************\n");
 	printf ("\n");
@@ -104,11 +105,11 @@ void AcerDET::printInfo() const {
 	analyse_Muon		->printInfo();
 	analyse_Electron	->printInfo();
 	analyse_Photon		->printInfo();
-	analyse_Jet			->printInfo();
-	analyse_Mis			->printInfo();
+	analyse_Jet		->printInfo();
+	analyse_Mis		->printInfo();
 	analyse_BJet		->printInfo();
 	analyse_CJet		->printInfo();
-	analyse_Tau			->printInfo();
+	analyse_Tau		->printInfo();
 	analyse_Calibration	->printInfo();
 }
 
@@ -118,11 +119,12 @@ void AcerDET::printResults() const {
 	analyse_Muon		->printResults();
 	analyse_Electron	->printResults();
 	analyse_Photon		->printResults();
-	analyse_Jet			->printResults();
-	analyse_Mis			->printResults();
+	analyse_Jet		->printResults();
+	analyse_Mis		->printResults();
 	analyse_BJet		->printResults();
 	analyse_CJet		->printResults();
-	analyse_Tau			->printResults();
+	analyse_Tau	       	->printResults();
+	analyse_Calibration	->printResults();
 }
 
 void AcerDET::storeHistograms() {

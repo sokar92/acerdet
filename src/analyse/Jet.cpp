@@ -51,13 +51,13 @@ void Jet::printInfo() const {
 	printf ("\n");
 }
 
-void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weigth ) {
+void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weight ) {
 	
 	Int32_t idhist = 500 + KEYHID;
 	if (!histoRegistered) {
 		histoRegistered = true;
 		histoManager
-		  ->registerHistogram(idhist+1, "Jet: multiplicity", 50, 0.0, 10);
+		  ->registerHistogram(idhist+1, "Jet: multiplicity", 20, 0.0, 20);
 		histoManager
 		  ->registerHistogram(idhist+11, "Jet: delta phi jet-barycentre", 50, -0.5, 0.5);
 		histoManager
@@ -65,9 +65,9 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 		histoManager
 		  ->registerHistogram(idhist+13, "Jet: delta r jet-barycentre",   50,  0.0, 1.0);
 		histoManager
-		  ->registerHistogram(idhist+23, "Jet: pTjet/pT particles in Rcone",           50,  0.0, 2.0);
+		  ->registerHistogram(idhist+14, "Jet: delta r jet- HP parton",   50,  0.0, 1.0);
 		histoManager
-		  ->registerHistogram(idhist+14, "Jet: delta r jet- HP parton",  50,  0.0, 1.0);
+		  ->registerHistogram(idhist+23, "Jet: pTjet/pT particles in Rcone",  50,  0.0, 2.0);
 		histoManager
 		  ->registerHistogram(idhist+24, "Jet: pTjet/pT HP parton",           50,  0.0, 2.0);
 	}
@@ -175,7 +175,7 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	
 	// histogram NJET
 	histoManager
-	  ->insert( idhist+1, orecord.Jets.size() );
+	  ->insert( idhist+1, orecord.Jets.size(), weight );
 	
 	// arrange jets in falling E_T sequence
 	JetData::sortBy_pT( orecord.Jets );
@@ -236,13 +236,13 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 			       );
 	  
 	  histoManager
-	    ->insert(idhist+11, ETAREC - jet.eta_rec);
+	    ->insert(idhist+11, ETAREC - jet.eta_rec, weight);
 	  histoManager
-	    ->insert(idhist+12, PHIREC - jet.phi_rec);
+	    ->insert(idhist+12, PHIREC - jet.phi_rec, weight);
 	  histoManager
-	    ->insert(idhist+13, DETR);
+	    ->insert(idhist+13, DETR, weight);
 	  histoManager
-	    ->insert(idhist+23, jet.pT / PTREC);
+	    ->insert(idhist+23, jet.pT / PTREC, weight);
 	  
 	}
 	
@@ -256,7 +256,7 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	  for (int j=6; j<parts.size(); ++j) {
 	    const Particle& part = parts[j];
 	    
-	    if (part.status != PS_HP_QUARK) 
+	    if (part.status != PS_HISTORY) 
 	      continue;
 	    
 	    Real64_t DPHIA = abs(part.getPhi() - jet.phi_rec); 
@@ -276,9 +276,9 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	  
 	  if (PTREC != 0) {
 	    histoManager
-	      ->insert(idhist+14, DETRMIN, 1.0);
+	      ->insert(idhist+14, DETRMIN, weight);
 	    histoManager
-	      ->insert(idhist+24, jet.pT / PTREC, 1.0);
+	      ->insert(idhist+24, jet.pT / PTREC, weight);
 	  }
 	}
 }

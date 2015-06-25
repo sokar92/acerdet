@@ -67,12 +67,12 @@ namespace AcerDet {
 			/*!
 			 * \param input record.
 			 * \param output record.
-			 * \param weight event weigth.
+			 * \param weight event weight.
 			 */
 			void analyseRecord(
 				const io::InputRecord& input,
 				io::OutputRecord& output,
-				Real64_t weigth );
+				Real64_t weight );
 			
 			/**
 			 * Print Jet algorithm execution results to standard output.

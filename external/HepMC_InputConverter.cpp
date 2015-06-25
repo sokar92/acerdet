@@ -16,9 +16,9 @@ ParticleType HepMC_InputConverter::getParticleType(int code) {
 	if (code == -14 || code == 14) return PT_NEUTRINO_MUO;
 	if (code == -15 || code == 15) return PT_TAU;
 	if (code == -16 || code == 16) return PT_NEUTRINO_TAU;
-	if (code == -22 || code == 22) return PT_PHOTON;
+	if (code == 22) return PT_PHOTON;
 	if (code == 23) return PT_BOSON_Z;
-	if (code == 24) return PT_BOSON_W;
+	if (code == 24 || code == -24 ) return PT_BOSON_W;
 	if (code == 25) return PT_BOSON_H;
 	
 	return PT_UNKNOWN;
@@ -28,9 +28,8 @@ ParticleStatus HepMC_InputConverter::getParticleStatus(HepMC::GenParticle* gpart
 	if (gpart->is_beam()) return PS_BEAM; 	     // status_code == 4
 	if (gpart->is_undecayed()) return PS_FINAL;  // status_code == 1 -> final state
 	if (gpart->has_decayed()) return PS_DECAYED; // status_code == 2 -> before hadronization
-	if (gpart->status() == 3) return PS_HISTORY; // documentation line -> history
-	if (abs(gpart->status()) >= 30) return PS_CASCADE_QUARK;
-	if (20 <= abs(gpart->status()) && abs(gpart->status()) < 30) return PS_HP_QUARK;
+	if (20 <= abs(gpart->status()) && abs(gpart->status()) < 30) return PS_HISTORY; // documentation line -> history
+	if (abs(gpart->status()) >= 30 && abs(gpart->pdg_id()) < 6) return PS_CASCADE_QUARK;
 	return PS_NULL;
 }
 
@@ -69,12 +68,20 @@ Int32_t extractDaughter2(HepMC::GenVertex* ptr) {
 
 InputRecord HepMC_InputConverter::convert( const GenEvent& event ) {
 	vector<Particle> parts;
-	
+	int icount =-1;	
 	for( GenEvent::particle_const_iterator iter = event.particles_begin(); iter != event.particles_end(); ++iter ) {
+
 		GenParticle* gpart = *iter;
 		
 		core::Particle part;
-		
+
+		//to synchronize barcode and counter in vector<Particle> load empty particle
+		if(icount<0){
+		  icount++;
+		  part.barcode = icount;
+		  parts.push_back(part);
+
+		}
 		// particle tree hierarchy
 		part.barcode = gpart->barcode();
 		HepMC::GenVertex* prod = gpart->production_vertex();
@@ -82,16 +89,17 @@ InputRecord HepMC_InputConverter::convert( const GenEvent& event ) {
 		HepMC::GenVertex* decay = gpart->end_vertex();
 		part.daughters = make_pair(extractDaughter1(decay), extractDaughter2(decay));
 
-		// check conversion from Pythia8 event record
-		// printf("barcode=%d, mother=%d, daughter1=%d, daughter2=%d\n", part.barcode, part.mother, extractDaughter1(decay), extractDaughter2(decay)); 
-
-		// state (named & id)
+		// status (named & id)
 		part.status = getParticleStatus(gpart);
 		part.statusID = gpart->status();
 		
 		// type (named & id)
 		part.type = getParticleType(gpart->pdg_id());
 		part.pdg_id = gpart->pdg_id();
+
+		// check conversion from Pythia8 event record
+		//		if( icount < 10) printf("barcode=%d, status=%d,  pdgid=%d, mother=%d, daughter1=%d, daughter2=%d\n", 
+		//			part.barcode, part.statusID, part.pdg_id, part.mother, extractDaughter1(decay), extractDaughter2(decay)); 
 		
 		// momentum as Vector4
 		part.momentum = vec4(gpart->momentum());
@@ -102,7 +110,6 @@ InputRecord HepMC_InputConverter::convert( const GenEvent& event ) {
 		}
 		
 		parts.push_back(part);
-		//cout << part; // to delete in release!
 	}
 	
 	return InputRecord(parts);

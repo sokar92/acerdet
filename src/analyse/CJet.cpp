@@ -46,19 +46,19 @@ void CJet::printInfo() const {
 	printf ("\n");
 }
 
-void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weigth ) {
+void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weight ) {
 	
 	Int32_t idhist = 800 + KEYHID;
 	if (!histoRegistered) {
 		histoRegistered = true;
 		histoManager
-			->registerHistogram(idhist+11, "CJet: c-jets multiplicity", 10, 0.0, 10.0);
+			->registerHistogram(idhist+11, "CJet: c-jets multiplicity"       , 10, 0.0, 10.0);
 		histoManager
-			->registerHistogram(idhist+21, "CJet: c-quarks HARD multiplicity", 10, 0.0, 10.0);
+			->registerHistogram(idhist+21, "CJet: c-quarks HP multiplicity"  , 10, 0.0, 10.0);
 		histoManager 
-			->registerHistogram(idhist+23, "CJet: delta r cjet-cquark HARD", 50, 0.0,  5.0);
+			->registerHistogram(idhist+23, "CJet: delta r cjet-cquark HP"    , 50, 0.0,  1.0);
 		histoManager
-			->registerHistogram(idhist+24, "CJet: pTcjet/pTcquark HARD", 50, 0.0,  2.0);
+			->registerHistogram(idhist+24, "CJet: pTcjet/pTcquark HP"        , 50, 0.0,  2.0);
 	}
 
 	// do not use this algorithm
@@ -141,15 +141,14 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	
 	// store count in histogram
 	histoManager
-	  ->insert(idhist+11, NJETC, 1.0);
+	  ->insert(idhist+11, NJETC, weight);
 	
 	// check partons
 	Int32_t IQUAC = 0, ICJET = 0;
 	for (int i=6; i<parts.size(); ++i) {
 	  const Particle& part = parts[i];
 	  
-	  if (part.status == PS_HP_QUARK //isHardProcess(parts, i)
-	      && part.type == PT_CJET) { 
+	  if (part.status == PS_HISTORY && part.type == PT_CJET) { 
 
 	    if (abs(part.getEta()) < ETCMAX
 		&& part.pT() > ETJET) {
@@ -183,7 +182,7 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 
 	// fill histogram
 	histoManager
-	  ->insert(idhist+21, IQUAC );
+	  ->insert(idhist+21, IQUAC, weight );
 	
 	for (int i=0; i<orecord.Jets.size(); ++i) {
 	  Real64_t PTREC = 0.0;
@@ -217,9 +216,9 @@ void CJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	  
 	  if (PTREC != 0) {
 	    histoManager
-	      ->insert(idhist + 23, DETRMIN, 1.0);
+	      ->insert(idhist + 23, DETRMIN, weight);
 	    histoManager
-	      ->insert(idhist + 24, orecord.Jets[i].pT / PTREC, 1.0);
+	      ->insert(idhist + 24, orecord.Jets[i].pT / PTREC, weight);
 	  }
 	}
 }

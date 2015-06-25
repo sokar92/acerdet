@@ -45,14 +45,18 @@ void Tau::printInfo() const {
 	printf ("\n");
 }
 
-void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weigth ) {
+void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weight ) {
 	Int32_t idhist = 900 + KEYHID;
 	if (!histoRegistered) {
 		histoRegistered = true;
 		histoManager
 			->registerHistogram(idhist+11, "Tau: tau-jets multiplicity", 10, 0.0, 10.0);
 		histoManager
-			->registerHistogram(idhist+21, "Tau: hadronic taus multiplicity", 10, 0.0, 10.0);
+			->registerHistogram(idhist+21, "Tau: tau-had multiplicity ", 10, 0.0, 10.0);
+		histoManager
+			->registerHistogram(idhist+23, "Tau: delta r tau-jet, tau-had ", 50, 0.0, 1.0);
+		histoManager
+			->registerHistogram(idhist+24, "Tau: pTtaujet/pTtau-had ", 50, 0.0, 2.0);
 	}
 
  	// new event to compute
@@ -61,21 +65,19 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	// reference to particles container
 	const vector<Particle>& parts = irecord.particles();
 	
-	// look for tau-jets
-	Int32_t NTAU = 0, NJETTAU = 0;
+	// look for tau-jet taggers, if exist mark jets
+	Int32_t NHADTAU = 0, NJETTAU = 0;
 	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
-		
+
 		if (part.status == PS_DECAYED && part.type == PT_TAU) {
-		  // if there are still jets
-		  if (orecord.Jets.empty()) 
-		    continue;
-		  
+
 		  Bool_t TAUJET_tagger = true;
 		  
 		  // choose only hadronic tau-decay
 		  if (!part.hasDaughter())
 		    continue;
+
 		  Int32_t IN = -1;
 		  for (int j=part.daughters.first; j<=part.daughters.second; ++j) {
 		    // daughter is e or m
@@ -102,8 +104,8 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 		    TAUJET_tagger = false;
 		  
 		  if (TAUJET_tagger) 
-		    NTAU++;
-		  
+		    NHADTAU++;
+
 		  // mark tau-jet
 		  Real64_t DR = 100.0;
 		  Int32_t JETTAU = -1;
@@ -125,14 +127,21 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 		      DR = DDR;
 		    }
 		  }
-		  
+
 		  if (DR > RJTAU) {
 		    TAUJET_tagger = false;
 		    JETTAU = -1;
 		  }
 		  
-		  if (TAUJET_tagger  && abs(orecord.Jets[JETTAU].eta_rec) < 2.5 ) {
+		  if (TAUJET_tagger  && abs(orecord.Jets[JETTAU].eta_rec) < ETATAU ) {
 		    orecord.Jets[JETTAU].type = TAU_JET;
+
+		  histoManager
+		    ->insert(idhist + 23, DR, weight);
+
+		  histoManager
+		    ->insert(idhist + 24, orecord.Jets[JETTAU].pT/ tmpPart.pT(), weight);
+
 		  }
 		}
 	}
@@ -144,9 +153,9 @@ void Tau::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 
 
 	histoManager
-		->insert(idhist+11, NJETTAU);
+	  ->insert(idhist+11, NJETTAU, weight);
 	histoManager
-		->insert(idhist+21, NTAU);
+	  ->insert(idhist+21, NHADTAU, weight);
 }
 
 void Tau::printResults() const {

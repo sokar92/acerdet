@@ -45,7 +45,7 @@ void Mis::printInfo() const {
 	printf ("\n");
 }
 
-void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weigth ) {
+void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weight ) {
 	
 	Int32_t idhist = 600 + KEYHID;
 	if (!histoRegistered) {
@@ -57,7 +57,9 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 		histoManager
 			->registerHistogram(idhist+13, "Mis: reconstructed pTmiss", 50, 0.0, 200.0);
 		histoManager
-			->registerHistogram(idhist+21, "Mis: reconstructed p_T nu", 50, 0.0, 200.0);
+			->registerHistogram(idhist+21, "Mis: true p_T invisible", 50, 0.0, 200.0);
+		histoManager
+			->registerHistogram(idhist+22, "Mis: pT miss (true - reco)/reco ", 50, -1.0, 1.0);
 	}
 
     // new event to compute
@@ -136,7 +138,7 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	);
     
     histoManager
-		->insert(idhist+11, ETREC );
+      ->insert(idhist+11, ETREC, weight );
     
     // smear cells energy not used for reconstruction
     // remove cells below threshold
@@ -170,7 +172,7 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	);
 	
 	histoManager
-	  ->insert(idhist+12, ETSUM );
+	  ->insert(idhist+12, ETSUM, weight );
 	
 	//PXXMISS, PYYMISS
 	Real64_t PXXMISS = -orecord.Miss.PXSUM;
@@ -181,7 +183,7 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	);
 	
 	histoManager
-	  ->insert(idhist+13, PTMISS );
+	  ->insert(idhist+13, PTMISS, weight );
 	
 	// sum up momenta  of neutrinos 
 	Real64_t PXXNUES = 0.0;
@@ -208,7 +210,11 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	orecord.Miss.PYNUE = PYYNUES;
 	
 	histoManager
-	  ->insert(idhist+21, PTNUES );
+	  ->insert(idhist+21, PTNUES, weight );
+	
+	if( PTMISS > 0 )
+	  histoManager
+	  ->insert(idhist+22, (PTNUES - PTMISS)/PTMISS, weight );
 }
 
 void Mis::printResults() const {

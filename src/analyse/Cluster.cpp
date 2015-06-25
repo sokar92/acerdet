@@ -53,7 +53,7 @@ void Cluster::printInfo() const {
 	printf ("\n");
 }
 
-void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weigth ) {
+void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weight ) {
 	
 	Int32_t idhist = 100 + KEYHID;
 	if (!histoRegistered) {
@@ -61,17 +61,17 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		histoManager
 			->registerHistogram(idhist+1,  "Cluster: multiplicity", 10, 0.0, 10.0);
 		histoManager
-			->registerHistogram(idhist+11, "Cluster: delta eta clu-barycentre"  , 50, -0.5, 0.5);
+			->registerHistogram(idhist+11, "Cluster: delta eta cluster barycentre"  , 50, -0.5, 0.5);
 		histoManager
-			->registerHistogram(idhist+12, "Cluster: delta phi clu-barycentre"  , 50, -0.5, 0.5);
+			->registerHistogram(idhist+12, "Cluster: delta phi cluster barycentre"  , 50, -0.5, 0.5);
 		histoManager
-			->registerHistogram(idhist+13, "Cluster: delta r   clu-barycentre"  , 50,  0.0, 0.5);
+			->registerHistogram(idhist+13, "Cluster: delta r   cluster barycentre"  , 50,  0.0, 0.5);
 		histoManager
-			->registerHistogram(idhist+23, "Cluster: delta r   clu-parton"      , 50,  0.0, 0.5);
+			->registerHistogram(idhist+23, "Cluster: delta r   cluster HPparton"    , 50,  0.0, 0.5);
 		histoManager
-			->registerHistogram(idhist+14, "Cluster: pTclu/SumpTparticle"       , 50,  0.0, 2.0);
+			->registerHistogram(idhist+14, "Cluster: pTclu/SumpT particle"          , 50,  0.0, 2.0);
 		histoManager
-			->registerHistogram(idhist+24, "Cluster: pTclu/SumpTparticle"       , 50,  0.0, 2.0);
+			->registerHistogram(idhist+24, "Cluster: pTclu/SumpT HP parton"         , 50,  0.0, 2.0);
 	}
 
 	// new event to compute
@@ -176,7 +176,7 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 	
 	// fill histogram
 	histoManager
-		->insert(idhist+1, tempClusters.size());
+	  ->insert(idhist+1, tempClusters.size(), weight);
 	
 	// reconstruct baricenter of particles
 	const vector<Particle>& parts = irecord.particles();
@@ -236,16 +236,16 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		
 		// fill  histograms
 		histoManager
-			->insert(idhist + 11, ETAREC - cluster.eta_rec);
+		  ->insert(idhist + 11, ETAREC - cluster.eta_rec, weight);
 		
 		histoManager
-			->insert(idhist + 12, PHIREC - cluster.phi_rec); 
+		  ->insert(idhist + 12, PHIREC - cluster.phi_rec, weight); 
 		
 		histoManager
-			->insert(idhist + 13, DETR);
+		  ->insert(idhist + 13, DETR, weight);
 		
 		histoManager
-			->insert(idhist + 14, cluster.pT / PTREC);			
+		  ->insert(idhist + 14, cluster.pT / PTREC, weight);			
 	}
 
 	for (int ICLU=0; ICLU<orecord.Clusters.size(); ICLU++) {
@@ -282,9 +282,9 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 		// fill histograms
 		if (PTREC != 0) {
 			histoManager
-				->insert(idhist + 23, DETRMIN);
+			  ->insert(idhist + 23, DETRMIN, weight);
 			histoManager
-				->insert(idhist + 24, cluster.pT / PTREC);
+			  ->insert(idhist + 24, cluster.pT / PTREC, weight);
 		}
 	}
 }
