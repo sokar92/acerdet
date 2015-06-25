@@ -1,0 +1,20 @@
+% Thiss are LaTeX extensions
+\newenvironment{Tabhere}%
+{\condbreak{3cm}\par\leavevmode\def\@captype{table}}{\par}
+\newenvironment{Fighere}%
+{\condbreak{3cm}\vspace{5mm}\leavevmode\def\@captype{figure}}{\par}
+\def\condbreak#1{\par\@tempdima=#1
+\ifdim\pagetotal>0pt
+\advance\@tempdima by -\pagegoal
+\advance\@tempdima by \pagetotal
+\ifdim\@tempdima>0pt\newpage\fi\fi}
+% Example d'utilisation (idem pour Tabhere)
+% \begin{Fighere}
+%  la figure
+% \caption{...}
+% \label{mon-label}
+% \end{Fighere}
+% La commande \condbreak{distance} verifie s'il reste la distance specifiee
+% sur la page en cours, sinon elle emet un \newpage.
+% ex. \condbreak{3cm} teste pour la presence de 3cm de libre
+\endinput
