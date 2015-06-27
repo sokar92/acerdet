@@ -1047,7 +1047,7 @@ in the main program (see {\tt demo.cpp}):
 \item
 initialise  generator
 \item
-initialise and confirgure {\tt AcerDET}
+initialise and configure {\tt AcerDET}
 \item
 initialise root tree and histogram manager
 \item
@@ -1116,7 +1116,50 @@ The respective sequence of calls is executed in the {\tt AcerDET::analyseRecord}
 
 The distribution version consists of the source code of the {\tt
 AcerDET} and example of the main program for execution with {\tt
-PYTHIA 8.1} generator. The {\tt acerdet.dat} file resides in
+PYTHIA 8.1} generator. 
+
+\begin{Fighere}
+\begin{center}
+{
+   \includegraphics[width=15.0cm,angle=0]{acerdet_structure.eps}\\
+}
+\end{center}
+\caption{\em
+Structure of AcerDET package.
+\label{acerDETstructure}} 
+\end{Fighere}
+
+
+{\tt AcerDET } is designed to be an universal tool. It does not depend on any external 
+library (except {\tt C++ STL}). In order to provide functionalities not built-in directly 
+in {\tt AcerDET}, it provides a set of interfaces.
+
+Instantiation of {\tt AcerDET} requires providing instances of such interfaces. Because of 
+separation between analyse logic and data structures {\tt AcerDET} might work with a various 
+number of external libraries.
+
+The {\tt AcerDET} package provides a set of default implementations for its interfaces, 
+grouped in {\tt AcerDET::external} subpackage containing:
+\begin{itemize}
+
+\item {\tt Root\_HistogramManager} -- a default implementation of {\tt IHistogramManager} 
+interface. Provides methods for storing weighted data in named histograms. 
+For more details see {\tt AcerDET::core::IHistogramManager}.
+
+\item {\tt Pythia8\_ParticleDataProviderFactory} -- a default implementation of 
+{\tt IParticleDataProviderFactory} interface. Represents a particle types database, 
+providing particle charge, name, etc. For more details see {\tt AcerDET::core::ParticleDataProvider}.
+
+\item {\tt HepMC\_InputConverter} -- static class converting {\tt HepMC} event record 
+to {\tt AcerDET} internal representation of input record. For more details see 
+{\tt AcerDET::io::InputRecord}.
+
+\item {\tt Root\_NTupleManager} -- wrapper for {\tt ROOT}'s NTuple. Provides methods for 
+storing and saving weighted events. The {\tt demo} uses it like an external database.
+
+\end{itemize}
+
+The {\tt acerdet.dat} file (configuration file for {\tt AcerDET} package) resides in
 subdirectory {\tt acerdet\_dat}. Source code resides in {\tt
 acerdet\_src} which has one level deeper internal structure (see README there). 
 Interfaces to external libraries are in directory {\tt acerdet\_external}
@@ -1134,17 +1177,11 @@ Struture of directory {\bf acerdet}
   drwxrwxr-x  2 erichter erichter    4096 Jun 12 10:31 conf
   -rw-rw-r--  1 erichter erichter    2719 Jun 10 17:25 demo.cpp
   -rw-rw-r--  1 erichter erichter     590 Jun 10 16:07 demoCreateConfig.cpp
-  -rwxrwxr-x  1 erichter erichter  159120 Jun 12 10:31 demoCreateConfig.exe
-  -rw-rw-r--  1 erichter erichter  169068 Jun 12 10:31 demoCreateConfig.o
-  -rwxrwxr-x  1 erichter erichter 1466119 Jun 12 10:31 demo.exe
-  -rw-rw-r--  1 erichter erichter 1723964 Jun 12 10:31 demo.o
   drwxrwxr-x  3 erichter erichter    4096 Jun 12 10:31 external
   -rw-rw-r--  1 erichter erichter     861 Jun 10 16:08 external.inc
   drwxrwxr-x  8 erichter erichter    4096 Jun 12 17:55 .git
   -rw-rw-r--  1 erichter erichter      74 Jun 10 16:09 .gitignore
-  -rw-rw-r--  1 erichter erichter   55195 Jun 10 17:37 grep
   -rw-rw-r--  1 erichter erichter     848 Jun 10 16:07 Makefile
-  -rw-rw-r--  1 erichter erichter  327986 Jun 12 10:31 out
   -rw-rw-r--  1 erichter erichter     204 Jun 10 16:08 path.inc
   -rw-rw-r--  1 erichter erichter     274 Jun 10 16:07 README
   -rw-rw-r--  1 erichter erichter      69 Jun 10 16:07 setup.sh
@@ -1152,7 +1189,7 @@ Struture of directory {\bf acerdet}
 \end{verbatim} 
 }
 \item
-Struture of directory {\bf acerdet/src}
+Struture of directory {\bf acerdet/src} (after compilation using 'make')
 {\scriptsize
 \begin{verbatim}  
   -rw-rw-r-- 1 erichter erichter    4078 Jun 10 17:25 AcerDET.cpp
@@ -1189,6 +1226,45 @@ Output will be stored in file  {\tt conf/XXX.conf.root}
 
 \end{itemize}
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Development}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Regarding modifications in {\tt AcerDET} algorithms, package users are able to 
+develop own extensions to our main algorithm. As it was shown in previous section 
+{\tt AcerDET} provides a set of interfaces to implement in order to use the package.
+{\tt AcerDET::external} subpackage contains default implementations of those interfaces, 
+but user may develop his own implementations. For instance if someone wants to use 
+other histogram manager, it is enough to create new class inheriting from 
+{\tt AcerDET::core::IHistogramManager} and pass it's instance when create new {\tt AcerDET} 
+instance (as it is shown in {\tt demo.cpp}).
+
+{\scriptsize
+\begin{verbatim}  
+const std::string configFileName = "acerdet.dat";
+Configuration configuration = Configuration::fromFile( configFileName );
+IParticleDataProviderFactory *pdpFactory =
+	new external::Pythia8_ParticleDataProviderFactory();
+IHistogramManager *histoManager =
+	new external::Root_HistogramManager(); // HERE USE OWN INSTANCE
+external::Root_NTupleManager nTuple;
+
+AcerDET acerDet(
+	configuration,
+	pdpFactory,
+	histoManager 
+);
+\end{verbatim} 
+}
+
+Analoguously user may use own instance of {\tt IParticleDataProviderFactory}.
+{\tt ROOT} NTuple is used in demo like na external database, so using other 
+databases is possible in similiar way.
+Distributed demo version uses {\tt HepMC} as input data standard, while 
+{\tt AcerDET} uses its own input format. Default conversion algoritm is 
+placed in {\tt AcerDET::external::HepMC\_InputConverter}. In order to use 
+other input format, similiar converter to {\tt AcerDET} input format is required.
 
 
 \newpage
