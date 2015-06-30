@@ -22,6 +22,7 @@ void Root_NTupleManager::init() {
 	
 	ntuple->Branch("part_n",             &n_part_n);
 	ntuple->Branch("part_pdgId",         &n_part_pdgId);
+	ntuple->Branch("part_mother_pdgId",  &n_part_mother_pdgId);
 	ntuple->Branch("part_px",            &n_part_px);
 	ntuple->Branch("part_py",            &n_part_py);
 	ntuple->Branch("part_pz",            &n_part_pz);
@@ -73,6 +74,7 @@ void Root_NTupleManager::fill(
 	n_part_pz.clear();
 	n_part_E.clear();
 	n_part_pdgId.clear();
+	n_part_mother_pdgId.clear();
 	
 	int count = 0;
 	const vector<Particle>& parts = irecord.particles();
@@ -87,7 +89,9 @@ void Root_NTupleManager::fill(
 		  Real64_t pz = parts[j].pT() * sinh(parts[j].getEta());
 		  Real64_t E  = parts[j].pT() * cosh(parts[j].getEta());
 		  
-		  n_part_pdgId.push_back(parts[j].pdg_id);					
+		  n_part_pdgId.push_back(parts[j].pdg_id);
+		  int jm= parts[j].mother;					
+		  n_part_mother_pdgId.push_back(parts[jm].pdg_id);					
 		  n_part_px.push_back(px);
 		  n_part_py.push_back(py);
 		  n_part_pz.push_back(pz);

@@ -62,7 +62,8 @@ Real64_t Particle::getPhi() const {
 }
 
 Real64_t Particle::getEta() const {
-	return sign(log( (momentum.p.length() + abs(momentum.p.z)) / pT()), momentum.p.z);
+  if( pT() < 1.e-3) return sign(10.0, (momentum.p.z));
+  return sign(log( (momentum.p.length() + abs(momentum.p.z)) / pT()), momentum.p.z);
 }
 
 Real64_t Particle::getTheta() const {

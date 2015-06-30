@@ -22,6 +22,7 @@ namespace AcerDet {
 			vector<Real32_t> n_part_pz;
 			vector<Real32_t> n_part_E;
 			vector<Int32_t> n_part_pdgId;
+			vector<Int32_t> n_part_mother_pdgId;
 
 			Int32_t  n_muo_n;
 			vector<Real32_t> n_muo_px;
