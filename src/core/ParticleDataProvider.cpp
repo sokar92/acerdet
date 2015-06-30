@@ -2,12 +2,12 @@
 using namespace AcerDet::core;
 
 template<typename K, typename V>
-bool contains(map<K,V> m, const K& key) {
+bool contains(const map<K,V>& m, const K& key) {
 	return m.find(key) != m.end();
 }
 
 template<typename K, typename V>
-const V& get(map<K,V> m, const K& key) {
+const V& get(const map<K,V>& m, const K& key) {
 	return (*m.find(key)).second;
 }
 
