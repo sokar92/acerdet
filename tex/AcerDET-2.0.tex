@@ -29,13 +29,14 @@
 \begin{titlepage}
 
 \begin{flushright}
-{\rm   30 June  2015}
+{\rm   1 July  2015}
 \end{flushright}
 
 
 \begin{center}
 \vspace{2.0cm} 
-  {\bf \LARGE AcerDET-2.0: a particle level } \\
+  {\bf \LARGE AcerDET-2.0\footnote{Package is available for the web page 
+  {\tt http://erichter.home.cern.ch/erichter/AcerDET.html}}: a particle level } \\
 \vspace{0.25cm} 
   {\bf \LARGE fast simulation and reconstruction package} \\
 \vspace{0.25cm} 
@@ -60,23 +61,28 @@
 \end{center}
 
 
-The fortran version of the  {\tt AcerDET} package has been published in~\cite{AcerDET-1.0},
+The fortran version of the  {\tt AcerDET} package has been published in~[1],
 and used in the multiple publications on the predictions for physics at LHC.
-The package provided, starting from list of particles in the event, the list of 
-reconstructed jets, isolated electrons, muons and photons and
+The package provides, starting from list of particles in the event, the list of 
+reconstructed jets, isolated electrons, muons, photons and
 reconstructed missing transverse energy.
 The {\tt AcerDET} represents a simplified version of the package called
 {\tt ATLFAST}, used since several years within ATLAS Collaboration.
-In the fast simulation version implemented in {\tt AcerDET}, some functionalities of the 
-former one have been removed, only the most crucial detector effects are
+In the fast simulation implemented in {\tt AcerDET}, some functionalities of 
+{\tt ATLFAST} are absent, but the most crucial detector effects are
 implemented and the  parametrisations are largely simplified.
-Therefore it is not representing in details neither ATLAS nor
-CMS detectors.
+Therefore it is not representing details neither of ATLAS nor
+CMS detectors. 
 
 This short paper documents a new C++ implementation of the same algorithms 
-as used in~\cite{AcerDET-1.0}. We believe that the package can be well adequate 
+as used in~[1]. We believe that the package can be well adequate 
 for some feasibility studies of the high $p_T$ physics at LHC and at planned ppFCC. 
 The further evolution of this code is planned.
+
+\vspace{1.5cm}
+[1]  E. Richter-Was, {\it AcerDET: A Particle level fast simulation and reconstruction 
+package for phenomenological studies on high p(T) physics at LHC },
+hep-ph/0207355.
 
 %\vspace{1.0cm}
 %PACS number(s): 
@@ -150,26 +156,29 @@ T. Sjöstrand, S. Mrenna and P. Skands, {\it PYTHIA 6.4 Physics and Manual}, JHE
 \unboldmath
 
 The potential of the LHC detectors for physics at high  $p_T$ is
-very rich, as shown first three years of data taking during so called {\tt Run I}.
+very rich, as first three years of data taking during so called {\tt Run I}
+have shown.
  
 The discovery of the Higgs boson, searches results for Supersymmetry particles,
 Exotic particles, New Vector Bosons are very impressive. 
-All these thanks to the high sensitivity of the detectors
+All these is thanks to the high sensitivity of the detectors
 in terms of acceptance and identifying efficiencies to variety of 
-signatures: photons, electrons, muons, multi-b-jets, tau-jets, missing
+signatures: photons, electrons, muons, multi-b-jets, $\tau$-jets, missing
 transverse energy.
 
 Those high sensitivities allow to study very
-exclusive signatures and so the discovery potential is 
+exclusive signatures;  the discovery potential is 
 limited in some cases by the rare background processes.
-It is  evident that the multi-jet and multi-b-jet
+It is  evident, that the multi-jet and multi-b-jet
 production in association with known vector bosons, W and/or Z, or with
 top-quark pair is the the serious background to the several
 observables as well. 
-It is becoming more and more evident importance of effect beyond the leading order:
+The importance of effect beyond the leading order:
 effects coming from the finite width or angular spin correlations (eg. from the 
-intermediate resonances decays), limitations and complementarity of the matrix
-element and parton shower predictions for the diversity of signatures.
+intermediate resonances decays) is becoming more evident.
+Limitations and complementarity of the matrix
+element and parton shower predictions for the diversity of signatures
+need to be investigated.
 
 The package for particle-level simulation and reconstruction 
 is  one of the intermediate steps between 
@@ -180,19 +189,19 @@ jets, isolated electrons, muons and photons and
 reconstructed missing transverse energy.
 It can serve for phenomenological feasibility studies on the prospects 
 for observability of a given signature. 
-This package can be also useful for the dedicated comparisons between
-matrix element and parton shower predictions. In that case one can
+Such package can be useful for the dedicated comparisons between
+matrix element and parton shower predictions. In that case, one can
 compare experimental signatures (reconstructed jets,
 leptons, photons) to quantify size of the discrepancies between
-different predictions in straightforward way. 
+different predictions in a straightforward way. 
 
-The fortran version of presented here package~\cite{AcerDET-1.0} has played this role 
+The {\tt Fortran} version of presented here package~\cite{AcerDET-1.0} has played such role 
 since several years, more than 80 papers published in the last 10 years was using
 it or this purpose~\cite{AcerDET-1.0-citations}. 
-Here we present that new C++ implementation, where all the algorithmic components
-have been preserved, changed is also format of the input event record being now
-comonly accepted HepMC and the output format being ROOT tree with reconstructed 
-objets and control histograms,
+Here, we present the new {\tt C++} implementation, where all the algorithmic components
+have been preserved, changed is format of the input event. 
+Now comonly accepted {\tt HepMC} and the output format of {\tt  ROOT} tree with reconstructed 
+objets and control histograms is introduced.
 
 The package simulates some key features of the LHC detectors like
 ATLAS and CMS. It is based on the calorimetric energy deposition for
@@ -200,12 +209,12 @@ jets reconstruction and tracks reconstruction for electrons and muons.
 It takes into account very high granularity of the electromagnetic calorimetry
 for the photon reconstruction. The missing transverse energy is
 calculated for the total energy balance of the reconstructed objects.
-The capability for the identification of b-jets and tau-jets is also
+The capability for the identification of b-jets and $\tau$-jets is also
 explored. Implemented set of parametrisations is 
 not representing in details performance of neither ATLAS nor
 CMS detectors. 
 Nevertheless, we believe that the package is still adequate for 
-feasibility studies on the high $p_T$ physics at LHC and offer option
+feasibility studies on the high $p_T$ physics at LHC and offer starting option
 also for future FCC program. 
 
 
@@ -795,22 +804,23 @@ simulation and reconstruction algorithms.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \unboldmath
 
-We presented package which can be useful for several
-phenomenological studies on the high $p_T$ physics at LHC.
-As example of more recent publications which have been using
+We presented an update from {\tt Fortran} to {\tt C++} of a package which can be 
+useful for several phenomenological studies on the high $p_T$ physics at LHC.
+As examples of applications some recent publications which have been using
 its fortran version AcerDET-1.0 \cite{AcerDET-1.0} are papers eg. 
-\cite{Nagata2015, Schaetzel2014, Choi2012, Aguilar-Saavedra2012},
-for the more complete list see link \cite{AcerDET-1.0-citations}. 
+\cite{Nagata2015, Schaetzel2014, Choi2012, Aguilar-Saavedra2012}
+( for the more complete list see link \cite{AcerDET-1.0-citations} ). 
 
-It is not the aim of the package to represent in details performance of
-neither ATLAS nor CMS detectors, nevertheless some global features
-of these would be reproduced well. In particular we believe that the
+It is not the aim of the package to represent in details performance
+neither of ATLAS nor of CMS detectors, nevertheless some global features
+of these would be reproduced well. We have presented some benchmark results
+in Section~2. In particular we believe that the
 analyses performed with the package for physics at LHC will be more
 realistic than parton-level studies alone.
 
-The package allows also for rather flexible 
-adjusting of several key parameters which characterise features of any
-detector for LHC or future ILC or FFC experiments. 
+The package allows also for flexible 
+adjusting of key parameters which characterise features of any
+detector be it for LHC or for future ILC or FFC experiments. 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
