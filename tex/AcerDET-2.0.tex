@@ -249,7 +249,7 @@ hadronisation and decays of unstable particles can by analysed by
 this package. The list of the partons/particles of the generated event should
 be stored in the {\tt HepMC} format. It is then copied into internally used 
 vector of particles, with added few flags  i.e. additional information regarding
-particles status ad type. This information is used by the {\tt AcerDET} algorithms 
+particles status and its type. This information is used by the {\tt AcerDET} algorithms 
 for event-be-event simulation and reconstruction.\\
 Events simulation is limited to the following steps:
 \begin{itemize}
@@ -277,12 +277,12 @@ Acceptation of remaining clusters as hadronic jets and identification
 Jets energy calibration.
 \end{itemize}
 There is no clear separation between the {\it simulation} and {\it
-reconstruction} parts in the structure of algorithms. Some larger
-blocks ({\tt subroutines}) might realise both tasks.
+reconstruction} parts in the structure of algorithms. A larger
+blocks ({\tt algorithms}) may realise both tasks.
 
 As a final result provided are four-momenta of reconstructed objects:
 electrons, photons, muons, labeled and calibrated jets and calculated is
-total missing transverse energy. 
+total missing transverse energy in analysed event.
 
 
 \boldmath 
@@ -291,8 +291,8 @@ total missing transverse energy.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \unboldmath
 
- The transverse energy of all undecayed particles stored in events record
- except for muons, neutrinos and other 
+ The transverse energy of all undecayed particles stored in the event record,\newline
+ ({\tt InputRecor:Particles}, except of muons, neutrinos and other 
  {\it invisible} particles\footnote{User may want to make any particle
  invisible to the detector. For this one should overwrite its {\it pdgId code} 
  in the  {\tt vector<Particle>} to that specified for the invisible particles 
@@ -305,7 +305,7 @@ total missing transverse energy.
  in  the inner part of the detector we assume that the $\phi$ position of charged
  particles with transverse momenta above  the threshold 
  (default: $p_T > 0.5$~GeV) will be shifted as parametrised in function
- {\tt  foldPhi}. The contribution from all charged particles with
+ {\tt  Particle::foldPhi}. The contribution from all charged particles with
  transverse momenta  below that threshold is neglected.
 
  All calorimetric cells with the transverse energy greater than a
@@ -319,9 +319,11 @@ total missing transverse energy.
  $(\eta^{clu} \times \phi^{clu})$ of the reconstructed cluster
  taken are the coordinates of the bary-center of the cone weighted
  by the cells $E_T$ for all cells inside the cone around the
- initiator cell.
+ initiator cell. Information about energy deposition in cells is stored 
+in {\tt OutputRecord:Cells}
 
- All reconstructed clusters are stored in the container of {\tt ClusterData} objects.
+ All reconstructed clusters are stored in the container of {\tt ClusterData} objects,\\
+{\tt OutputRecord:Clusters}.
  Fig.~\ref{FS2.1} shows the  $\Delta \eta$ (left) and  $\Delta \phi$ (right) distribution
  between the reconstructed bary-center of particles falling within the
  geometrical cluster cone  and the reconstructed cluster position.
@@ -381,8 +383,7 @@ The assumed single muon transverse momenta resolution
  of $\sigma = 0.05\% \cdot p_T$
 leads to the $\sigma_m = 1.57$~GeV resolution for the invariant mass
 of the four-muon system originating from the $ H \to ZZ^* \to 4 \mu $
-decay. Please note that the photon bremsstrahlung
-was omitted in the event generation.
+decay. 
 
 
 
@@ -440,8 +441,7 @@ reconstructed distribution of the 4-electron system.
 The assumed single electron energy resolution of $\sigma = 12\%/\sqrt{E}$
 leads to the $\sigma_m = 1.26$~GeV resolution for the reconstructed invariant mass
 of the four-electron system originating from the $ H \to ZZ^* \to 4e $
-decay. Please note that the photon bremsstrahlung
-was omitted in the events generation.
+decay. 
 
 
 
@@ -558,7 +558,7 @@ They are removed from the  {\tt OutputRecord.Clusters} and stored in the
 common  {\tt OutputRecord.Jets}.
 
 The jets reconstruction efficiencies and di-jet mass resolution
-have been studied using control physics process of the $WH$ production
+have been studied using control physics process of the $gg \to H$ production
 with $m_H=125$~GeV and forcing the Higgs boson decay into specific
 partons, namely $H \to u \bar u$, $H \to c \bar c$  and $H \to b \bar b$.
 We used also process $gg \to H \to \tau \tau$ for estimating tau-jet
@@ -608,7 +608,7 @@ for tau-jets (default: ON).
   $p_T^{jet}> 15$ GeV). The rapidity coverage is limited to $|\eta| <2.5$.
   The $\Delta R_{cone}=0.4$ is used for cluster
   reconstruction and  $\Delta R_{cone}=0.2$ is used for matching
-  criteria. The $WH, H \to b \bar b, c \bar c, u \bar u$ and $gg \to H
+  criteria. The $gg \to H, H \to b \bar b, c \bar c, u \bar u$ and $gg \to H
   \to \tau \tau$ processes were generated with $m_H = 125$ GeV.
 In case of tau-jets only hadronic tau decays were generated.  
 \label{T2.1}} 
@@ -715,7 +715,7 @@ precision of the calibration procedure.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \unboldmath
 
-The missing transverse energy is calculated by summing the transverse
+The missing transverse energy is calculated by summing up transverse
 momenta of identified isolated photons, electrons and muons, of jets
 and clusters not accepted as jets and of
 non-isolated muons not added to any jet. Finally, the
@@ -725,7 +725,7 @@ deposited in unused cells are smeared with the same energy resolution
 function as for jets, and cells with deposited transverse energy below
 a given threshold (default: 0 GeV) are excluded from the sum. From
 the calculation of the total sum $E_T^{obs}$ the missing transverse
-energy is obtained, $E_T^{miss} =  E_T^{obs}$ as well as the missing
+energy is obtained, $E_T^{miss} = - E_T^{obs}$ as well as the missing
 transverse momentum components $p_x^{miss} = - p_x^{obs}$, 
 $p_y^{miss} = - p_y^{obs}$. The total calorimeter transverse energy,
 $\sum E_T^{calo}$, is calculated as the sum of all the above
@@ -827,12 +827,13 @@ detector be it for LHC or for future ILC or FFC experiments.
 \section*{Acknowledgments}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-This work was inspired by the several years of my involvement in the activity 
+This work on AcerDET-1.0 was inspired by the several years of ERW involvement in the activity 
 of the  Physics Working Groups of the ATLAS Collaboration.
 ERW  grateful to all colleagues for a very creative atmosphere.
 In particular, for several suggestions and inspiring discussions to,
 Daniel Froidevaux, who  some years ago initiated and guided 
-her work on the first version of the fast simulation package.
+her work on the first version of the fast simulation package. The AcerDET-2.0 represents 
+continuation of this project in new software environment.
 
 The work of P. Mikos and E. Richter-Was is supported in part by the Polish National 
 Centre of Science, Grant No. DEC-2011/03/B/ST2/00220. 
@@ -982,8 +983,8 @@ objects.
 The event, which is going to be processed, should be stored
 in the {\tt HepMC} format. In the source code of the program
 provided are methods to traslate this format into internal event
-structure, vector of {\tt Particles} and to interpret status 
-and pdgId codes of the particles. 
+structure, vector of {\tt Particles} stored in {\tt InputRecord} 
+and to interpret status and pdgId codes of the particles. 
 
 The following internal types are introduced, based on the information
 available in the {\tt HepMC} conversion of {\tt Pythia 8.1} event record.
@@ -992,29 +993,29 @@ available in the {\tt HepMC} conversion of {\tt Pythia 8.1} event record.
 {\tt ParticleType}
 \begin{itemize}
 \item
-PT\_CJET  - particle with pdgID code = -4,4
+PT\_CJET  - particle with pdgId code = -4, 4
 \item
-PT\_BJET  - particle with pdgID code = -5,5
+PT\_BJET  - particle with pdgId code = -5, 5
 \item
-PT\_ELECTRON  - particle with pdgID code = -11, 11
+PT\_ELECTRON  - particle with pdgId code = -11, 11
 \item
-PT\_NEUTRINO\_ELE  - particle with pdgID code = -12, 12
+PT\_NEUTRINO\_ELE  - particle with pdgId code = -12, 12
 \item
-PT\_MUON  - particle with pdgID code = -13, 13
+PT\_MUON  - particle with pdgId code = -13, 13
 \item
-PT\_NEUTRINO\_MUON  - particle with pdgID code = -14, 14
+PT\_NEUTRINO\_MUON  - particle with pdgId code = -14, 14
 \item
-PT\_TAU  - particle with pdgID code = -15, 15
+PT\_TAU  - particle with pdgId code = -15, 15
 \item
-PT\_NEUTRINO\_TAU  - particle with pdgID code = -16, 16
+PT\_NEUTRINO\_TAU  - particle with pdgId code = -16, 16
 \item
-PT\_PHOTON  - particle with pdgID code = 22
+PT\_PHOTON  - particle with pdgId code = 22
 \item
-PT\_BOSON\_Z  - particle with pdgID code = 23
+PT\_BOSON\_Z  - particle with pdgId code = 23
 \item
-PT\_BOSON\_W  - particle with pdgID code = -24, 24
+PT\_BOSON\_W  - particle with pdgId code = -24, 24
 \item
-PT\_BOSON\_H  - particle with pdgID code = 25
+PT\_BOSON\_H  - particle with pdgId code = 25
 \item
 PT\_UNKNOWN  - other 
 \end{itemize}
@@ -1022,17 +1023,17 @@ PT\_UNKNOWN  - other
 {\tt ParticleStatus}
 \begin{itemize}
 \item
-PS\_BEAM   - corresponding HepMC: part->is\_beam() = true;
+PS\_BEAM   - corresponding HepMC: part$->$is\_beam() = true;
 \item
-PS\_FINAL  - corresponding HepMC: part->is\_undecayed() = true;
+PS\_FINAL  - corresponding HepMC: part$->$is\_undecayed() = true;
 \item
-PS\_DECAYED  - corresponding HepMC: part->has\_undecayed() = true;
+PS\_DECAYED  - corresponding HepMC: part$->$has\_undecayed() = true;
 \item
-PS\_HISTORY  - corresponding HepMC: part->is\_undecayed() = true;
+PS\_HISTORY  - corresponding HepMC: part$->$is\_undecayed() = true;
 \item
-PS\_CASCADE\_QUARK  - corresponding HepMC: abs(part->status()) >=30;
+PS\_CASCADE\_QUARK  - corresponding HepMC: abs(part$->$status()) >=30;
 \item
-PS\_HP\_QUARK  - corresponding HepMC: abs(part->status()) = 20 - 29;
+PS\_HP\_QUARK  - corresponding HepMC: abs(part$->$status()) = 20 - 29;
 \item
 PS\_NULL  - other;
 \end{itemize}
@@ -1081,8 +1082,8 @@ Invoking method which fill root tree is optional.
 User however may decide to skip this part, or implement
 different output format.
 
-If general, if user do not wish, the dependencies on {\tt ROOT} could be easily
-removed. It requires linking into executable the respective library 
+In general, if user do not wish, the dependencies on {\tt ROOT} could be easily
+removed. It requires linking into executable the respective alternative library 
 and providing very simple conversion package where the existing calls to
 {\tt ROOT} functions for histograming
 are used  to fill information into the user's preferred ones.
@@ -1170,10 +1171,10 @@ storing and saving weighted events. The {\tt demo} uses it like an external data
 \end{itemize}
 
 The {\tt acerdet.dat} file (configuration file for {\tt AcerDET} package) resides in
-subdirectory {\tt acerdet\_dat}. Source code resides in {\tt
-acerdet\_src} which has one level deeper internal structure (see README there). 
-Interfaces to external libraries are in directory {\tt acerdet\_external}
-The library will be created in {\tt acerdet\_src} directory, provided is also
+main directory {\tt acerdet\_dat}. Source code resides in {\tt
+src} which has one level deeper internal structure (see README there). 
+Interfaces to external libraries are in directory {\tt external}
+The library will be created in {\tt src} directory, provided is also
 example of the main program {\tt  demo.cpp} to execute {\tt AcerDET} algorithms
 with  {\tt PYTHIA 8.1} generator:
 
@@ -1228,7 +1229,10 @@ Then type: {\it make }. It will
 compile the code and create the {\tt src/libAcerDET.a} and {\tt src/libAcerDET.so}.
 It will create also demo executable {\tt demo.exe}
 \item
-To execute, type  {\tt ./demo.exe  conf/XXX.conf nEvent}
+To execute, type  
+\newline
+{\tt ./demo.exe  conf/XXX.conf nEvent}
+\newline
 where  {\tt conf/XXX.conf} stands for file configuring generated process and 
 {\tt nEvent} is a integer number of required events to be generated.
 \item
@@ -1412,7 +1416,7 @@ unused clusters, etc. and added to the {\tt ACDTree}.
 \section{Parametrisation for energy/momenta resolution}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Function RESPHO}
+\subsection{Smearing::forPhoton}
 
 The parametrisation for photon energy resolution assumes only 
 energy dependence and the Gaussian
@@ -1426,7 +1430,7 @@ distribution (normal distribution from Standard C++ library).
 All 4-momenta components of the photon are smeared with the same
 resolution so the direction of the photon is not altered. 
 
-\subsection{Function RESELE}
+\subsection{Smearing::forElectron}
 
 The parametrisation for electron energy resolution assumes only 
 energy dependence and the Gaussian
@@ -1440,7 +1444,7 @@ distribution (normal distribution from Standard C++ library).
 All 4-momenta components of the electron are smeared with the same
 resolution so the direction of the electron is not altered. 
 
-\subsection{Function RESHAD}
+\subsection{Smearing::forHadron}
 
 The parametrisation for clusters momenta resolution assumes only 
 energy dependence and Gaussian
@@ -1463,7 +1467,7 @@ distribution (normal distribution from Standard C++ library).
 All 4-momenta components of the muon are smeared with the same
 resolution so the direction of the muon is not altered. 
 
-\subsection{Function RESMUO}
+\subsection{Smearing::forMuon}
 
 The parametrisation for muon momenta resolution assumes only 
 transverse momenta dependence and Gaussian
@@ -1477,7 +1481,7 @@ distribution (normal distribution from Standard C++ library).
 All 4-momenta components of the muon are smeared with the same
 resolution so the direction of the muon is not altered. 
 
-\subsection{Function FLDPHI}
+\subsection{Particle::foldPhi}
 
 The effect of the magnetic field is included by simple shifting the
 $\phi$ position of the charged particles respectively to its
@@ -1540,158 +1544,162 @@ could be provided code on the generated process, {\tt IDPROC}.
 \begin{verbatim}  
 ******************************************************************************
 *Tree    :ACDTree   : ACDTree                                                *
-*Entries :       10 : Total =           30521 bytes  File  Size =      13140 *
-*        :          : Tree compression factor =   1.00                       *
+*Entries :   100000 : Total =       176704219 bytes  File  Size =   83438909 *
+*        :          : Tree compression factor =   2.12                       *
 ******************************************************************************
 *Br    0 :ProcessID : ProcessID/I                                            *
-*Entries :       10 : Total  Size=        609 bytes  File Size  =        119 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Entries :   100000 : Total  Size=     785597 bytes  File Size  =     401027 *
+*Baskets :       13 : Basket Size=      32000 bytes  Compression=   1.96     *
 *............................................................................*
 *Br    1 :part_n    : part_n/I                                               *
-*Entries :       10 : Total  Size=        594 bytes  File Size  =        116 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Entries :   100000 : Total  Size=     785546 bytes  File Size  =     400988 *
+*Baskets :       13 : Basket Size=      32000 bytes  Compression=   1.96     *
 *............................................................................*
 *Br    2 :part_pdgId : vector<int>                                           *
-*Entries :       10 : Total  Size=       1358 bytes  File Size  =        860 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Entries :   100000 : Total  Size=   14579602 bytes  File Size  =    7086584 *
+*Baskets :      235 : Basket Size=      32000 bytes  Compression=   2.06     *
 *............................................................................*
-*Br    3 :part_px   : vector<float>                                          *
-*Entries :       10 : Total  Size=       1343 bytes  File Size  =        857 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br    3 :part_mother_pdgId : vector<int>                                    *
+*Entries :   100000 : Total  Size=   14581275 bytes  File Size  =    7088229 *
+*Baskets :      235 : Basket Size=      32000 bytes  Compression=   2.06     *
 *............................................................................*
-*Br    4 :part_py   : vector<float>                                          *
-*Entries :       10 : Total  Size=       1343 bytes  File Size  =        857 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br    4 :part_px   : vector<float>                                          *
+*Entries :   100000 : Total  Size=   14578885 bytes  File Size  =    7085879 *
+*Baskets :      235 : Basket Size=      32000 bytes  Compression=   2.06     *
 *............................................................................*
-*Br    5 :part_pz   : vector<float>                                          *
-*Entries :       10 : Total  Size=       1343 bytes  File Size  =        857 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br    5 :part_py   : vector<float>                                          *
+*Entries :   100000 : Total  Size=   14578885 bytes  File Size  =    7085879 *
+*Baskets :      235 : Basket Size=      32000 bytes  Compression=   2.06     *
 *............................................................................*
-*Br    6 :part_E    : vector<float>                                          *
-*Entries :       10 : Total  Size=       1338 bytes  File Size  =        856 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br    6 :part_pz   : vector<float>                                          *
+*Entries :   100000 : Total  Size=   14578885 bytes  File Size  =    7085879 *
+*Baskets :      235 : Basket Size=      32000 bytes  Compression=   2.06     *
 *............................................................................*
-*Br    7 :ele_n     : ele_n/I                                                *
-*Entries :       10 : Total  Size=        589 bytes  File Size  =        115 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br    7 :part_E    : vector<float>                                          *
+*Entries :   100000 : Total  Size=   14578646 bytes  File Size  =    7085644 *
+*Baskets :      235 : Basket Size=      32000 bytes  Compression=   2.06     *
 *............................................................................*
-*Br    8 :ele_pdgId : vector<int>                                            *
-*Entries :       10 : Total  Size=        721 bytes  File Size  =        227 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br    8 :ele_n     : ele_n/I                                                *
+*Entries :   100000 : Total  Size=     785529 bytes  File Size  =     400975 *
+*Baskets :       13 : Basket Size=      32000 bytes  Compression=   1.96     *
 *............................................................................*
-*Br    9 :ele_px    : vector<float>                                          *
-*Entries :       10 : Total  Size=        706 bytes  File Size  =        224 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br    9 :ele_pdgId : vector<int>                                            *
+*Entries :   100000 : Total  Size=    3204969 bytes  File Size  =    1411515 *
+*Baskets :       57 : Basket Size=      32000 bytes  Compression=   2.27     *
 *............................................................................*
-*Br   10 :ele_py    : vector<float>                                          *
-*Entries :       10 : Total  Size=        706 bytes  File Size  =        224 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br   10 :ele_px    : vector<float>                                          *
+*Entries :   100000 : Total  Size=    3204786 bytes  File Size  =    1411344 *
+*Baskets :       57 : Basket Size=      32000 bytes  Compression=   2.27     *
 *............................................................................*
-*Br   11 :ele_pz    : vector<float>                                          *
-*Entries :       10 : Total  Size=        706 bytes  File Size  =        224 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br   11 :ele_py    : vector<float>                                          *
+*Entries :   100000 : Total  Size=    3204786 bytes  File Size  =    1411344 *
+*Baskets :       57 : Basket Size=      32000 bytes  Compression=   2.27     *
 *............................................................................*
-*Br   12 :ele_E     : vector<float>                                          *
-*Entries :       10 : Total  Size=        701 bytes  File Size  =        223 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br   12 :ele_pz    : vector<float>                                          *
+*Entries :   100000 : Total  Size=    3204786 bytes  File Size  =    1411344 *
+*Baskets :       57 : Basket Size=      32000 bytes  Compression=   2.27     *
 *............................................................................*
-*Br   13 :muo_n     : muo_n/I                                                *
-*Entries :       10 : Total  Size=        589 bytes  File Size  =        115 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br   13 :ele_E     : vector<float>                                          *
+*Entries :   100000 : Total  Size=    3204725 bytes  File Size  =    1411287 *
+*Baskets :       57 : Basket Size=      32000 bytes  Compression=   2.27     *
 *............................................................................*
-*Br   14 :muo_pdgId : vector<int>                                            *
-*Entries :       10 : Total  Size=        721 bytes  File Size  =        227 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br   14 :muo_n     : muo_n/I                                                *
+*Entries :   100000 : Total  Size=     785529 bytes  File Size  =     400975 *
+*Baskets :       13 : Basket Size=      32000 bytes  Compression=   1.96     *
 *............................................................................*
-*Br   15 :muo_px    : vector<float>                                          *
-*Entries :       10 : Total  Size=        706 bytes  File Size  =        224 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br   15 :muo_pdgId : vector<int>                                            *
+*Entries :   100000 : Total  Size=    3204997 bytes  File Size  =    1411543 *
+*Baskets :       57 : Basket Size=      32000 bytes  Compression=   2.27     *
 *............................................................................*
-*Br   16 :muo_py    : vector<float>                                          *
-*Entries :       10 : Total  Size=        706 bytes  File Size  =        224 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br   16 :muo_px    : vector<float>                                          *
+*Entries :   100000 : Total  Size=    3204814 bytes  File Size  =    1411372 *
+*Baskets :       57 : Basket Size=      32000 bytes  Compression=   2.27     *
 *............................................................................*
-*Br   17 :muo_pz    : vector<float>                                          *
-*Entries :       10 : Total  Size=        706 bytes  File Size  =        224 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br   17 :muo_py    : vector<float>                                          *
+*Entries :   100000 : Total  Size=    3204814 bytes  File Size  =    1411372 *
+*Baskets :       57 : Basket Size=      32000 bytes  Compression=   2.27     *
 *............................................................................*
-*Br   18 :muo_E     : vector<float>                                          *
-*Entries :       10 : Total  Size=        701 bytes  File Size  =        223 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br   18 :muo_pz    : vector<float>                                          *
+*Entries :   100000 : Total  Size=    3204814 bytes  File Size  =    1411372 *
+*Baskets :       57 : Basket Size=      32000 bytes  Compression=   2.27     *
 *............................................................................*
-*Br   19 :pho_n     : pho_n/I                                                *
-*Entries :       10 : Total  Size=        589 bytes  File Size  =        115 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br   19 :muo_E     : vector<float>                                          *
+*Entries :   100000 : Total  Size=    3204753 bytes  File Size  =    1411315 *
+*Baskets :       57 : Basket Size=      32000 bytes  Compression=   2.27     *
 *............................................................................*
-*Br   20 :pho_pdgId : vector<int>                                            *
-*Entries :       10 : Total  Size=        721 bytes  File Size  =        227 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br   20 :pho_n     : pho_n/I                                                *
+*Entries :   100000 : Total  Size=     785529 bytes  File Size  =     400975 *
+*Baskets :       13 : Basket Size=      32000 bytes  Compression=   1.96     *
 *............................................................................*
-*Br   21 :pho_px    : vector<float>                                          *
-*Entries :       10 : Total  Size=        706 bytes  File Size  =        224 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br   21 :pho_pdgId : vector<int>                                            *
+*Entries :   100000 : Total  Size=    4558940 bytes  File Size  =    2093066 *
+*Baskets :       78 : Basket Size=      32000 bytes  Compression=   2.18     *
 *............................................................................*
-*Br   22 :pho_py    : vector<float>                                          *
-*Entries :       10 : Total  Size=        706 bytes  File Size  =        224 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br   22 :pho_px    : vector<float>                                          *
+*Entries :   100000 : Total  Size=    4558694 bytes  File Size  =    2092832 *
+*Baskets :       78 : Basket Size=      32000 bytes  Compression=   2.18     *
 *............................................................................*
-*Br   23 :pho_pz    : vector<float>                                          *
-*Entries :       10 : Total  Size=        706 bytes  File Size  =        224 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br   23 :pho_py    : vector<float>                                          *
+*Entries :   100000 : Total  Size=    4558694 bytes  File Size  =    2092832 *
+*Baskets :       78 : Basket Size=      32000 bytes  Compression=   2.18     *
 *............................................................................*
-*Br   24 :pho_E     : vector<float>                                          *
-*Entries :       10 : Total  Size=        701 bytes  File Size  =        223 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br   24 :pho_pz    : vector<float>                                          *
+*Entries :   100000 : Total  Size=    4558694 bytes  File Size  =    2092832 *
+*Baskets :       78 : Basket Size=      32000 bytes  Compression=   2.18     *
 *............................................................................*
-*Br   25 :jet_n     : jet_n/I                                                *
-*Entries :       10 : Total  Size=        589 bytes  File Size  =        115 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br   25 :pho_E     : vector<float>                                          *
+*Entries :   100000 : Total  Size=    4558612 bytes  File Size  =    2092754 *
+*Baskets :       78 : Basket Size=      32000 bytes  Compression=   2.18     *
 *............................................................................*
-*Br   26 :jet_pdgId : vector<int>                                            *
-*Entries :       10 : Total  Size=        877 bytes  File Size  =        383 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br   26 :jet_n     : jet_n/I                                                *
+*Entries :   100000 : Total  Size=     785529 bytes  File Size  =     400975 *
+*Baskets :       13 : Basket Size=      32000 bytes  Compression=   1.96     *
 *............................................................................*
-*Br   27 :jet_px    : vector<float>                                          *
-*Entries :       10 : Total  Size=        862 bytes  File Size  =        380 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br   27 :jet_pdgId : vector<int>                                            *
+*Entries :   100000 : Total  Size=    4991805 bytes  File Size  =    2301791 *
+*Baskets :       85 : Basket Size=      32000 bytes  Compression=   2.17     *
 *............................................................................*
-*Br   28 :jet_py    : vector<float>                                          *
-*Entries :       10 : Total  Size=        862 bytes  File Size  =        380 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br   28 :jet_px    : vector<float>                                          *
+*Entries :   100000 : Total  Size=    4991538 bytes  File Size  =    2301536 *
+*Baskets :       85 : Basket Size=      32000 bytes  Compression=   2.17     *
 *............................................................................*
-*Br   29 :jet_pz    : vector<float>                                          *
-*Entries :       10 : Total  Size=        862 bytes  File Size  =        380 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br   29 :jet_py    : vector<float>                                          *
+*Entries :   100000 : Total  Size=    4991538 bytes  File Size  =    2301536 *
+*Baskets :       85 : Basket Size=      32000 bytes  Compression=   2.17     *
 *............................................................................*
-*Br   30 :jet_E     : vector<float>                                          *
-*Entries :       10 : Total  Size=        857 bytes  File Size  =        379 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br   30 :jet_pz    : vector<float>                                          *
+*Entries :   100000 : Total  Size=    4991538 bytes  File Size  =    2301536 *
+*Baskets :       85 : Basket Size=      32000 bytes  Compression=   2.17     *
 *............................................................................*
-*Br   31 :pxmiss    : pxmiss/F                                               *
-*Entries :       10 : Total  Size=        594 bytes  File Size  =        116 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br   31 :jet_E     : vector<float>                                          *
+*Entries :   100000 : Total  Size=    4991449 bytes  File Size  =    2301451 *
+*Baskets :       85 : Basket Size=      32000 bytes  Compression=   2.17     *
 *............................................................................*
-*Br   32 :pymiss    : pymiss/F                                               *
-*Entries :       10 : Total  Size=        594 bytes  File Size  =        116 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br   32 :pxmiss    : pxmiss/F                                               *
+*Entries :   100000 : Total  Size=     785546 bytes  File Size  =     400988 *
+*Baskets :       13 : Basket Size=      32000 bytes  Compression=   1.96     *
 *............................................................................*
-*Br   33 :pxnue     : pxnue/F                                                *
-*Entries :       10 : Total  Size=        589 bytes  File Size  =        115 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br   33 :pymiss    : pymiss/F                                               *
+*Entries :   100000 : Total  Size=     785546 bytes  File Size  =     400988 *
+*Baskets :       13 : Basket Size=      32000 bytes  Compression=   1.96     *
 *............................................................................*
-*Br   34 :pynue     : pynue/F                                                *
-*Entries :       10 : Total  Size=        589 bytes  File Size  =        115 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br   34 :pxnue     : pxnue/F                                                *
+*Entries :   100000 : Total  Size=     785529 bytes  File Size  =     400975 *
+*Baskets :       13 : Basket Size=      32000 bytes  Compression=   1.96     *
 *............................................................................*
-*Br   35 :pxcalo    : pxcalo/F                                               *
-*Entries :       10 : Total  Size=        594 bytes  File Size  =        116 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br   35 :pynue     : pynue/F                                                *
+*Entries :   100000 : Total  Size=     785529 bytes  File Size  =     400975 *
+*Baskets :       13 : Basket Size=      32000 bytes  Compression=   1.96     *
 *............................................................................*
-*Br   36 :pycalo    : pycalo/F                                               *
-*Entries :       10 : Total  Size=        594 bytes  File Size  =        116 *
-*Baskets :        1 : Basket Size=      32000 bytes  Compression=   1.00     *
+*Br   36 :pxcalo    : pxcalo/F                                               *
+*Entries :   100000 : Total  Size=     785546 bytes  File Size  =     400988 *
+*Baskets :       13 : Basket Size=      32000 bytes  Compression=   1.96     *
 *............................................................................*
-\end{verbatim}
+*Br   37 :pycalo    : pycalo/F                                               *
+*Entries :   100000 : Total  Size=     785546 bytes  File Size  =     400988 *
+*Baskets :       13 : Basket Size=      32000 bytes  Compression=   1.96     *
+*............................................................................*
+r\end{verbatim}
 } 
 
 \newpage
@@ -1907,6 +1915,7 @@ the simulation/reconstruction. The are store together with {\tt ACDTree}
 tuple in file XXX.conf.root.
 \scriptsize{
 \begin{verbatim}  
+  OBJ: TTree	ACDTree	ACDTree : 0 at: 0x8190c80
   KEY: TH1F	hist10000;1	Cell: multiplicity
   KEY: TH1F	hist10101;1	Cluster: multiplicity
   KEY: TH1F	hist10111;1	Cluster: delta eta cluster barycentre
@@ -1936,6 +1945,7 @@ tuple in file XXX.conf.root.
   KEY: TH1F	hist10612;1	Mis: reconstructed p_T + cells
   KEY: TH1F	hist10613;1	Mis: reconstructed pTmiss
   KEY: TH1F	hist10621;1	Mis: true p_T invisible
+  KEY: TH1F	hist10622;1	Mis: pT miss (true - reco)/reco 
   KEY: TH1F	hist10711;1	BJet: b-jets multiplicity
   KEY: TH1F	hist10721;1	BJet: b-quarks HP multiplicity
   KEY: TH1F	hist10723;1	BJet: delta r bjet-bquark HP
@@ -1948,7 +1958,10 @@ tuple in file XXX.conf.root.
   KEY: TH1F	hist10921;1	Tau: tau-had multiplicity 
   KEY: TH1F	hist10923;1	Tau: delta r tau-jet, tau-had 
   KEY: TH1F	hist10924;1	Tau: pTtaujet/pTtau-had 
-  KEY: TTree	ACDTree;1	ACDTree                 
+  KEY: TH1F	hist11001;1	Calibration: calibration correction
+  KEY: TH1F	hist11011;1	Calibration: pT jets before calibration
+  KEY: TH1F	hist11012;1	Calibration: pT jets after calibration
+  KEY: TTree	ACDTree;1	ACDTree
 \end{verbatim}  
 }
 
