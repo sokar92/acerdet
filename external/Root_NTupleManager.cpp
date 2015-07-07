@@ -57,7 +57,7 @@ void Root_NTupleManager::init() {
 	ntuple->Branch("jet_E",              &n_jet_E);
 
 	ntuple->Branch("pxmiss",             &n_pxmiss);
-	ntuple->Branch("pymiss",             &n_pxmiss);
+	ntuple->Branch("pymiss",             &n_pymiss);
 	ntuple->Branch("pxnue",              &n_pxnue);
 	ntuple->Branch("pynue",              &n_pynue);
 	ntuple->Branch("pxcalo",             &n_pxcalo);
@@ -191,7 +191,7 @@ void Root_NTupleManager::fill(
 	n_pynue = orecord.Miss.PYNUE;
 	n_pxcalo = orecord.Miss.PXXCALO;
 	n_pycalo = orecord.Miss.PYYCALO;
-	
+
 	n_ProcessID = processId;
 	n_eventWeight = weight;
 
