@@ -36,6 +36,8 @@ AcerDET::AcerDET(
 		new analyse::Photon( config, histoManager );
 	analyse_Tau =
 		new analyse::Tau( config, histoManager );
+	analyse_Test_Histograms =
+		new analyse::Test_Histograms( config, histoManager );
 }
 
 /*
@@ -55,6 +57,7 @@ AcerDET::~AcerDET() {
 	delete analyse_Muon;
 	delete analyse_Photon;
 	delete analyse_Tau;
+	delete analyse_Test_Histograms;
 
 }
 
@@ -79,6 +82,7 @@ void AcerDET::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 	analyse_CJet		->analyseRecord( irecord, orecord, weigth );
 	analyse_Tau		->analyseRecord( irecord, orecord, weigth );
 	analyse_Calibration	->analyseRecord( irecord, orecord, weigth );
+	analyse_Test_Histograms		->analyseRecord( irecord, orecord, weigth );
 }
 
 /*
@@ -111,6 +115,7 @@ void AcerDET::printInfo() const {
 	analyse_CJet		->printInfo();
 	analyse_Tau		->printInfo();
 	analyse_Calibration	->printInfo();
+	analyse_Test_Histograms	->printInfo();
 }
 
 void AcerDET::printResults() const {
@@ -125,6 +130,7 @@ void AcerDET::printResults() const {
 	analyse_CJet		->printResults();
 	analyse_Tau	       	->printResults();
 	analyse_Calibration	->printResults();
+	analyse_Test_Histograms	->printResults();
 }
 
 void AcerDET::storeHistograms() {
