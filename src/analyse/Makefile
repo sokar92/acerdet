@@ -11,7 +11,8 @@ OBJECTS= BJet.o \
 	Mis.o \
 	Muon.o \
 	Photon.o \
-	Tau.o
+	Tau.o \
+	Test_Histograms.o
 
 all: $(OBJECTS)
 
