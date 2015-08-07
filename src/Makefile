@@ -9,7 +9,9 @@ LIB= AcerDET
 SUBTARGETS= compile_core \
 	compile_configuration \
 	compile_io \
+	compile_test \
 	compile_analyse
+	
 
 OBJECTS= AcerDET.o
 
@@ -66,9 +68,13 @@ compile_configuration:
 
 compile_io: 
 	$(MAKE) -C ./io
+
+compile_test:
+	$(MAKE) -C ./test
 	
 compile_analyse:
 	$(MAKE) -C ./analyse
+
 
 
 clean_core:
@@ -79,9 +85,15 @@ clean_configuration:
 
 clean_io: 
 	$(MAKE) -C ./io clean
+
+clean_test:
+	$(MAKE) -C ./test clean
 	
 clean_analyse:
 	$(MAKE) -C ./analyse clean
+
+
+
 
 
 # -------------------
