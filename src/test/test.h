@@ -24,10 +24,10 @@ namespace AcerDet {
 	namespace test {
 		
 		
-		//! Common class representing partons.
+		//! Helper class for creating test histograms. 
 		/**
-		 * Common class representing partons.
-		 * Stores it's type, status, four-vectors representing momentum and production vertex (if exists), mother and daughters ids.
+		 * Helper class for creating test histograms. 
+		 * Stores particle data needed to create specific types of hostograms.
 		 */
 		class Test {
 		public:		    
