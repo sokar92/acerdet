@@ -33,6 +33,7 @@
 #include "analyse/Muon.h"
 #include "analyse/Photon.h"
 #include "analyse/Tau.h"
+#include "analyse/Test_Histograms.h"
 
 namespace AcerDet {
 
@@ -57,6 +58,7 @@ namespace AcerDet {
 		analyse::Muon          *analyse_Muon;        /*!< An instance of algorithm for reconstructing muons. */
 		analyse::Photon        *analyse_Photon;      /*!< An instance of algorithm for reconstructing photons. */
 		analyse::Tau           *analyse_Tau;         /*!< An instance of algorithm for reconstructing taus. */
+		analyse::Test_Histograms           *analyse_Test_Histograms;         /*!< An instance of algorithm for test histograms. */
 		
 	public:
 	
