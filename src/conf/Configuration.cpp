@@ -53,6 +53,7 @@ const std::string C_Flag_Susy_Lsp_Particle	= "SUSY_LSP_Particle";
 const std::string C_Flag_BC_Jets_Labeling	= "BC-JetsLabeling";
 const std::string C_Flag_Tau_Jets_Labeling	= "Tau-JetsLabeling";
 const std::string C_Flag_JetCalibration		= "JetCalibration";
+const std::string C_Flag_Test				= "Test";
 
 Configuration::_Flag::_Flag() :
 	HistogramId( 10000 ),
@@ -61,7 +62,8 @@ Configuration::_Flag::_Flag() :
 	SusyParticle( 66 ),
 	BCJetsLabeling( true ),
 	TauJetsLabeling( true ),
-	JetCalibration( true ) 
+	JetCalibration( true ),
+	Test( true ) 
 {}
 
 void Configuration::_Flag::read( const string& line ) {
@@ -77,6 +79,7 @@ void Configuration::_Flag::read( const string& line ) {
 	else if (P.second.sec == C_Flag_BC_Jets_Labeling)	BCJetsLabeling = (P.second.tail == "1");
 	else if (P.second.sec == C_Flag_Tau_Jets_Labeling)	TauJetsLabeling = (P.second.tail == "1");
 	else if (P.second.sec == C_Flag_JetCalibration)		JetCalibration = (P.second.tail == "1");
+	else if (P.second.sec == C_Flag_Test)				Test = (P.second.tail == "1");
 }
 
 string Configuration::_Flag::write( ) const {
@@ -88,6 +91,7 @@ string Configuration::_Flag::write( ) const {
 	ss << C_Flag << "." << C_Flag_BC_Jets_Labeling	<< " " << BCJetsLabeling 	<< endl;
 	ss << C_Flag << "." << C_Flag_Tau_Jets_Labeling	<< " " << TauJetsLabeling 	<< endl;
 	ss << C_Flag << "." << C_Flag_JetCalibration	<< " " << JetCalibration	<< endl;
+	ss << C_Flag << "." << C_Flag_Test			<< " " << Test			<< endl;
 	return ss.str();
 }
 
