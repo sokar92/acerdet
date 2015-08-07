@@ -67,28 +67,27 @@ void Calibration::analyseRecord( const io::InputRecord& irecord, io::OutputRecor
     Real64_t Corr = 1.0;
     
     if( X < 40.0 ){
-      Real64_t A0 =   1.2715;
-      Real64_t A1 =   .12241;
-      Real64_t A2 =  -.10480E-01;
-      Real64_t A3 =  +.33310E-03;
-      Real64_t A4 =  -.47454E-05;
-      Real64_t A5 =   .25436E-07;
+      Real64_t A0 =   .437876;
+      Real64_t A1 =   .636209;
+      Real64_t A2 =  -.709003E-01;
+      Real64_t A3 =  +.320892E-02;
+      Real64_t A4 =  -.660921E-04;
+      Real64_t A5 =   .512782E-06;
       Corr = A0 + A1*X + A2*X*X +A3*X*X*X+A4*X*X*X*X+A5*X*X*X*X*X;
-      Corr = Corr*1.006;
 
     } else if ( X > 40.0 && X < 60.0 ){
-      Real64_t      A0 = 11.3579;
-      Real64_t      A1 =-0.993207;
-      Real64_t      A2 = 0.0388214;
-      Real64_t      A3 =-0.000754235;
-      Real64_t      A4 =7.22229E-06;
-      Real64_t      A5 =-2.71501E-08;
-      Corr = A0+A1*X+A2*X*X+A3*X*X*X+A4*X*X*X*X+A5*X*X*X*X*X;    
+      Real64_t      A0 = 286.581;
+      Real64_t      A1 =-29.0227;
+      Real64_t      A2 = 1.17481;
+      Real64_t      A3 =-0.0236602;
+      Real64_t      A4 = 0.237002E-03;
+      Real64_t      A5 =-9.44527E-07;
+      Corr = A0+A1*X+A2*X*X+A3*X*X*X+A4*X*X*X*X+A5*X*X*X*X*X;   
       
     } else if ( X < 200.0){
-      Real64_t   A0 =   1.18;
-      Real64_t   A1 =   -.16672E-02;
-      Real64_t   A2 =    .44414E-05;
+      Real64_t   A0 =   1.05187;
+      Real64_t   A1 =   -.103818E-02;
+      Real64_t   A2 =    .340883E-05;
       Corr = A0+A1*X+A2*X*X;
     }
     orecord.Jets[j].pT = Corr * orecord.Jets[j].pT;
