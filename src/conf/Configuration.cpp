@@ -12,29 +12,87 @@ using namespace std;
   Helper functions
 */
 struct _split {
-	string prim, sec, tail;
-	_split( const string& p, const string& s, const string& t) : prim(p), sec(s), tail(t) {}
+	string PropertyGroupName;
+	string Property;
+	string Value;
+	string Comment;
+
+	_split( const string& group, const string& property, const string& value, const string& comment) : 
+		PropertyGroupName (group),
+		Property (property),
+		Value (value),
+		Comment (comment) 
+	{}
+
+	static _split empty() {
+		return _split("", "", "", "");
+	}
 };
 
-inline bool checkStringContains( const string& text, char c ) {
-	for (string::const_iterator it = text.begin(); it != text.end(); it++)
-		if ((*it) == c) return true;
-	return false;
+bool isAlphaNum(char c) {
+	return ('0' <= c && c <= '9')
+	|| ('a' <= c && c <= 'z')
+	|| ('A' <= c && c <= 'Z');
 }
 
-pair<bool,_split> split( const string& text ) {
-	if (!checkStringContains(text, '.'))
-		return make_pair(false, _split("","",""));
-	
-	char t1[128], t2[128];
-	sscanf(text.c_str(), "%[^.].%[^\n]", t1, t2);
-	if (!checkStringContains(string(t2), ' '))
-		return make_pair(false, _split("","",""));
-	
-	char q1[128], q2[128];
-	sscanf(t2, "%[^ ] %[^\n]", q1, q2);
+bool isPropertyElement(char c) {
+	return isAlphaNum(c)
+	|| c == '-'
+	|| c == '_'
+	|| c == '.';
+}
 
-	return make_pair(true, _split(string(t1), string(q1), string(q2)));
+bool isSpace(char c) {
+	return c == ' '
+	|| c == '\t';
+}
+
+// --------------------------------------------------------------------
+// -- Split line into format  PropertyGroup.Property Value  #Comment --
+// --------------------------------------------------------------------
+pair<bool,_split> split( const string& text ) {
+	// iterators over text
+	string::const_iterator it_end = text.begin();
+	string::const_iterator it_beg;
+
+	// read PropertyGroupName
+	it_beg = it_end;
+	while (it_end != text.end() && isAlphaNum(*it_end)) it_end++;
+	string group(it_beg, it_end);
+
+	// skip dot
+	if (it_end != text.end() && *it_end == '.') {
+		it_end++;
+	} else {
+		return make_pair(false, _split::empty());
+	}
+
+	// read Property
+	it_beg = it_end;
+	while (it_end != text.end() && isPropertyElement(*it_end)) it_end++;
+	string property(it_beg, it_end);
+
+	// skip spaces
+	if (it_end != text.end() && isSpace(*it_end)) {
+		while (it_end != text.end() && isSpace(*it_end))
+			it_end++;
+	} else {
+		return make_pair(false, _split::empty());
+	}
+
+	// read Value
+	it_beg = it_end;
+	while (it_end != text.end() && *it_end != '#') it_end++;
+	string value(it_beg, it_end);
+
+	// read comment
+	if (it_end != text.end()) {
+		string comment(it_end, text.end());
+		return make_pair(true, _split(group, property, value, comment));
+	}
+
+	// return
+	return make_pair(true, _split(group, property, value, ""));
 }
 
 /*
@@ -53,6 +111,7 @@ const std::string C_Flag_Susy_Lsp_Particle	= "SUSY_LSP_Particle";
 const std::string C_Flag_BC_Jets_Labeling	= "BC-JetsLabeling";
 const std::string C_Flag_Tau_Jets_Labeling	= "Tau-JetsLabeling";
 const std::string C_Flag_JetCalibration		= "JetCalibration";
+const std::string C_Flag_Test				= "Test";
 
 Configuration::_Flag::_Flag() :
 	HistogramId( 10000 ),
@@ -61,22 +120,61 @@ Configuration::_Flag::_Flag() :
 	SusyParticle( 66 ),
 	BCJetsLabeling( true ),
 	TauJetsLabeling( true ),
-	JetCalibration( true ) 
+	JetCalibration( true ),
+	Test( true ) 
 {}
 
 void Configuration::_Flag::read( const string& line ) {
 	pair<bool,_split> P = split(line);
 	
-	if (!P.first || P.second.prim != C_Flag)
+	if (!P.first || P.second.PropertyGroupName != C_Flag)
 		return;
 
-	if (P.second.sec == C_Flag_HistogramID) 			sscanf(P.second.tail.c_str(), "%d", &HistogramId);
-	else if (P.second.sec == C_Flag_Susy_Lsp_Particle)	sscanf(P.second.tail.c_str(), "%d", &SusyParticle);
-	else if (P.second.sec == C_Flag_Smearing) 			Smearing = (P.second.tail == "1");
-	else if (P.second.sec == C_Flag_BField) 			BField = (P.second.tail == "1");
-	else if (P.second.sec == C_Flag_BC_Jets_Labeling)	BCJetsLabeling = (P.second.tail == "1");
-	else if (P.second.sec == C_Flag_Tau_Jets_Labeling)	TauJetsLabeling = (P.second.tail == "1");
-	else if (P.second.sec == C_Flag_JetCalibration)		JetCalibration = (P.second.tail == "1");
+	const _split& s = P.second;
+	if (s.Property == C_Flag_HistogramID)
+		sscanf(s.Value.c_str(), "%d", &HistogramId);
+
+	else if (s.Property == C_Flag_Susy_Lsp_Particle) {
+		int tmp;
+		sscanf(s.Value.c_str(), "%d", &tmp);
+		SusyParticle = tmp;
+	}
+
+	else if (s.Property == C_Flag_Smearing) {
+		int tmp;
+		sscanf(s.Value.c_str(), "%d", &tmp);
+		Smearing = tmp;
+	}
+
+	else if (s.Property == C_Flag_BField) {
+		int tmp;
+		sscanf(s.Value.c_str(), "%d", &tmp);
+		BField = tmp;
+	}
+
+	else if (s.Property == C_Flag_BC_Jets_Labeling) {
+		int tmp;
+		sscanf(s.Value.c_str(), "%d", &tmp);
+		BCJetsLabeling = tmp;
+	}
+
+	else if (s.Property == C_Flag_Tau_Jets_Labeling) {
+		int tmp;
+		sscanf(s.Value.c_str(), "%d", &tmp);
+		TauJetsLabeling = tmp;
+	}
+
+	else if (s.Property == C_Flag_JetCalibration) {
+		int tmp;
+		sscanf(s.Value.c_str(), "%d", &tmp);
+		JetCalibration = tmp;
+	}
+
+	else if (s.Property == C_Flag_Test) {
+		int tmp;
+		sscanf(s.Value.c_str(), "%d", &tmp);
+		Test = tmp;
+	}
 }
 
 string Configuration::_Flag::write( ) const {
@@ -88,6 +186,7 @@ string Configuration::_Flag::write( ) const {
 	ss << C_Flag << "." << C_Flag_BC_Jets_Labeling	<< " " << BCJetsLabeling 	<< endl;
 	ss << C_Flag << "." << C_Flag_Tau_Jets_Labeling	<< " " << TauJetsLabeling 	<< endl;
 	ss << C_Flag << "." << C_Flag_JetCalibration	<< " " << JetCalibration	<< endl;
+	ss << C_Flag << "." << C_Flag_Test			<< " " << Test			<< endl;
 	return ss.str();
 }
 
@@ -115,15 +214,27 @@ Configuration::_Cell::_Cell() :
 void Configuration::_Cell::read( const string& line ) {
 	pair<bool,_split> P = split(line);
 	
-	if (!P.first || P.second.prim != C_Cell)
+	if (!P.first || P.second.PropertyGroupName != C_Cell)
 		return;
 
-	if (P.second.sec == C_Cell_RapidityCoverage) 	sscanf(P.second.tail.c_str(), "%lf", &RapidityCoverage);
-	else if (P.second.sec == C_Cell_Min_pT)			sscanf(P.second.tail.c_str(), "%lf", &MinpT);
-	else if (P.second.sec == C_Cell_Min_Et)			sscanf(P.second.tail.c_str(), "%lf", &MinEt);
-	else if (P.second.sec == C_Cell_EtaTransition)	sscanf(P.second.tail.c_str(), "%lf", &EtaTransition);
-	else if (P.second.sec == C_Cell_GranularityEta)	sscanf(P.second.tail.c_str(), "%lf", &GranularityEta);
-	else if (P.second.sec == C_Cell_GranularityPhi)	sscanf(P.second.tail.c_str(), "%lf", &GranularityPhi);
+	const _split& s = P.second;
+	if (s.Property == C_Cell_RapidityCoverage)
+		sscanf(s.Value.c_str(), "%lf", &RapidityCoverage);
+
+	else if (s.Property == C_Cell_Min_pT)
+		sscanf(s.Value.c_str(), "%lf", &MinpT);
+
+	else if (s.Property == C_Cell_Min_Et)
+		sscanf(s.Value.c_str(), "%lf", &MinEt);
+
+	else if (s.Property == C_Cell_EtaTransition)
+		sscanf(s.Value.c_str(), "%lf", &EtaTransition);
+
+	else if (s.Property == C_Cell_GranularityEta)
+		sscanf(s.Value.c_str(), "%lf", &GranularityEta);
+
+	else if (s.Property == C_Cell_GranularityPhi)
+		sscanf(s.Value.c_str(), "%lf", &GranularityPhi);
 }
 
 string Configuration::_Cell::write( ) const {
@@ -157,13 +268,21 @@ Configuration::_Cluster::_Cluster() :
 void Configuration::_Cluster::read( const string& line ) {
 	pair<bool,_split> P = split(line);
 	
-	if (!P.first || P.second.prim != C_Cluster)
+	if (!P.first || P.second.PropertyGroupName != C_Cluster)
 		return;
 
-	if (P.second.sec == C_Cluster_Min_Et) 				sscanf(P.second.tail.c_str(), "%lf", &MinEt);
-	else if (P.second.sec == C_Cluster_ConeR)			sscanf(P.second.tail.c_str(), "%lf", &ConeR);
-	else if (P.second.sec == C_Cluster_RapidityCoverage)sscanf(P.second.tail.c_str(), "%lf", &RapidityCoverage);
-	else if (P.second.sec == C_Cluster_Min_Et_init)		sscanf(P.second.tail.c_str(), "%lf", &MinEtInit);
+	const _split& s = P.second;
+	if (s.Property == C_Cluster_Min_Et)
+		sscanf(s.Value.c_str(), "%lf", &MinEt);
+
+	else if (s.Property == C_Cluster_ConeR)
+		sscanf(s.Value.c_str(), "%lf", &ConeR);
+
+	else if (s.Property == C_Cluster_RapidityCoverage)
+		sscanf(s.Value.c_str(), "%lf", &RapidityCoverage);
+
+	else if (s.Property == C_Cluster_Min_Et_init)
+		sscanf(s.Value.c_str(), "%lf", &MinEtInit);
 }
 
 string Configuration::_Cluster::write( ) const {
@@ -197,14 +316,24 @@ Configuration::_Muon::_Muon() :
 void Configuration::_Muon::read( const string& line ) {
 	pair<bool,_split> P = split(line);
 	
-	if (!P.first || P.second.prim != C_Muon)
+	if (!P.first || P.second.PropertyGroupName != C_Muon)
 		return;
 
-	if (P.second.sec == C_Muon_MinMomenta) 		sscanf(P.second.tail.c_str(), "%lf", &MinMomenta);
-	else if (P.second.sec == C_Muon_MaxEta)		sscanf(P.second.tail.c_str(), "%lf", &MaxEta);
-	else if (P.second.sec == C_Muon_MinIsolRlj) sscanf(P.second.tail.c_str(), "%lf", &MinIsolRlj);
-	else if (P.second.sec == C_Muon_ConeR)		sscanf(P.second.tail.c_str(), "%lf", &ConeR);
-	else if (P.second.sec == C_Muon_MaxEnergy)	sscanf(P.second.tail.c_str(), "%lf", &MaxEnergy);
+	const _split& s = P.second;
+	if (s.Property == C_Muon_MinMomenta)
+		sscanf(s.Value.c_str(), "%lf", &MinMomenta);
+
+	else if (s.Property == C_Muon_MaxEta)
+		sscanf(s.Value.c_str(), "%lf", &MaxEta);
+
+	else if (s.Property == C_Muon_MinIsolRlj)
+		sscanf(s.Value.c_str(), "%lf", &MinIsolRlj);
+
+	else if (s.Property == C_Muon_ConeR)
+		sscanf(s.Value.c_str(), "%lf", &ConeR);
+
+	else if (s.Property == C_Muon_MaxEnergy)
+		sscanf(s.Value.c_str(), "%lf", &MaxEnergy);
 }
 
 string Configuration::_Muon::write( ) const {
@@ -241,15 +370,27 @@ Configuration::_Photon::_Photon() :
 void Configuration::_Photon::read( const string& line ) {
 	pair<bool,_split> P = split(line);
 	
-	if (!P.first || P.second.prim != C_Photon)
+	if (!P.first || P.second.PropertyGroupName != C_Photon)
 		return;
 
-	if (P.second.sec == C_Photon_MinMomenta) 		sscanf(P.second.tail.c_str(), "%lf", &MinMomenta);
-	else if (P.second.sec == C_Photon_MaxEta)		sscanf(P.second.tail.c_str(), "%lf", &MaxEta);
-	else if (P.second.sec == C_Photon_MinJetsRlj) 	sscanf(P.second.tail.c_str(), "%lf", &MinJetsRlj);
-	else if (P.second.sec == C_Photon_MinIsolRlj) 	sscanf(P.second.tail.c_str(), "%lf", &MinIsolRlj);
-	else if (P.second.sec == C_Photon_ConeR)		sscanf(P.second.tail.c_str(), "%lf", &ConeR);
-	else if (P.second.sec == C_Photon_MaxEnergy)	sscanf(P.second.tail.c_str(), "%lf", &MaxEnergy);
+	const _split& s = P.second;
+	if (s.Property == C_Photon_MinMomenta)
+		sscanf(s.Value.c_str(), "%lf", &MinMomenta);
+	
+	else if (s.Property == C_Photon_MaxEta)
+		sscanf(s.Value.c_str(), "%lf", &MaxEta);
+
+	else if (s.Property == C_Photon_MinJetsRlj)
+		sscanf(s.Value.c_str(), "%lf", &MinJetsRlj);
+
+	else if (s.Property == C_Photon_MinIsolRlj)
+		sscanf(s.Value.c_str(), "%lf", &MinIsolRlj);
+
+	else if (s.Property == C_Photon_ConeR)
+		sscanf(s.Value.c_str(), "%lf", &ConeR);
+
+	else if (s.Property == C_Photon_MaxEnergy)
+		sscanf(s.Value.c_str(), "%lf", &MaxEnergy);
 }
 
 string Configuration::_Photon::write( ) const {
@@ -287,15 +428,27 @@ Configuration::_Electron::_Electron() :
 void Configuration::_Electron::read( const string& line ) {
 	pair<bool,_split> P = split(line);
 	
-	if (!P.first || P.second.prim != C_Electron)
+	if (!P.first || P.second.PropertyGroupName != C_Electron)
 		return;
 
-	if (P.second.sec == C_Electron_MinMomenta) 		sscanf(P.second.tail.c_str(), "%lf", &MinMomenta);
-	else if (P.second.sec == C_Electron_MaxEta)		sscanf(P.second.tail.c_str(), "%lf", &MaxEta);
-	else if (P.second.sec == C_Electron_MinJetsRlj) sscanf(P.second.tail.c_str(), "%lf", &MinJetsRlj);
-	else if (P.second.sec == C_Electron_MinIsolRlj) sscanf(P.second.tail.c_str(), "%lf", &MinIsolRlj);
-	else if (P.second.sec == C_Electron_ConeR)		sscanf(P.second.tail.c_str(), "%lf", &ConeR);
-	else if (P.second.sec == C_Electron_MaxEnergy)	sscanf(P.second.tail.c_str(), "%lf", &MaxEnergy);
+	const _split& s = P.second;
+	if (s.Property == C_Electron_MinMomenta)
+		sscanf(s.Value.c_str(), "%lf", &MinMomenta);
+
+	else if (s.Property == C_Electron_MaxEta)
+		sscanf(s.Value.c_str(), "%lf", &MaxEta);
+
+	else if (s.Property == C_Electron_MinJetsRlj)
+		sscanf(s.Value.c_str(), "%lf", &MinJetsRlj);
+
+	else if (s.Property == C_Electron_MinIsolRlj)
+		sscanf(s.Value.c_str(), "%lf", &MinIsolRlj);
+
+	else if (s.Property == C_Electron_ConeR)
+		sscanf(s.Value.c_str(), "%lf", &ConeR);
+
+	else if (s.Property == C_Electron_MaxEnergy)
+		sscanf(s.Value.c_str(), "%lf", &MaxEnergy);
 }
 
 string Configuration::_Electron::write( ) const {
@@ -325,11 +478,15 @@ Configuration::_Jet::_Jet() :
 void Configuration::_Jet::read( const string& line ) {
 	pair<bool,_split> P = split(line);
 	
-	if (!P.first || P.second.prim != C_Jets)
+	if (!P.first || P.second.PropertyGroupName != C_Jets)
 		return;
 
-	if (P.second.sec == C_Jets_MinEnergy)	 			sscanf(P.second.tail.c_str(), "%lf", &MinEnergy);
-	else if (P.second.sec == C_Jets_RapidityCoverage)	sscanf(P.second.tail.c_str(), "%lf", &RapidityCoverage);
+	const _split& s = P.second;
+	if (s.Property == C_Jets_MinEnergy)
+		sscanf(s.Value.c_str(), "%lf", &MinEnergy);
+
+	else if (s.Property == C_Jets_RapidityCoverage)
+		sscanf(s.Value.c_str(), "%lf", &RapidityCoverage);
 }
 
 string Configuration::_Jet::write( ) const {
@@ -357,12 +514,18 @@ Configuration::_BJet::_BJet() :
 void Configuration::_BJet::read( const string& line ) {
 	pair<bool,_split> P = split(line);
 	
-	if (!P.first || P.second.prim != C_BJets)
+	if (!P.first || P.second.PropertyGroupName != C_BJets)
 		return;
-	
-	if (P.second.sec == C_BJets_MinMomenta) 	sscanf(P.second.tail.c_str(), "%lf", &MinMomenta);
-	else if (P.second.sec == C_BJets_MaxEta)	sscanf(P.second.tail.c_str(), "%lf", &MaxEta);
-	else if (P.second.sec == C_BJets_MaxRbj)	sscanf(P.second.tail.c_str(), "%lf", &MaxRbj);
+
+	const _split& s = P.second;	
+	if (s.Property == C_BJets_MinMomenta)
+		sscanf(s.Value.c_str(), "%lf", &MinMomenta);
+
+	else if (s.Property == C_BJets_MaxEta)
+		sscanf(s.Value.c_str(), "%lf", &MaxEta);
+
+	else if (s.Property == C_BJets_MaxRbj)
+		sscanf(s.Value.c_str(), "%lf", &MaxRbj);
 }
 
 string Configuration::_BJet::write( ) const {
@@ -391,12 +554,18 @@ Configuration::_CJet::_CJet() :
 void Configuration::_CJet::read( const string& line ) {
 	pair<bool,_split> P = split(line);
 	
-	if (!P.first || P.second.prim != C_CJets)
+	if (!P.first || P.second.PropertyGroupName != C_CJets)
 		return;
 
-	if (P.second.sec == C_CJets_MinMomenta) 	sscanf(P.second.tail.c_str(), "%lf", &MinMomenta);
-	else if (P.second.sec == C_CJets_MaxEta)	sscanf(P.second.tail.c_str(), "%lf", &MaxEta);
-	else if (P.second.sec == C_CJets_MaxRcj)	sscanf(P.second.tail.c_str(), "%lf", &MaxRcj);
+	const _split& s = P.second;
+	if (s.Property == C_CJets_MinMomenta)
+		sscanf(s.Value.c_str(), "%lf", &MinMomenta);
+
+	else if (s.Property == C_CJets_MaxEta)
+		sscanf(s.Value.c_str(), "%lf", &MaxEta);
+
+	else if (s.Property == C_CJets_MaxRcj)
+		sscanf(s.Value.c_str(), "%lf", &MaxRcj);
 }
 
 string Configuration::_CJet::write( ) const {
@@ -427,13 +596,21 @@ Configuration::_Tau::_Tau() :
 void Configuration::_Tau::read( const string& line ) {
 	pair<bool,_split> P = split(line);
 	
-	if (!P.first || P.second.prim != C_Tau)
+	if (!P.first || P.second.PropertyGroupName != C_Tau)
 		return;
 
-	if (P.second.sec == C_Tau_MinpT)	 	sscanf(P.second.tail.c_str(), "%lf", &MinpT);
-	else if (P.second.sec == C_Tau_MaxEta)	sscanf(P.second.tail.c_str(), "%lf", &MaxEta);
-	else if (P.second.sec == C_Tau_MinR)	sscanf(P.second.tail.c_str(), "%lf", &MinR);
-	else if (P.second.sec == C_Tau_MaxR)	sscanf(P.second.tail.c_str(), "%lf", &MaxR);
+	const _split& s = P.second;
+	if (s.Property == C_Tau_MinpT)
+		sscanf(s.Value.c_str(), "%lf", &MinpT);
+
+	else if (s.Property == C_Tau_MaxEta)
+		sscanf(s.Value.c_str(), "%lf", &MaxEta);
+
+	else if (s.Property == C_Tau_MinR)
+		sscanf(s.Value.c_str(), "%lf", &MinR);
+
+	else if (s.Property == C_Tau_MaxR)
+		sscanf(s.Value.c_str(), "%lf", &MaxR);
 }
 
 string Configuration::_Tau::write( ) const {
@@ -459,11 +636,12 @@ Configuration::_Misc::_Misc() :
 void Configuration::_Misc::read( const string& line ) {
 	pair<bool,_split> P = split(line);
 	
-	if (!P.first || P.second.prim != C_Misc)
+	if (!P.first || P.second.PropertyGroupName != C_Misc)
 		return;
 
-	if (P.second.sec == C_Misc_MinEt) 
-		sscanf(P.second.tail.c_str(), "%lf", &MinEt);
+	const _split& s = P.second;
+	if (s.Property == C_Misc_MinEt) 
+		sscanf(s.Value.c_str(), "%lf", &MinEt);
 }
 
 string Configuration::_Misc::write( ) const {
