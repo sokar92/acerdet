@@ -1,58 +1,58 @@
-Flag.HistogramID		10000        ....id for histograms
-Flag.Smearing			1            ....smearing on=1, off=0
-Flag.B-Field			1            ....B-field  on=1, off=0
-Flag.SUSY_LSP_Particle		66           ....code for SUSY LSP particle
-Flag.BC-JetsLabeling		1            ....b- and c-jets labeling on=1, off=0
-Flag.Tau-JetsLabeling		1            ....tau-jets labeling on=1, off=0
-Flag.JetCalibration		1            ....jet calibration  on=1, off=0
-Flag.Test			1            ....generating test histograms on=1, off=0
+Flag.HistogramID		10000        # id for histograms
+Flag.Smearing			1            # smearing on=1, off=0
+Flag.B-Field			1            # B-field  on=1, off=0
+Flag.SUSY_LSP_Particle		66           # code for SUSY LSP particle
+Flag.BC-JetsLabeling		1            # b- and c-jets labeling on=1, off=0
+Flag.Tau-JetsLabeling		1            # tau-jets labeling on=1, off=0
+Flag.JetCalibration		1            # jet calibration  on=1, off=0
+Flag.Test			1            # generating test histograms on=1, off=0
 
-Cell.RapidityCoverage		5.000        ....rapidity coverage
-Cell.MinpT			0.500        ....min p_T for B-field
-Cell.MinEt			0.000        ....min E_T for cell 
-Cell.EtaTransition		3.200        ....eta transition in cells granularity
-Cell.GranularityEta		0.100        ....granularity in eta (within Cell.EtaTransition), 2x outside
-Cell.GranularityPhi		0.100        ....granularity in phi (within Cell.EtaTransition), 2x outside
+Cell.RapidityCoverage		5.000        # rapidity coverage
+Cell.MinpT			0.500        # min p_T for B-field
+Cell.MinEt			0.000        # min E_T for cell 
+Cell.EtaTransition		3.200        # eta transition in cells granularity
+Cell.GranularityEta		0.100        # granularity in eta (within Cell.EtaTransition), 2x outside
+Cell.GranularityPhi		0.100        # granularity in phi (within Cell.EtaTransition), 2x outside
 
-Cluster.MinEt			5.000        ....minimum E_T for cluster
-Cluster.ConeR			0.400        ....cone R for clustering 
-Cluster.RapidityCoverage	5.000        ....rapidity coverage
-Cluster.MinEtInit		1.500        ....min E_T for cluster initiator
+Cluster.MinEt			5.000        # minimum E_T for cluster
+Cluster.ConeR			0.400        # cone R for clustering 
+Cluster.RapidityCoverage	5.000        # rapidity coverage
+Cluster.MinEtInit		1.500        # min E_T for cluster initiator
 
-Muon.MinMomenta			6.000        ....minimum muon-momenta to be detected
-Muon.MaxEta			2.500        ....maximum muon eta to be detected
-Muon.MinIsolRlj			0.400        ....min R_lj for muon-isolation
-Muon.ConeR			0.200        ....R_cone for energy deposition 
-Muon.MaxEnergy			10.000       ....max energy deposition for isol
+Muon.MinMomenta			6.000        # minimum muon-momenta to be detected
+Muon.MaxEta			2.500        # maximum muon eta to be detected
+Muon.MinIsolRlj			0.400        # min R_lj for muon-isolation
+Muon.ConeR			0.200        # R_cone for energy deposition 
+Muon.MaxEnergy			10.000       # max energy deposition for isol
 
-Photon.MinMomenta		5.000        ....minimum photon-momenta to be isol
-Photon.MaxEta			2.500        ....maximum photon eta to be isol
-Photon.MinJetsRlj		0.150        ....min R_lj for photon-jet
-Photon.MinIsolRlj		0.400        ....min R_lj for photon-isolation
-Photon.ConeR			0.200        ....R_cone for energy deposition 
-Photon.MaxEnergy		10.000       ....max energy deposition for isol
+Photon.MinMomenta		5.000        # minimum photon-momenta to be isol
+Photon.MaxEta			2.500        # maximum photon eta to be isol
+Photon.MinJetsRlj		0.150        # min R_lj for photon-jet
+Photon.MinIsolRlj		0.400        # min R_lj for photon-isolation
+Photon.ConeR			0.200        # R_cone for energy deposition 
+Photon.MaxEnergy		10.000       # max energy deposition for isol
 
-Electron.MinMomenta		5.000        ....minimum electron-momenta to be isol
-Electron.MaxEta			2.500        ....maximum electron eta to be isol
-Electron.MinJetsRlj		0.150        ....min R_lj for electron-jet
-Electron.MinIsolRlj		0.400        ....min R_lj for electron-isolation
-Electron.ConeR			0.200        ....R_cone for energy deposition 
-Electron.MaxEnergy		10.000       ....max energy deposition for isol
+Electron.MinMomenta		5.000        # minimum electron-momenta to be isol
+Electron.MaxEta			2.500        # maximum electron eta to be isol
+Electron.MinJetsRlj		0.150        # min R_lj for electron-jet
+Electron.MinIsolRlj		0.400        # min R_lj for electron-isolation
+Electron.ConeR			0.200        # R_cone for energy deposition 
+Electron.MaxEnergy		10.000       # max energy deposition for isol
 
-Jets.MinEnergy			10.000       ....jets energy_min  threshold
-Jets.RapidityCoverage		5.000        ....rapidity coverage for jets
+Jets.MinEnergy			10.000       # jets energy_min  threshold
+Jets.RapidityCoverage		5.000        # rapidity coverage for jets
 
-BJets.MinMomenta		5.000        ....minimum b-quark pT (after FSR) momenta for b-jet label
-BJets.MaxEta			2.500        ....maximum b-quark eta for  b-jet label
-BJets.MaxRbj			0.200        ....max R_bj for b-jet label
+BJets.MinMomenta		5.000        # minimum b-quark pT (after FSR) momenta for b-jet label
+BJets.MaxEta			2.500        # maximum b-quark eta for  b-jet label
+BJets.MaxRbj			0.200        # max R_bj for b-jet label
 
-CJets.MinMomenta		5.000        ....minimum c-quark pT (after FSR) momenta for c-jet label
-CJets.MaxEta			2.500        ....maximum c-quark eta for  c-jet label
-CJets.MaxRcj			0.200        ....max R_cj for c-jet label
+CJets.MinMomenta		5.000        # minimum c-quark pT (after FSR) momenta for c-jet label
+CJets.MaxEta			2.500        # maximum c-quark eta for  c-jet label
+CJets.MaxRcj			0.200        # max R_cj for c-jet label
 
-Tau.MinpT			10.000       ....minimum tau-had pT for  tau-jet label
-Tau.MaxEta			2.500        ....maximum tau-eta for  tau-jet label
-Tau.MinR			0.300        ....max R_tauj for tau-jet
-Tau.MaxR			0.900        ....max R_tauj for tau-jet
+Tau.MinpT			10.000       # minimum tau-had pT for  tau-jet label
+Tau.MaxEta			2.500        # maximum tau-eta for  tau-jet label
+Tau.MinR			0.300        # max R_tauj for tau-jet
+Tau.MaxR			0.900        # max R_tauj for tau-jet
 
-Misc.MinEt			0.000        ....min E_T for energy in cell to count unused cell
+Misc.MinEt			0.000        # min E_T for energy in cell to count unused cell
