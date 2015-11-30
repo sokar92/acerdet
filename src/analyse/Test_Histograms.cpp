@@ -85,18 +85,18 @@ void Test_Histograms::analyseRecord( const io::InputRecord& irecord, io::OutputR
 			
 			
 			histoManager
-				->registerHistogram(pho_idhist+51, "Photon: higgs mass ISOLATED", 100, 100.0, 140.0);
+				->registerHistogram(pho_idhist+51, "Photon: Higgs mass ISOLATED", 100, 100.0, 140.0);
 			histoManager
-				->registerHistogram(pho_idhist+61, "Photon: higgs mass HP", 100, 100.0, 140.0);
+				->registerHistogram(pho_idhist+61, "Photon: Higgs mass HP", 100, 100.0, 140.0);
 			histoManager
 				->registerHistogram(pho_idhist+71, "Photon: photon pt ISOLATED", 100, 0.0, 100.0);
 			histoManager
 				->registerHistogram(pho_idhist+81, "Photon: photon pt HP", 100, 0.0, 100.0);
 			
 			histoManager
-				->registerHistogram(jet_idhist+51, "UJet: Higss mass from cjets", 100, 80.0,  140.0);
+				->registerHistogram(jet_idhist+51, "UJet: Higgs mass from ujets", 100, 80.0,  140.0);
 			histoManager
-				->registerHistogram(jet_idhist+61, "UJet: Higss mass from cquarks HP", 100, 80.0, 140.0);
+				->registerHistogram(jet_idhist+61, "UJet: Higgs mass from uquarks HP", 100, 80.0, 140.0);
 			
 			histoManager
 				->registerHistogram(mis_idhist+2, "Mis: Px_miss - Px_nu", 200, -100, 100);
@@ -108,14 +108,14 @@ void Test_Histograms::analyseRecord( const io::InputRecord& irecord, io::OutputR
 				->registerHistogram(mis_idhist+17, "Mis: Py_calo - Py_nu", 200, -100, 100);
 			
 			histoManager
-				->registerHistogram(bjet_idhist+51, "BJet: Higss mass from bjets", 100, 80.0,  140.0);
+				->registerHistogram(bjet_idhist+51, "BJet: Higgs mass from bjets", 100, 80.0,  140.0);
 			histoManager
-				->registerHistogram(bjet_idhist+61, "BJet: Higss mass from bquarks HP", 100, 80.0, 140.0);
+				->registerHistogram(bjet_idhist+61, "BJet: Higgs mass from bquarks HP", 100, 80.0, 140.0);
 			
 			histoManager
-				->registerHistogram(cjet_idhist+51, "CJet: Higss mass from cjets", 100, 80.0,  140.0);
+				->registerHistogram(cjet_idhist+51, "CJet: Higgs mass from cjets", 100, 80.0,  140.0);
 			histoManager
-				->registerHistogram(cjet_idhist+61, "CJet: Higss mass from cquarks HP", 100, 80.0, 140.0);
+				->registerHistogram(cjet_idhist+61, "CJet: Higgs mass from cquarks HP", 100, 80.0, 140.0);
 				
 		
 		}
