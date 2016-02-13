@@ -22,18 +22,9 @@
 // ---------------------------------------------
 // --  Include AcerDET 2.0 analyse components --
 // ---------------------------------------------
-#include "analyse/BJet.h"
-#include "analyse/Calibration.h"
-#include "analyse/Cell.h"
-#include "analyse/CJet.h"
-#include "analyse/Cluster.h"
-#include "analyse/Electron.h"
-#include "analyse/Jet.h"
-#include "analyse/Mis.h"
-#include "analyse/Muon.h"
-#include "analyse/Photon.h"
-#include "analyse/Tau.h"
-#include "analyse/Test_Histograms.h"
+#include "analyse/IAnalysePhase.h"
+
+#include <vector>
 
 namespace AcerDet {
 
@@ -46,19 +37,7 @@ namespace AcerDet {
 		core::IHistogramManager     *histos;            /*!< A global instance of core::IHistogramManager. */
 		Bool_t                      histos_initialized; /*!< Indicates whether global instance of core::IHistogramManager is already initialized. */
 		core::ParticleDataProvider  partProvider;       /*!< A global instance of core::IParticleDataProvider. */
-		
-		analyse::BJet          *analyse_BJet;        /*!< An instance of algorithm for reconstructing b-jets. */
-		analyse::Calibration   *analyse_Calibration; /*!< An instance of AcerDET detector calibration. */
-		analyse::Cell          *analyse_Cell;        /*!< An instance of algorithm for cells construction. */
-		analyse::CJet          *analyse_CJet;        /*!< An instance of algorithm for reconstructing c-jets. */
-		analyse::Cluster       *analyse_Cluster;     /*!< An instance of algorithm for clusters construction. */
-		analyse::Electron      *analyse_Electron;    /*!< An instance of algorithm for reconstructing electrons. */
-		analyse::Jet           *analyse_Jet;         /*!< An instance of algorithm for reconstructing jets. */
-		analyse::Mis           *analyse_Mis;         /*!< An instance of algorithm for accumulating missing energy. */
-		analyse::Muon          *analyse_Muon;        /*!< An instance of algorithm for reconstructing muons. */
-		analyse::Photon        *analyse_Photon;      /*!< An instance of algorithm for reconstructing photons. */
-		analyse::Tau           *analyse_Tau;         /*!< An instance of algorithm for reconstructing taus. */
-		analyse::Test_Histograms           *analyse_Test_Histograms;         /*!< An instance of algorithm for test histograms. */
+		std::vector<analyse::IAnalysePhase*> analyse_phases;
 		
 	public:
 	

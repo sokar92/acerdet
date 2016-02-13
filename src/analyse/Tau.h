@@ -13,6 +13,8 @@ using namespace AcerDet::core;
 #include "../io/OutputRecord.h"
 using namespace AcerDet::io;
 
+#include "./IAnalysePhase.h"
+
 namespace AcerDet {
 	namespace analyse {
 
@@ -20,7 +22,7 @@ namespace AcerDet {
 		/*!
 		 * An algorithm for Tau reconstruction.
 		 */
-		class Tau {
+		class Tau : public IAnalysePhase {
 		private:
 			Real64_t ETJET;  /*!< see Configuration */
 			Real64_t PTTAU;  /*!< see Configuration */

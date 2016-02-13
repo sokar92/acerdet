@@ -13,6 +13,8 @@ using namespace AcerDet::core;
 #include "../io/OutputRecord.h"
 using namespace AcerDet::io;
 
+#include "./IAnalysePhase.h"
+
 namespace AcerDet {
 	namespace analyse {
 
@@ -20,7 +22,7 @@ namespace AcerDet {
 		/*!
 		 * An algorithm for Electron reconstruction.
 		 */
-		class Electron {
+		class Electron : public IAnalysePhase {
 		private:
 			Real64_t ETCLU;  /*!< see Configuration */
 			Real64_t RCONE;  /*!< see Configuration */

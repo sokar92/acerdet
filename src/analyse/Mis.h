@@ -13,6 +13,8 @@ using namespace AcerDet::core;
 #include "../io/OutputRecord.h"
 using namespace AcerDet::io;
 
+#include "./IAnalysePhase.h"
+
 namespace AcerDet {
 	namespace analyse {
 
@@ -20,7 +22,7 @@ namespace AcerDet {
 		/*!
 		 * An algorithm for collecting missing energy.
 		 */
-		class Mis {
+		class Mis : public IAnalysePhase {
 		private:
 			Real64_t PTMUMIN; /*!< see Configuration */
 			Real64_t ETAMAX;  /*!< see Configuration */

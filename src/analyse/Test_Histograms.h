@@ -16,6 +16,8 @@ using namespace AcerDet::core;
 #include "../io/OutputRecord.h"
 using namespace AcerDet::io;
 
+#include "./IAnalysePhase.h"
+
 namespace AcerDet {
 	namespace analyse {
 
@@ -23,7 +25,7 @@ namespace AcerDet {
 		/*!
 		 * An algorithm for a creation of test histograms.
 		 */
-		class Test_Histograms {
+		class Test_Histograms : public IAnalysePhase {
 		private:
 			
 			Int32_t KEYHID;    /*!< see Configuration */

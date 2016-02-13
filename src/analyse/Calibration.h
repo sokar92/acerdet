@@ -9,6 +9,7 @@ using namespace AcerDet::conf;
 #include "../core/IHistogramManager.h"
 #include "../io/InputRecord.h"
 #include "../io/OutputRecord.h"
+#include "./IAnalysePhase.h"
 
 namespace AcerDet {
 	namespace analyse {
@@ -17,7 +18,7 @@ namespace AcerDet {
 		/*!
 		 * Calibration
 		 */
-		class Calibration {
+		class Calibration : public IAnalysePhase {
 		private:
 			Real64_t RCONE; /*!< see Configuration */
 			

@@ -13,6 +13,8 @@ using namespace AcerDet::core;
 #include "../io/OutputRecord.h"
 using namespace AcerDet::io;
 
+#include "./IAnalysePhase.h"
+
 namespace AcerDet {
 	namespace analyse {
 
@@ -20,7 +22,7 @@ namespace AcerDet {
 		/*!
 		 * An algorithm recognising Jets as CJets.
 		 */	
-		class CJet {
+		class CJet : public IAnalysePhase {
 		private:
 			Real64_t ETJET;  /*!< see Configuration */
 			Real64_t RCONE;  /*!< see Configuration */

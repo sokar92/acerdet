@@ -14,6 +14,8 @@ using namespace AcerDet::core;
 #include "../io/OutputRecord.h"
 using namespace AcerDet::io;
 
+#include "./IAnalysePhase.h"
+
 namespace AcerDet {
 	namespace analyse {
 
@@ -21,7 +23,7 @@ namespace AcerDet {
 		/*!
 		 * An algorithm for grouping cells into clusters.
 		 */
-		class Cluster {
+		class Cluster : public IAnalysePhase {
 		private:
 			Real64_t ETCLU;  /*!< see Configuration */
 			Real64_t RCONE;  /*!< see Configuration */

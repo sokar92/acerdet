@@ -9,6 +9,7 @@ using namespace AcerDet::conf;
 #include "../core/IHistogramManager.h"
 #include "../io/InputRecord.h"
 #include "../io/OutputRecord.h"
+#include "./IAnalysePhase.h"
 
 namespace AcerDet {
 	namespace analyse {
@@ -17,7 +18,7 @@ namespace AcerDet {
 		/*!
 		 * An algorithm recognising Jets as BJets.
 		 */	
-		class BJet {
+		class BJet : public IAnalysePhase {
 		private:
 			Real64_t ETJET;  /*!< see Configuration */
 			Real64_t RCONE;  /*!< see Configuration */
