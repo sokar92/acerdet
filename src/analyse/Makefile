@@ -12,7 +12,8 @@ OBJECTS= BJet.o \
 	Muon.o \
 	Photon.o \
 	Tau.o \
-	Test_Histograms.o
+	Test_Histograms.o \
+	FastJet_Cell.o
 
 all: $(OBJECTS)
 
