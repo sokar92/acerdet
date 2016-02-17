@@ -29,6 +29,7 @@ namespace AcerDet {
 				bool TauJetsLabeling;	/*!< tau-jets labeling on = 1, off = 0 */
 				bool JetCalibration;	/*!< jet calibration  on = 1, off = 0 */
 				bool Test;		/*!< test histograms  on = 1, off = 0 */
+				bool UseFastJet;		/*!< use FastJet clusterization  on = 1, off = 0 */
 
 				/**
 				 * Default constructor.

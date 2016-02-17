@@ -112,6 +112,7 @@ const std::string C_Flag_BC_Jets_Labeling	= "BC-JetsLabeling";
 const std::string C_Flag_Tau_Jets_Labeling	= "Tau-JetsLabeling";
 const std::string C_Flag_JetCalibration		= "JetCalibration";
 const std::string C_Flag_Test				= "Test";
+const std::string C_Flag_UseFastJet			= "UseFastJet";
 
 Configuration::_Flag::_Flag() :
 	HistogramId( 10000 ),
@@ -121,7 +122,8 @@ Configuration::_Flag::_Flag() :
 	BCJetsLabeling( true ),
 	TauJetsLabeling( true ),
 	JetCalibration( true ),
-	Test( true ) 
+	Test( true ),
+	UseFastJet( false )
 {}
 
 void Configuration::_Flag::read( const string& line ) {
@@ -175,6 +177,12 @@ void Configuration::_Flag::read( const string& line ) {
 		sscanf(s.Value.c_str(), "%d", &tmp);
 		Test = tmp;
 	}
+	
+	else if (s.Property == C_Flag_UseFastJet) {
+		int tmp;
+		sscanf(s.Value.c_str(), "%d", &tmp);
+		UseFastJet = tmp;
+	}
 }
 
 string Configuration::_Flag::write( ) const {
@@ -187,6 +195,7 @@ string Configuration::_Flag::write( ) const {
 	ss << C_Flag << "." << C_Flag_Tau_Jets_Labeling	<< " " << TauJetsLabeling 	<< endl;
 	ss << C_Flag << "." << C_Flag_JetCalibration	<< " " << JetCalibration	<< endl;
 	ss << C_Flag << "." << C_Flag_Test			<< " " << Test			<< endl;
+	ss << C_Flag << "." << C_Flag_UseFastJet << " " << UseFastJet << endl;
 	return ss.str();
 }
 
