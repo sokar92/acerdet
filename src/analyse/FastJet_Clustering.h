@@ -1,5 +1,5 @@
-#ifndef _AcerDet_Analyse_FastJet_Cell_
-#define _AcerDet_Analyse_FastJet_Cell_
+#ifndef _AcerDet_Analyse_FastJet_Clustering_
+#define _AcerDet_Analyse_FastJet_Clustering_
 
 #pragma once
 
@@ -16,6 +16,9 @@ using namespace AcerDet::io;
 
 #include "./IAnalysePhase.h"
 
+#include <fastjet/ClusterSequence.hh>
+using namespace fastjet;
+
 namespace AcerDet {
 	namespace analyse {
 
@@ -23,7 +26,7 @@ namespace AcerDet {
 		/*!
 		 * An algorithm for grouping particles into cells.
 		 */
-		class FastJet_Cell : public IAnalysePhase {
+		class FastJet_Clustering : public IAnalysePhase {
 		private:
 			Real64_t ETACEL; /*!< see Configuration */
 			Real64_t PTMIN;  /*!< see Configuration */
@@ -52,7 +55,7 @@ namespace AcerDet {
 			 * \param histMgr a global instance of IHistogramManager
 			 * \param partData a global instance of IParticleDataProvider
 			 */
-			FastJet_Cell( 
+			FastJet_Clustering( 
 				const Configuration& conf,
 				IHistogramManager* histMgr,
 				const ParticleDataProvider& partData );
@@ -60,7 +63,7 @@ namespace AcerDet {
 			/**
 			 * Destructor.
 			 */
-			~FastJet_Cell();
+			~FastJet_Clustering();
 			
 			/**
 			 * Print information about Cell algorithm class to standard output.

@@ -15,8 +15,8 @@ acerDetDeps:
 demo:
 	$(CC) $(CFLAGS) -c demo.cpp -o demo.o $(PYTHIAINCLUDE) $(HEPMCINCLUDE) -D_REENTRANT $(ROOTINCLUDE) -I ./src
 	$(CC) $(CFLAGS) -c demoCreateConfig.cpp -o demoCreateConfig.o $(PYTHIAINCLUDE) $(HEPMCINCLUDE) -I ./src
-	$(CC) demo.o -o demo.exe $(ACERDET_LIB) $(EXT_LIB) $(PYTHIALIBS) $(HEPMCLIBS) $(ROOTLIBS) -Wl,-rpath,$(PYTHIALOCATION)lib -Wl,-rpath,$(HEPMCLOCATION)lib
-	$(CC) demoCreateConfig.o -o demoCreateConfig.exe $(ACERDET_LIB) $(EXT_LIB) $(PYTHIALIBS) $(HEPMCLIBS) -Wl,-rpath,$(PYTHIALOCATION)lib -Wl,-rpath,$(HEPMCLOCATION)lib
+	$(CC) demo.o -o demo.exe $(ACERDET_LIB) $(EXT_LIB) $(PYTHIALIBS) $(HEPMCLIBS) $(ROOTLIBS) -Wl,-rpath,$(PYTHIALOCATION)lib -Wl,-rpath,$(HEPMCLOCATION)lib $(FASTJETLIBS)
+	$(CC) demoCreateConfig.o -o demoCreateConfig.exe $(ACERDET_LIB) $(EXT_LIB) $(PYTHIALIBS) $(HEPMCLIBS) -Wl,-rpath,$(PYTHIALOCATION)lib -Wl,-rpath,$(HEPMCLOCATION)lib $(FASTJETLIBS)
 
 clean:
 	rm -f *~ *.o *.exe *.a

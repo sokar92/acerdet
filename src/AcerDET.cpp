@@ -14,7 +14,7 @@
 #include "analyse/Tau.h"
 #include "analyse/Test_Histograms.h"
 
-#include "analyse/FastJet_Cell.h"
+#include "analyse/FastJet_Clustering.h"
 
 using namespace AcerDet;
 
@@ -31,7 +31,7 @@ AcerDET::AcerDET(
 	partProvider = partFactory->create();
 	
 	//analyse_phases.push_back( new analyse::Cell( config, histoManager, partProvider ) );
-	analyse_phases.push_back( new analyse::FastJet_Cell( config, histoManager, partProvider ) );
+	analyse_phases.push_back( new analyse::FastJet_Clustering( config, histoManager, partProvider ) );
 	analyse_phases.push_back( new analyse::Cluster( config, histoManager, partProvider ) );
 	analyse_phases.push_back( new analyse::Muon( config, histoManager ) );
 	analyse_phases.push_back( new analyse::Electron( config, histoManager ) );

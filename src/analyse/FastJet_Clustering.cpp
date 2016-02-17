@@ -1,10 +1,10 @@
 #include <cstdio>
-#include "FastJet_Cell.h"
+#include "FastJet_Clustering.h"
 #include "../core/Typedefs.h"
 #include "../core/Functions.h"
 using namespace AcerDet::analyse;
 
-FastJet_Cell::FastJet_Cell(
+FastJet_Clustering::FastJet_Clustering(
 	const Configuration& config,
 	IHistogramManager *histoMng,
 	const ParticleDataProvider& partDataProvider ) 
@@ -27,19 +27,19 @@ FastJet_Cell::FastJet_Cell(
 	partProvider( partDataProvider )
 {}
 
-FastJet_Cell::~FastJet_Cell() {
+FastJet_Clustering::~FastJet_Clustering() {
 	histoManager = NULL;
 }
 
-void FastJet_Cell::printInfo() const {
+void FastJet_Clustering::printInfo() const {
 	// print out title
-	printf ("*********************************************\n");
-	printf ("*                                           *\n");
-	printf ("*     *********************************     *\n");
-	printf ("*     ***   analyse::FastJet_Cell   ***     *\n");
-	printf ("*     *********************************     *\n");
-	printf ("*                                           *\n");
-	printf ("*********************************************\n");
+	printf ("***************************************************\n");
+	printf ("*                                                 *\n");
+	printf ("*     ***************************************     *\n");
+	printf ("*     ***   analyse::FastJet_Clustering   ***     *\n");
+	printf ("*     ***************************************     *\n");
+	printf ("*                                                 *\n");
+	printf ("***************************************************\n");
 
 	// print out basic params
 	printf ("\n\t clusters definition ...\n");
@@ -56,13 +56,13 @@ void FastJet_Cell::printInfo() const {
 	printf ("\n");
 }
 
-void FastJet_Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weight ) {
+void FastJet_Clustering::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weight ) {
 
 	Int32_t idhist = 0 + KEYHID;
 	if (!histoRegistered) {
 		histoRegistered = true;
 		histoManager
-			->registerHistogram(idhist, "FastJet_Cell: multiplicity", 50, 0.0, 500.0);
+			->registerHistogram(idhist, "FastJet_Clustering: multiplicity", 50, 0.0, 500.0);
 	}
 
 	// new event to compute
@@ -169,15 +169,15 @@ void FastJet_Cell::analyseRecord( const io::InputRecord& irecord, io::OutputReco
 		->insert(idhist, orecord.Cells.size(), weight );
 }
 
-void FastJet_Cell::printResults() const {
-	printf ("*******************************************\n");
-	printf ("*                                         *\n");
-	printf ("*     *******************************     *\n");
-	printf ("*     ***   Output from           ***     *\n");
-	printf ("*     ***  analyse::FastJet_Cell  ***     *\n");
-	printf ("*     *******************************     *\n");
-	printf ("*                                         *\n");
-	printf ("*******************************************\n");
+void FastJet_Clustering::printResults() const {
+	printf ("*************************************************\n");
+	printf ("*                                               *\n");
+	printf ("*     *************************************     *\n");
+	printf ("*     ***         Output from           ***     *\n");
+	printf ("*     ***  analyse::FastJet_Clustering  ***     *\n");
+	printf ("*     *************************************     *\n");
+	printf ("*                                               *\n");
+	printf ("*************************************************\n");
 	
 	printf (" Analysed records: %d\n", IEVENT);
 }
