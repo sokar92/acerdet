@@ -20,6 +20,8 @@ FastJet_Clustering::FastJet_Clustering(
 	DBETA	( config.Cell.GranularityEta ),
 	DBPHI	( config.Cell.GranularityPhi ),
 	
+	ETCLU   ( config.Cluster.MinEt ),
+	
 	KEYHID	( config.Flag.HistogramId ),
 	KEYFLD	( config.Flag.BField ),
 	KFINVS	( config.Flag.SusyParticle ),
@@ -147,6 +149,10 @@ void FastJet_Clustering::analyseRecord( const io::InputRecord& irecord, io::Outp
 	vector<ClusterData> tempClusters;
 	for (vector<PseudoJet>::const_iterator it = unusedClusters.begin(); it != unusedClusters.end(); it++) {
 		const PseudoJet& jet = *it;
+		
+		// reject clusters with too small amount of energy
+		if (jet.pt() < ETCLU)
+			continue;
 		
 		// fields cellId and hits are ignored - do not need it
 		ClusterData newCluster;
