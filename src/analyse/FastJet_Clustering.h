@@ -16,9 +16,6 @@ using namespace AcerDet::io;
 
 #include "./IAnalysePhase.h"
 
-#include <fastjet/ClusterSequence.hh>
-using namespace fastjet;
-
 namespace AcerDet {
 	namespace analyse {
 

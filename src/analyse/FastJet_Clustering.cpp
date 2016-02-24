@@ -4,6 +4,10 @@
 #include "../core/Functions.h"
 using namespace AcerDet::analyse;
 
+#include <fastjet/PseudoJet.hh>
+#include <fastjet/ClusterSequence.hh>
+using namespace fastjet;
+
 FastJet_Clustering::FastJet_Clustering(
 	const Configuration& config,
 	IHistogramManager *histoMng,
@@ -56,117 +60,112 @@ void FastJet_Clustering::printInfo() const {
 	printf ("\n");
 }
 
+struct ParticleInfo : public PseudoJet::UserInfoBase
+{
+	Int32_t statusID; // for sure status = PS_FINAL
+	ParticleType type;
+	Int32_t pdg_id;
+			
+	Vector4f production;
+
+	Int32_t barcode;
+	Int32_t mother;
+	pair<Int32_t,Int32_t> daughters;
+};
+
 void FastJet_Clustering::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weight ) {
-
-	Int32_t idhist = 0 + KEYHID;
-	if (!histoRegistered) {
-		histoRegistered = true;
-		histoManager
-			->registerHistogram(idhist, "FastJet_Clustering: multiplicity", 50, 0.0, 500.0);
-	}
-
-	// new event to compute
-	IEVENT++;
-	
-	// corrections to much detector granularity
-	Int32_t NBETA = round(2.0 * ETACEL / DBETA);
-	Int32_t NBPHI = round(6.4 / DBPHI);
-	Real64_t PTLRAT = 1.0 / pow(sinh(ETACEL), 2.0);
 	
 	// reference to particle container
 	const vector<Particle>& parts = irecord.particles();
 	
-	// temporary cells container
-	vector<CellData> tempCells;
+	// FastJet particles container
+	vector<PseudoJet> fj_Particles;
 	
-	// Loop over all particles.
-	// Find cell that was hit by given particle.
+	// Loop over all particles - build input for FastJet
 	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
 
 		if (part.status != PS_FINAL)
 			continue;
-			
-		Real64_t DETPHI = 0.0;
-		Real64_t ETA, PHI, PT, PZ;
-
-		PT = part.pT();
-		PZ = part.pZ();
 		
-		// pt^2 <= coef * pz^2
-		if (PT * PT <= PTLRAT * PZ * PZ)
-			continue;
-
 		if (part.isNeutrino()
 		|| part.type == PT_MUON
 		|| part.pdg_id == KFINVS)
 			continue;
-
-		if (KEYFLD && partProvider.getChargeType(part.pdg_id) != 0) {
-			if (part.pT() < PTMIN)
-				continue;
-				
-			Real64_t CHRG = partProvider.getCharge(part.pdg_id) / 3.0;
-			DETPHI = CHRG * part.foldPhi();
-		}
 		
-		PT = part.pT();
-		ETA = part.getEta();
-		PHI = saturatePi(part.getPhi() + DETPHI);
+		// set particle momentum
+		PseudoJet jet(part.pX(), part.pY(), part.pZ(), part.e());
 		
-		Int32_t IETA, IPHI;
-		if (abs(ETA) < CALOTH) {
-			IETA = 1 + static_cast<Int32_t>( (ETA + ETACEL) / 2.0 / ETACEL * NBETA );
-			IPHI = 1 + static_cast<Int32_t>( (PHI + PI) / 2.0 / PI * NBPHI );
-		} else {
-			IETA = 1 + 2 * static_cast<Int32_t>( (ETA + ETACEL) / 2.0 / ETACEL * NBETA / 2.0 );
-			IPHI = 1 + 2 * static_cast<Int32_t>( (PHI + PI) / 2.0 / PI * NBPHI / 2.0 );
-		}
+		// set particle additional data
+		ParticleInfo info;
+		info.statusID = part.statusID;
+		info.type = part.type;
+		info.pdg_id = part.pdg_id;
+		info.production = part.production;
+		info.barcode = part.barcode;
+		info.mother = part.mother;
+		info.daughters = part.daughters;
 		
-		Int32_t cellID = NBPHI * IETA + IPHI;
+		jet.set_user_info(&info);
 		
-		// Add to cell already hit
-		Bool_t found = false;
-		for (int j=0; j<tempCells.size(); ++j) {
-			if (cellID == tempCells[j].cellID) {
-				tempCells[j].hits++;		// new part hits this cell
-				tempCells[j].pT += PT;		// summing pT of part hits 
-				found = true;
-				break;
-			}
-		}
-		
-		// Or book new cell
-		if (!found) {
-			CellData newCell;
-			newCell.status = 2;				// CREATED
-			newCell.cellID = cellID;		// not used ID
-			newCell.hits = 1;				// only single hit for now
-			newCell.pT = PT;				// pT from single hit
-			
-			if (abs(ETA) < CALOTH) {
-				newCell.eta = 2.0 * ETACEL * (IETA - 1.0 + 0.5) / NBETA - ETACEL;
-				newCell.phi = 2.0 * PI * (IPHI - 1.0 + 0.5) / NBPHI - PI;
-			} else {
-				newCell.eta = 2.0 * ETACEL * (IETA - 1.0 + 1.0) / NBETA - ETACEL;
-				newCell.phi = 2.0 * PI * (IPHI - 1.0 + 1.0) / NBPHI - PI;
-			}
-
-			tempCells.push_back(newCell);
-		}
+		// add to collection
+		fj_Particles.push_back(jet);
 	}
-
-	// Remove cells below threshold and store cells-map in output record
-	for (int j=0; j<tempCells.size(); ++j) {
-		// enough pT to create new cell
-		if (tempCells[j].pT > ETTHR) {
-			orecord.Cells.push_back(tempCells[j]);
-		}
+	
+	// choose a jet definition
+	Real64_t R = 0.7;
+	JetDefinition jet_def(antikt_algorithm, R);
+	
+	// run the clustering, extract the jets
+	ClusterSequence cs(fj_Particles, jet_def);
+	
+	// fill Cells and Clusters collections in output record
+	vector<PseudoJet> jets = sorted_by_pt(cs.inclusive_jets(PTMIN));
+	vector<PseudoJet> unusedCells = cs.unclustered_particles();
+	vector<PseudoJet> unusedClusters = cs.childless_pseudojets();
+	
+	// fill Cell data
+	for (vector<PseudoJet>::const_iterator it = unusedCells.begin(); it != unusedCells.end(); it++) {
+		const PseudoJet& jet = *it;
+		
+		// ignore small cell-impulses
+		if (jet.pt() < ETTHR)
+			continue;
+		
+		// fields cellId and hits are ignored - do not need it
+		CellData newCell;
+		newCell.status = 2;				// CREATED
+		newCell.pT = jet.pt();			// pT
+		newCell.eta = jet.eta();        // eta
+		newCell.phi = jet.phi_std();    // phi \in [-pi, +pi]
+		
+		// add new cell to output record
+		orecord.Cells.push_back(newCell);
 	}
+	
+	// fill Cluster data
+	vector<ClusterData> tempClusters;
+	for (vector<PseudoJet>::const_iterator it = unusedClusters.begin(); it != unusedClusters.end(); it++) {
+		const PseudoJet& jet = *it;
+		
+		// fields cellId and hits are ignored - do not need it
+		ClusterData newCluster;
+		newCluster.status = 1;              // status ok
+		newCluster.eta = jet.eta();         // eta
+		newCluster.phi = jet.phi_std();     // phi \in [-pi, +pi]
+		newCluster.eta_rec = jet.eta();     // eta
+		newCluster.phi_rec = jet.phi_std(); // phi \in [-pi, +pi]
+		newCluster.pT = jet.pt();
+		newCluster.alreadyUsed = false;
+		
+		tempClusters.push_back(newCluster);
+	}
+	
+	// Arrange clusters in falling ET sequence
+	ClusterData::sortBy_pT(tempClusters);
 
-	// fill histogram
-	histoManager
-		->insert(idhist, orecord.Cells.size(), weight );
+	// store in outputrecord
+	orecord.Clusters.insert(orecord.Clusters.end(), tempClusters.begin(), tempClusters.end());
 }
 
 void FastJet_Clustering::printResults() const {
