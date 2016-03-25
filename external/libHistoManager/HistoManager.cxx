@@ -109,7 +109,7 @@ HistoManager::~HistoManager() {
 void HistoManager::addTH1F(const char *name, const char *title, int bins, float xlow, float xhigh) {
   TClonesArray &a = *m_TH1FArray;
   a[th1fSize] = new (a[th1fSize]) TH1F(name, title, bins, xlow, xhigh);
-  std::cout << "histoTH1F    " << name << std::endl;
+//  std::cout << "histoTH1F    " << name << std::endl;
   th1fSize++;
   
 }
@@ -121,7 +121,7 @@ void HistoManager::addTH1F(const char *name, const char *title, int bins, float 
 void HistoManager::addTH1F(const char *name, const char *title, int binsx, const double *xbins ) {
   TClonesArray &a = *m_TH1FArray;
   a[th1fSize] = new (a[th1fSize]) TH1F(name, title, binsx, xbins);
-  std::cout << "histoTH1F    " << name << std::endl;
+//  std::cout << "histoTH1F    " << name << std::endl;
   th1fSize++;
 }
 
@@ -134,7 +134,7 @@ void HistoManager::addTH3F(const char *name, const char *title, int bins1, float
                            int bins3, float xlow3, float xhigh3) {
   TClonesArray &a = *m_TH3FArray;
   a[th3fSize] = new (a[th3fSize]) TH3F(name, title, bins1, xlow1, xhigh1, bins2, xlow2, xhigh2, bins3, xlow3, xhigh3);
-  std::cout << "histoTH3F    " << name << std::endl;
+//  std::cout << "histoTH3F    " << name << std::endl;
   th3fSize++;
 }
 
@@ -147,7 +147,7 @@ void HistoManager::addTH3F(const char *name, const char *title, int binsx, const
                            int binsz, const double *zbins) {
   TClonesArray &a = *m_TH3FArray;
   a[th3fSize] = new (a[th3fSize]) TH3F(name, title, binsx, xbins, binsy, ybins, binsz, zbins);
-  std::cout << "histoTH3F    " << name << std::endl;
+//  std::cout << "histoTH3F    " << name << std::endl;
   th3fSize++;
 }
 
@@ -159,7 +159,7 @@ void HistoManager::addTH3F(const char *name, const char *title, int binsx, const
 void HistoManager::addTH2F(const char *name, const char *title, int bins1, float xlow1, float xhigh1,int bins2, float xlow2, float xhigh2) {
   TClonesArray &a = *m_TH2FArray;
   a[th2fSize] = new (a[th2fSize]) TH2F(name, title, bins1, xlow1, xhigh1, bins2, xlow2, xhigh2);
-  std::cout << "histoTH2F    " << name << std::endl;
+//  std::cout << "histoTH2F    " << name << std::endl;
   th2fSize++;
 }
 
@@ -171,7 +171,7 @@ void HistoManager::addTH2F(const char *name, const char *title, int bins1, float
 void HistoManager::addTH2F(const char *name, const char *title, int binsx, const double *xbins , int binsy, const double *ybins) {
   TClonesArray &a = *m_TH2FArray;
   a[th2fSize] = new (a[th2fSize]) TH2F(name, title, binsx, xbins, binsy, ybins);
-  std::cout << "histoTH2F    " << name << std::endl;
+//  std::cout << "histoTH2F    " << name << std::endl;
   th2fSize++;
 }
 
@@ -183,7 +183,7 @@ void HistoManager::addTH2F(const char *name, const char *title, int binsx, const
 void HistoManager::addTProf(const char *name, const char *title, int bins, float xlow1, float xhigh1,float xlow2, float xhigh2) {
   TClonesArray &a = *m_TProfArray;
   a[tprofSize] = new (a[tprofSize]) TProfile(name, title, bins, xlow1, xhigh1, xlow2, xhigh2);
-  std::cout << "histoTProfile    " << name << std::endl;
+//  std::cout << "histoTProfile    " << name << std::endl;
   tprofSize++;
 }
 

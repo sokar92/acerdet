@@ -93,9 +93,9 @@ int main( int argc, char **argv ) {
 
 		InputRecord iRec = external::HepMC_InputConverter::convert( *hepmc );
 // wypisz iRec
-		if (iEvent == 0) {
-			cout << iRec;
-		}
+//		if (iEvent == 0) {
+//			cout << iRec;
+//		}
 
 		acerDet.analyseRecord(iRec, oRec, weigth);
 
