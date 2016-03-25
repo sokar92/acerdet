@@ -31,7 +31,11 @@ namespace AcerDet {
 			Real64_t CALOTH; /*!< see Configuration */
 			Real64_t DBETA;  /*!< see Configuration */
 			Real64_t DBPHI;  /*!< see Configuration */
+			
 			Real64_t ETCLU;  /*!< see Configuration */
+			Real64_t RCONE;  /*!< see Configuration */
+			Real64_t ETACLU; /*!< see Configuration */
+			Real64_t ETINI;  /*!< see Configuration */
 			
 			Int32_t KEYHID; /*!< Histogram unique id */
 			Bool_t  KEYFLD; /*!< see Configuration */

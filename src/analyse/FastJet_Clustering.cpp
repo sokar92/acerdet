@@ -21,6 +21,9 @@ FastJet_Clustering::FastJet_Clustering(
 	DBPHI	( config.Cell.GranularityPhi ),
 	
 	ETCLU   ( config.Cluster.MinEt ),
+	RCONE	( config.Cluster.ConeR ),
+	ETACLU	( config.Cluster.RapidityCoverage ),
+	ETINI	( config.Cluster.MinEtInit ),
 	
 	KEYHID	( config.Flag.HistogramId ),
 	KEYFLD	( config.Flag.BField ),
@@ -97,7 +100,7 @@ void FastJet_Clustering::analyseRecord( const io::InputRecord& irecord, io::Outp
 		
 		// set particle momentum
 		PseudoJet jet(part.pX(), part.pY(), part.pZ(), part.e());
-		
+	/*	
 		// set particle additional data
 		ParticleInfo info;
 		info.statusID = part.statusID;
@@ -109,14 +112,13 @@ void FastJet_Clustering::analyseRecord( const io::InputRecord& irecord, io::Outp
 		info.daughters = part.daughters;
 		
 		jet.set_user_info(&info);
-		
+	*/	
 		// add to collection
 		fj_Particles.push_back(jet);
 	}
 	
 	// choose a jet definition
-	Real64_t R = 0.7;
-	JetDefinition jet_def(antikt_algorithm, R);
+	JetDefinition jet_def(antikt_algorithm, RCONE);
 	
 	// run the clustering, extract the jets
 	ClusterSequence cs(fj_Particles, jet_def);
@@ -148,6 +150,26 @@ void FastJet_Clustering::analyseRecord( const io::InputRecord& irecord, io::Outp
 	// fill Cluster data
 	vector<ClusterData> tempClusters;
 	for (vector<PseudoJet>::const_iterator it = unusedClusters.begin(); it != unusedClusters.end(); it++) {
+		const PseudoJet& jet = *it;
+		
+		// reject clusters with too small amount of energy
+		if (jet.pt() < ETCLU)
+			continue;
+		
+		// fields cellId and hits are ignored - do not need it
+		ClusterData newCluster;
+		newCluster.status = 1;              // status ok
+		newCluster.eta = jet.eta();         // eta
+		newCluster.phi = jet.phi_std();     // phi \in [-pi, +pi]
+		newCluster.eta_rec = jet.eta();     // eta
+		newCluster.phi_rec = jet.phi_std(); // phi \in [-pi, +pi]
+		newCluster.pT = jet.pt();
+		newCluster.alreadyUsed = false;
+		
+		tempClusters.push_back(newCluster);
+	}
+	
+	for (vector<PseudoJet>::const_iterator it = jets.begin(); it != jets.end(); it++) {
 		const PseudoJet& jet = *it;
 		
 		// reject clusters with too small amount of energy
