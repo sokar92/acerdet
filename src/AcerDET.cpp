@@ -30,13 +30,12 @@ AcerDET::AcerDET(
 {
 	partProvider = partFactory->create();
 	
-	if (config.Flag.UseFastJet) {
+	analyse_phases.push_back( new analyse::Cell( config, histoManager, partProvider ) );
+	
+	if (config.Flag.UseFastJet)
 		analyse_phases.push_back( new analyse::FastJet_Clustering( config, histoManager, partProvider ) );
-	}
-	else {
-		analyse_phases.push_back( new analyse::Cell( config, histoManager, partProvider ) );
+	else
 		analyse_phases.push_back( new analyse::Cluster( config, histoManager, partProvider ) );
-	}
 	
 	analyse_phases.push_back( new analyse::Muon( config, histoManager ) );
 	analyse_phases.push_back( new analyse::Electron( config, histoManager ) );

@@ -81,11 +81,11 @@ struct ParticleInfo : public PseudoJet::UserInfoBase
 void FastJet_Clustering::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weight ) {
 	
 	// reference to particle container
-	const vector<Particle>& parts = irecord.particles();
+	// const vector<Particle>& parts = irecord.particles();
 	
 	// FastJet particles container
 	vector<PseudoJet> fj_Particles;
-	
+	/*
 	// Loop over all particles - build input for FastJet
 	for (int i=0; i<parts.size(); ++i) {
 		const Particle& part = parts[i];
@@ -100,20 +100,28 @@ void FastJet_Clustering::analyseRecord( const io::InputRecord& irecord, io::Outp
 		
 		// set particle momentum
 		PseudoJet jet(part.pX(), part.pY(), part.pZ(), part.e());
-	/*	
+	
 		// set particle additional data
-		ParticleInfo info;
-		info.statusID = part.statusID;
-		info.type = part.type;
-		info.pdg_id = part.pdg_id;
-		info.production = part.production;
-		info.barcode = part.barcode;
-		info.mother = part.mother;
-		info.daughters = part.daughters;
+		//ParticleInfo info;
+		//info.statusID = part.statusID;
+		//info.type = part.type;
+		//info.pdg_id = part.pdg_id;
+		//info.production = part.production;
+		//info.barcode = part.barcode;
+		//info.mother = part.mother;
+		//info.daughters = part.daughters;
 		
 		jet.set_user_info(&info);
-	*/	
+	
 		// add to collection
+		fj_Particles.push_back(jet);
+	}*/
+	
+	for (vector<CellData>::const_iterator it = orecord.Cells.begin(); it != orecord.Cells.end(); it++) {
+		const CellData& cell = *it;
+		
+		PseudoJet jet(cell.pX(), cell.pY(), cell.pZ(), cell.e());
+		
 		fj_Particles.push_back(jet);
 	}
 	

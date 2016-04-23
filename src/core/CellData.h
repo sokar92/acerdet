@@ -45,6 +45,14 @@ namespace AcerDet {
 			 */
 			CellData();
 			
+			Real64_t pX() const;
+			
+			Real64_t pY() const;
+			
+			Real64_t pZ() const;
+			
+			Real64_t e() const;
+			
 			/**
 			 * Sorst a list of cells by accumulated energy.
 			 * \param v list of cells to sort.
