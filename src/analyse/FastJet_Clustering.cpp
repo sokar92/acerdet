@@ -78,44 +78,27 @@ struct ParticleInfo : public PseudoJet::UserInfoBase
 	pair<Int32_t,Int32_t> daughters;
 };
 
+inline double dAbs(double d) {
+	return d < 0 ? -d : d;
+}
+
+inline bool closeTo(double a, double b) {
+	return dAbs(a - b) < 0.000001;
+}
+
 void FastJet_Clustering::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weight ) {
 	
-	// reference to particle container
-	// const vector<Particle>& parts = irecord.particles();
+	Int32_t idhist = 100 + KEYHID;
+	if (!histoRegistered) {
+		histoRegistered = true;
+		histoManager
+			->registerHistogram(idhist+1,  "Cluster: multiplicity", 10, 0.0, 10.0);
+	}
+	
+	IEVENT++;
 	
 	// FastJet particles container
 	vector<PseudoJet> fj_Particles;
-	/*
-	// Loop over all particles - build input for FastJet
-	for (int i=0; i<parts.size(); ++i) {
-		const Particle& part = parts[i];
-
-		if (part.status != PS_FINAL)
-			continue;
-		
-		if (part.isNeutrino()
-		|| part.type == PT_MUON
-		|| part.pdg_id == KFINVS)
-			continue;
-		
-		// set particle momentum
-		PseudoJet jet(part.pX(), part.pY(), part.pZ(), part.e());
-	
-		// set particle additional data
-		//ParticleInfo info;
-		//info.statusID = part.statusID;
-		//info.type = part.type;
-		//info.pdg_id = part.pdg_id;
-		//info.production = part.production;
-		//info.barcode = part.barcode;
-		//info.mother = part.mother;
-		//info.daughters = part.daughters;
-		
-		jet.set_user_info(&info);
-	
-		// add to collection
-		fj_Particles.push_back(jet);
-	}*/
 	
 	for (vector<CellData>::const_iterator it = orecord.Cells.begin(); it != orecord.Cells.end(); it++) {
 		const CellData& cell = *it;
@@ -136,24 +119,35 @@ void FastJet_Clustering::analyseRecord( const io::InputRecord& irecord, io::Outp
 	vector<PseudoJet> unusedCells = cs.unclustered_particles();
 	vector<PseudoJet> unusedClusters = cs.childless_pseudojets();
 	
-	// fill Cell data
+	// mark all cells in orecord as used
+	for (vector<CellData>::iterator it = orecord.Cells.begin(); it != orecord.Cells.end(); it++)
+		(*it).status = 0;
+	
+	// mark unused cells in orecord
+	int cells = orecord.Cells.size();
+	int changed = 0;
 	for (vector<PseudoJet>::const_iterator it = unusedCells.begin(); it != unusedCells.end(); it++) {
 		const PseudoJet& jet = *it;
 		
-		// ignore small cell-impulses
-		if (jet.pt() < ETTHR)
-			continue;
-		
-		// fields cellId and hits are ignored - do not need it
-		CellData newCell;
-		newCell.status = 2;				// CREATED
-		newCell.pT = jet.pt();			// pT
-		newCell.eta = jet.eta();        // eta
-		newCell.phi = jet.phi_std();    // phi \in [-pi, +pi]
-		
-		// add new cell to output record
-		orecord.Cells.push_back(newCell);
+		for (int i=0; i<cells; i++) {
+			CellData& cell = orecord.Cells[i];
+			
+			if (cell.status == 0)
+				continue;
+			
+			if (closeTo(cell.pX(), jet.px())
+			&& closeTo(cell.pY(), jet.py())
+			&& closeTo(cell.pZ(), jet.pz())
+			&& closeTo(cell.e(), jet.e()))
+			{
+				// mark as not used
+				cell.status = 2;
+				changed++;
+				break;
+			}
+		}
 	}
+	//printf ("---- changed = %d / %d ------\n", changed, (int)unusedCells.size());
 	
 	// fill Cluster data
 	vector<ClusterData> tempClusters;
@@ -202,6 +196,10 @@ void FastJet_Clustering::analyseRecord( const io::InputRecord& irecord, io::Outp
 
 	// store in outputrecord
 	orecord.Clusters.insert(orecord.Clusters.end(), tempClusters.begin(), tempClusters.end());
+	
+	// fill histogram
+	histoManager
+	  ->insert(idhist+1, tempClusters.size(), weight);
 }
 
 void FastJet_Clustering::printResults() const {
