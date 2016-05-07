@@ -86,6 +86,10 @@ inline bool closeTo(double a, double b) {
 	return dAbs(a - b) < 0.000001;
 }
 
+bool cellpXcomparator(const CellData& c1, const CellData& c2) {
+	return c1.pX() < c2.pX();
+}
+
 void FastJet_Clustering::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orecord, Real64_t weight ) {
 	
 	Int32_t idhist = 100 + KEYHID;
@@ -123,13 +127,43 @@ void FastJet_Clustering::analyseRecord( const io::InputRecord& irecord, io::Outp
 	for (vector<CellData>::iterator it = orecord.Cells.begin(); it != orecord.Cells.end(); it++)
 		(*it).status = 0;
 	
+	// sort cells by pX
+	std::sort(orecord.Cells.begin(), orecord.Cells.end(), cellpXcomparator);
+	
 	// mark unused cells in orecord
 	int cells = orecord.Cells.size();
 	int changed = 0;
 	for (vector<PseudoJet>::const_iterator it = unusedCells.begin(); it != unusedCells.end(); it++) {
 		const PseudoJet& jet = *it;
+		double jetpX = jet.px();
 		
-		for (int i=0; i<cells; i++) {
+		// find lower bound index
+		int l = 0;
+		int r = cells - 1;
+		while (l != r) {
+			int m = (l + r + 1) / 2;
+			if (orecord.Cells[m].pX() < jetpX) l = m;
+			else r = m - 1;
+		}
+		int lower_bound = l;
+		
+		// find upper bound index
+		l = 0;
+		r = cells - 1;
+		while (l != r) {
+			int m = (l + r) / 2;
+			if (orecord.Cells[m].pX() > jetpX) r = m;
+			else l = m + 1;
+		}
+		int upper_bound = l;
+		
+		if (lower_bound > upper_bound) {
+			printf ("Lower bound is greater than upper bound\n");
+			fflush (stdout);
+			throw -1;
+		}
+		
+		for (int i = lower_bound; i <= upper_bound; i++) {
 			CellData& cell = orecord.Cells[i];
 			
 			if (cell.status == 0)

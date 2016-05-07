@@ -5,8 +5,8 @@ Flag.SUSY_LSP_Particle		66           # code for SUSY LSP particle
 Flag.BC-JetsLabeling		1            # b- and c-jets labeling on=1, off=0
 Flag.Tau-JetsLabeling		1            # tau-jets labeling on=1, off=0
 Flag.JetCalibration		1            # jet calibration  on=1, off=0
-Flag.Test			1            # generating test histograms on=1, off=0
-Flag.UseFastJet			0            # FastJet clusterization  on=1, off=1
+Flag.Test			0            # generating test histograms on=1, off=0
+Flag.UseFastJet			1            # FastJet clusterization  on=1, off=1
 
 Cell.RapidityCoverage		5.000        # rapidity coverage
 Cell.MinpT			0.500        # min p_T for B-field
