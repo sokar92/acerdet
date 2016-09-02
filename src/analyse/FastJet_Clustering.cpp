@@ -96,7 +96,7 @@ void FastJet_Clustering::analyseRecord( const io::InputRecord& irecord, io::Outp
 	if (!histoRegistered) {
 		histoRegistered = true;
 		histoManager
-			->registerHistogram(idhist+1,  "Cluster: multiplicity", 10, 0.0, 10.0);
+			->registerHistogram(idhist+1,  "Cluster: multiplicity", 30, 0.0, 30.0);
 	}
 	
 	IEVENT++;

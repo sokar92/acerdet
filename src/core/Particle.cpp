@@ -58,7 +58,7 @@ Real64_t Particle::pT() const {
  */
  
 Real64_t Particle::getPhi() const {
-	return angle(momentum.p.x, momentum.p.y);
+	return asin(momentum.p.y / pT());
 }
 
 Real64_t Particle::getEta() const {
@@ -76,7 +76,7 @@ Real64_t Particle::getTheta() const {
  * Folding
  */
 Real64_t Particle::foldPhi() const {
-	return 0.5 / getPhi();
+	return 0.5 / pT();
 }
 
 /*

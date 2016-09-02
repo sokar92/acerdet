@@ -56,9 +56,9 @@ void BJet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 		histoManager
 			->registerHistogram(idhist+21, "BJet: b-quarks HP multiplicity", 10, 0.0, 10.0);
 		histoManager
-			->registerHistogram(idhist+23, "BJet: delta r bjet-bquark HP", 50, 0.0,  1.0);
+			->registerHistogram(idhist+23, "BJet: delta r bjet-bquark HP", 100, 0.0,  1.0);
 		histoManager
-			->registerHistogram(idhist+24, "BJet: pTbjet/pTbquark HP", 50, 0.0,  2.0);
+			->registerHistogram(idhist+24, "BJet: pTbjet/pTbquark HP", 200, 0.0,  4.0);
 	}
 	
 	// do not use this algorithm

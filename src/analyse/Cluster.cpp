@@ -59,19 +59,19 @@ void Cluster::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& o
 	if (!histoRegistered) {
 		histoRegistered = true;
 		histoManager
-			->registerHistogram(idhist+1,  "Cluster: multiplicity", 10, 0.0, 10.0);
+			->registerHistogram(idhist+1,  "Cluster: multiplicity", 30, 0.0, 30.0);
 		histoManager
-			->registerHistogram(idhist+11, "Cluster: delta eta cluster barycentre"  , 50, -0.5, 0.5);
+			->registerHistogram(idhist+11, "Cluster: delta eta cluster barycentre"  , 100, -0.5, 0.5);
 		histoManager
-			->registerHistogram(idhist+12, "Cluster: delta phi cluster barycentre"  , 50, -0.5, 0.5);
+			->registerHistogram(idhist+12, "Cluster: delta phi cluster barycentre"  , 100, -0.5, 0.5);
 		histoManager
-			->registerHistogram(idhist+13, "Cluster: delta r   cluster barycentre"  , 50,  0.0, 0.5);
+			->registerHistogram(idhist+13, "Cluster: delta r   cluster barycentre"  , 100,  0.0, 0.5);
 		histoManager
-			->registerHistogram(idhist+23, "Cluster: delta r   cluster HPparton"    , 50,  0.0, 0.5);
+			->registerHistogram(idhist+23, "Cluster: delta r   cluster HPparton"    , 100,  0.0, 0.5);
 		histoManager
-			->registerHistogram(idhist+14, "Cluster: pTclu/SumpT particle"          , 50,  0.0, 2.0);
+			->registerHistogram(idhist+14, "Cluster: pTclu/SumpT particle"          , 100,  0.0, 2.0);
 		histoManager
-			->registerHistogram(idhist+24, "Cluster: pTclu/SumpT HP parton"         , 50,  0.0, 2.0);
+			->registerHistogram(idhist+24, "Cluster: pTclu/SumpT HP parton"         , 100,  0.0, 2.0);
 	}
 
 	// new event to compute

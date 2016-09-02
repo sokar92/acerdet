@@ -41,11 +41,11 @@ void Calibration::analyseRecord( const io::InputRecord& irecord, io::OutputRecor
   if (!histoRegistered) {
     histoRegistered = true;
     histoManager
-      ->registerHistogram(idhist+1, "Calibration: calibration correction", 50, 0.0, 2.0);
+      ->registerHistogram(idhist+1, "Calibration: calibration correction", 500, 0.0, 10.0);
     histoManager
-      ->registerHistogram(idhist+11, "Calibration: pT jets before calibration", 50, 0.0, 100.0);
+      ->registerHistogram(idhist+11, "Calibration: pT jets before calibration", 125, 0.0, 250.0);
     histoManager
-      ->registerHistogram(idhist+12, "Calibration: pT jets after calibration", 50, 0.0, 100.0);
+      ->registerHistogram(idhist+12, "Calibration: pT jets after calibration", 125, 0.0, 250.0);
   }
 	
   // do not use this algorithm

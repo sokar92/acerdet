@@ -62,7 +62,7 @@ void Cell::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& orec
 	if (!histoRegistered) {
 		histoRegistered = true;
 		histoManager
-			->registerHistogram(idhist, "Cell: multiplicity", 50, 0.0, 500.0);
+			->registerHistogram(idhist, "Cell: multiplicity", 80, 0.0, 800.0);
 	}
 
 	// new event to compute

@@ -57,19 +57,19 @@ void Jet::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	if (!histoRegistered) {
 		histoRegistered = true;
 		histoManager
-		  ->registerHistogram(idhist+1, "Jet: multiplicity", 20, 0.0, 20);
+		  ->registerHistogram(idhist+1, "Jet: multiplicity", 30, 0.0, 30);
 		histoManager
-		  ->registerHistogram(idhist+11, "Jet: delta phi jet-barycentre", 50, -0.5, 0.5);
+		  ->registerHistogram(idhist+11, "Jet: delta eta jet-barycentre", 100, -0.5, 0.5);
 		histoManager
-		  ->registerHistogram(idhist+12, "Jet: delta eta jet-barycentre", 50, -0.5, 0.5);
+		  ->registerHistogram(idhist+12, "Jet: delta phi jet-barycentre", 100, -0.5, 0.5);
 		histoManager
-		  ->registerHistogram(idhist+13, "Jet: delta r jet-barycentre",   50,  0.0, 1.0);
+		  ->registerHistogram(idhist+13, "Jet: delta r jet-barycentre",   100,  0.0, 1.0);
 		histoManager
-		  ->registerHistogram(idhist+14, "Jet: delta r jet- HP parton",   50,  0.0, 1.0);
+		  ->registerHistogram(idhist+14, "Jet: delta r jet- HP parton",   100,  0.0, 1.0);
 		histoManager
-		  ->registerHistogram(idhist+23, "Jet: pTjet/pT particles in Rcone",  50,  0.0, 2.0);
+		  ->registerHistogram(idhist+23, "Jet: pTjet/pT particles in Rcone",  100,  0.0, 2.0);
 		histoManager
-		  ->registerHistogram(idhist+24, "Jet: pTjet/pT HP parton",           50,  0.0, 2.0);
+		  ->registerHistogram(idhist+24, "Jet: pTjet/pT HP parton",           100,  0.0, 2.0);
 	}
 
 	// new event to compute
