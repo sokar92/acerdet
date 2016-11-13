@@ -7,7 +7,7 @@ DEMO= demo.exe demoCreateConfig.exe
 EXT_LIB= $(PWD)/$(RELATIVE_PATH)/external/libAcerDetExternals.so
 ACERDET_LIB= $(PWD)/$(RELATIVE_PATH)/src/libAcerDET.so
 
-EVENTS= 100000
+EVENTS= 2000000
 
 T1= hadronisation
 T2= hardprocess
@@ -60,3 +60,19 @@ run: demo.exe run_prepareDirectory
 	cp acerdet_fast.dat acerdet.dat
 	./demo.exe conf/$(T3).conf $(EVENTS)
 	cp conf/$(T3).conf.root $(DIR3)/fast.root
+
+runHadron: demo.exe run_prepareDirectory	
+	cp acerdet_old.dat acerdet.dat
+	./demo.exe conf/$(T1).conf $(EVENTS)
+	cp conf/$(T1).conf.root $(DIR1)/old.root
+	cp acerdet_fast.dat acerdet.dat
+	./demo.exe conf/$(T1).conf $(EVENTS)
+	cp conf/$(T1).conf.root $(DIR1)/fast.root
+
+runHard: demo.exe run_prepareDirectory	
+	cp acerdet_old.dat acerdet.dat
+	./demo.exe conf/$(T2).conf $(EVENTS)
+	cp conf/$(T2).conf.root $(DIR2)/old.root
+	cp acerdet_fast.dat acerdet.dat
+	./demo.exe conf/$(T2).conf $(EVENTS)
+	cp conf/$(T2).conf.root $(DIR2)/fast.root

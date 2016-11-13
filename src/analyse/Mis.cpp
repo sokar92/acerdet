@@ -51,13 +51,13 @@ void Mis::analyseRecord( const io::InputRecord& irecord, io::OutputRecord& oreco
 	if (!histoRegistered) {
 		histoRegistered = true;
 		histoManager
-			->registerHistogram(idhist+11, "Mis: reconstructed p_T ", 100, 0.0, 200.0);
+			->registerHistogram(idhist+11, "Mis: reconstructed p_T ", 200, 0.0, 400.0);
 		histoManager
-			->registerHistogram(idhist+12, "Mis: reconstructed p_T + cells", 100, 0.0, 200.0);
+			->registerHistogram(idhist+12, "Mis: reconstructed p_T + cells", 200, 0.0, 400.0);
 		histoManager
-			->registerHistogram(idhist+13, "Mis: reconstructed pTmiss", 100, 0.0, 200.0);
+			->registerHistogram(idhist+13, "Mis: reconstructed pTmiss", 200, 0.0, 400.0);
 		histoManager
-			->registerHistogram(idhist+21, "Mis: true p_T invisible", 100, 0.0, 200.0);
+			->registerHistogram(idhist+21, "Mis: true p_T invisible", 200, 0.0, 400.0);
 		histoManager
 			->registerHistogram(idhist+22, "Mis: pT miss (true - reco)/reco ", 50, -1.0, 1.0);
 	}
